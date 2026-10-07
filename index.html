@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KNYAZEV DROP — Премиальный кейс оценок</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            900: '#0a0a0c',
+                            800: '#121216',
+                            700: '#1a1a22',
+                            600: '#262633',
+                        },
+                        brand: {
+                            gold: '#d4af37',
+                            goldLight: '#f3e5ab',
+                            bronze: '#cd7f32',
+                            silver: '#c0c0c0',
+                            purple: '#8a2be2',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0c;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism background */
+        .glass-panel {
+            background: rgba(18, 18, 22, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .glass-card {
+            background: rgba(26, 26, 34, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Hide scrollbars */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Roulette transition */
+        .roulette-track {
+            display: flex;
+            transition: transform 6s cubic-bezier(0.08, 0.82, 0.17, 1);
+            will-change: transform;
+        }
+
+        /* Custom glow effects */
+        .glow-gold {
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.15);
+        }
+        .glow-purple {
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.25);
+        }
+
+        /* Dial Rotation */
+        .upgrade-dial {
+            transition: transform 4s cubic-bezier(0.15, 0.85, 0.35, 1.02);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-gold/30 selection:text-white">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="sticky top-0 z-50 glass-panel border-b border-white/10 px-4 lg:px-8 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('case')">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-gold to-yellow-700 flex items-center justify-center font-bold text-dark-900 shadow-lg shadow-brand-gold/20">
+                    K
+                </div>
+                <div>
+                    <span class="font-bold tracking-wider text-lg text-white block leading-none">KNYAZEV</span>
+                    <span class="text-[10px] tracking-widest text-brand-gold uppercase font-medium">DROP</span>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center gap-1 bg-dark-800/80 p-1.5 rounded-xl border border-white/5">
+                <button id="nav-case" onclick="switchTab('case')" class="px-5 py-2 rounded-lg text-sm font-medium transition-all text-white bg-dark-700 shadow-sm flex items-center gap-2">
+                    <i data-lucide="package" class="w-4 h-4 text-brand-gold"></i>
+                    Кейс
+                </button>
+                <button id="nav-upgrade" onclick="switchTab('upgrade')" class="px-5 py-2 rounded-lg text-sm font-medium transition-all text-gray-400 hover:text-white flex items-center gap-2">
+                    <i data-lucide="zap" class="w-4 h-4"></i>
+                    Апгрейд
+                </button>
+                <button id="nav-inventory" onclick="switchTab('inventory')" class="px-5 py-2 rounded-lg text-sm font-medium transition-all text-gray-400 hover:text-white flex items-center gap-2 relative">
+                    <i data-lucide="briefcase" class="w-4 h-4"></i>
+                    Инвентарь
+                    <span id="inv-count-badge" class="hidden absolute -top-1 -right-1 bg-brand-gold text-dark-900 text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
+                </button>
+            </nav>
+
+            <!-- Balance & User Info -->
+            <div class="flex items-center gap-3">
+                <div class="bg-dark-800/90 border border-white/10 rounded-xl px-4 py-1.5 flex items-center gap-3">
+                    <div class="flex flex-col text-right">
+                        <span class="text-[10px] text-gray-400 uppercase tracking-wider font-medium">Баланс</span>
+                        <span class="text-sm font-bold text-brand-gold font-mono" id="user-balance">1,000 ₽</span>
+                    </div>
+                    <button onclick="addBalance()" class="w-7 h-7 rounded-lg bg-brand-gold/10 text-brand-gold hover:bg-brand-gold hover:text-dark-900 transition-colors flex items-center justify-center font-bold">
+                        +
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 lg:px-8 py-8 w-full flex-grow">
+
+        <!-- ================= TAB 1: CASE OPENING ================= -->
+        <section id="tab-case" class="space-y-12">
+            <!-- Hero Header -->
+            <div class="text-center max-w-2xl mx-auto space-y-3">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-gold/10 border border-brand-gold/20 text-brand-gold text-xs font-medium">
+                    <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Без оценок 2 • Гарантированная тройка и выше
+                </div>
+                <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-white">
+                    Фирменный Кейс Князя
+                </h1>
+                <p class="text-gray-400 text-sm md:text-base">
+                    Испытайте удачу. Здесь выпадают только достойные школьные оценки и уникальный Супердроп.
+                </p>
+            </div>
+
+            <!-- ROULETTE DRUM CONTAINER -->
+            <div class="relative max-w-4xl mx-auto">
+                <!-- Top / Bottom Indicators -->
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 z-20 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[14px] border-t-brand-gold drop-shadow-[0_2px_8px_rgba(212,175,55,0.8)]"></div>
+                <div class="absolute -bottom-3 left-1/2 -translate-x-1/2 z-20 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[14px] border-b-brand-gold drop-shadow-[0_-2px_8px_rgba(212,175,55,0.8)]"></div>
+
+                <!-- Vertical Center Line Guide -->
+                <div class="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[2px] bg-gradient-to-b from-brand-gold via-yellow-200 to-brand-gold z-10 pointer-events-none opacity-80"></div>
+
+                <!-- Mask overlay for gradient edges -->
+                <div class="relative overflow-hidden rounded-2xl glass-panel p-2 shadow-2xl border border-white/10">
+                    <div class="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-dark-900 to-transparent z-10 pointer-events-none"></div>
+                    <div class="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-dark-900 to-transparent z-10 pointer-events-none"></div>
+
+                    <!-- Inner Slider Track -->
+                    <div class="py-6 overflow-hidden">
+                        <div id="roulette-track" class="roulette-track gap-4 px-4">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTROLS & OPEN BUTTON -->
+            <div class="flex flex-col items-center justify-center gap-4">
+                <div class="flex items-center gap-4">
+                    <button id="open-case-btn" onclick="spinRoulette()" class="relative group overflow-hidden px-10 py-4 rounded-xl font-bold text-dark-900 bg-gradient-to-r from-brand-gold via-yellow-400 to-amber-500 shadow-lg shadow-brand-gold/25 hover:shadow-brand-gold/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none">
+                        <span class="relative z-10 flex items-center gap-2 text-base">
+                            <i data-lucide="key" class="w-5 h-5"></i>
+                            Открыть кейс за <span id="case-price-display">250 ₽</span>
+                        </span>
+                    </button>
+                </div>
+                <p class="text-xs text-gray-500">Шансы распределены честно: 3 (50%), 4 (30%), 5 (15%), Супердроп (5%)</p>
+            </div>
+
+            <!-- DROPS POOL PREVIEW -->
+            <div class="max-w-4xl mx-auto space-y-4 pt-6">
+                <h3 class="text-xs uppercase tracking-widest text-gray-400 font-semibold text-center">Содержимое кейса</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <!-- Grade 3 -->
+                    <div class="glass-card rounded-xl p-4 flex flex-col items-center justify-center text-center border-b-2 border-b-amber-700/60">
+                        <div class="w-12 h-12 rounded-xl bg-amber-950/40 border border-amber-700/40 flex items-center justify-center text-2xl font-bold text-amber-500 mb-2">3</div>
+                        <span class="text-sm font-semibold text-white">Оценка 3</span>
+                        <span class="text-xs text-gray-400 mt-1">Обычный • 100 ₽</span>
+                    </div>
+                    <!-- Grade 4 -->
+                    <div class="glass-card rounded-xl p-4 flex flex-col items-center justify-center text-center border-b-2 border-b-slate-400/60">
+                        <div class="w-12 h-12 rounded-xl bg-slate-800/40 border border-slate-400/40 flex items-center justify-center text-2xl font-bold text-slate-300 mb-2">4</div>
+                        <span class="text-sm font-semibold text-white">Оценка 4</span>
+                        <span class="text-xs text-gray-400 mt-1">Редкий • 300 ₽</span>
+                    </div>
+                    <!-- Grade 5 -->
+                    <div class="glass-card rounded-xl p-4 flex flex-col items-center justify-center text-center border-b-2 border-b-brand-gold/60">
+                        <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-brand-gold/40 flex items-center justify-center text-2xl font-bold text-brand-gold mb-2">5</div>
+                        <span class="text-sm font-semibold text-white">Оценка 5</span>
+                        <span class="text-xs text-gray-400 mt-1">Эпический • 750 ₽</span>
+                    </div>
+                    <!-- Superdrop -->
+                    <div class="glass-card rounded-xl p-4 flex flex-col items-center justify-center text-center border-b-2 border-b-purple-500/80 relative overflow-hidden group">
+                        <div class="absolute -right-6 -top-6 w-16 h-16 bg-purple-500/20 rounded-full blur-xl"></div>
+                        <div class="w-12 h-12 rounded-xl bg-purple-950/50 border border-purple-500/50 flex items-center justify-center text-xl font-bold text-purple-300 mb-2 shadow-lg shadow-purple-500/20">👑</div>
+                        <span class="text-sm font-bold bg-gradient-to-r from-purple-300 via-pink-300 to-yellow-200 bg-clip-text text-transparent">Супердроп от Князя</span>
+                        <span class="text-xs text-purple-300/80 mt-1">Легендарный • 2,500 ₽</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: UPGRADE SYSTEM ================= -->
+        <section id="tab-upgrade" class="hidden space-y-8">
+            <div class="text-center max-w-xl mx-auto space-y-2">
+                <h2 class="text-2xl md:text-4xl font-extrabold text-white">Контракт Апгрейда</h2>
+                <p class="text-sm text-gray-400">Поставьте предмет из инвентаря или выберите базовую оценку, настройте желаемый шанс и повысьте ранг.</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto glass-panel rounded-2xl p-6 md:p-8 border border-white/10 space-y-8">
+                
+                <!-- UPGRADE VISUALIZER / DIAL SECTION -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                    
+                    <!-- LEFT ITEM: SOURCE -->
+                    <div class="flex flex-col items-center space-y-3">
+                        <span class="text-xs text-gray-400 uppercase tracking-widest font-medium">Исходный предмет</span>
+                        <div id="upgrade-source-card" class="w-full glass-card rounded-xl p-5 flex flex-col items-center text-center border border-white/10 relative">
+                            <div id="source-icon-container" class="w-16 h-16 rounded-2xl bg-amber-950/40 border border-amber-700/40 flex items-center justify-center text-3xl font-bold text-amber-500 mb-3">
+                                3
+                            </div>
+                            <span id="source-name" class="font-semibold text-white text-base">Оценка 3</span>
+                            <span id="source-value" class="text-xs text-gray-400 mt-0.5">Ценность: 100 ₽</span>
+                        </div>
+
+                        <!-- Selector Buttons for Base Grade -->
+                        <div class="w-full space-y-1">
+                            <label class="text-[11px] text-gray-400 block text-center">Выбрать базу для расчета:</label>
+                            <div class="grid grid-cols-3 gap-1.5">
+                                <button onclick="setBaseGrade(3)" class="py-1.5 rounded-lg bg-dark-700 hover:bg-dark-600 text-xs font-semibold text-amber-500 border border-amber-500/20 transition-all">3</button>
+                                <button onclick="setBaseGrade(4)" class="py-1.5 rounded-lg bg-dark-700 hover:bg-dark-600 text-xs font-semibold text-slate-300 border border-slate-300/20 transition-all">4</button>
+                                <button onclick="setBaseGrade(5)" class="py-1.5 rounded-lg bg-dark-700 hover:bg-dark-600 text-xs font-semibold text-brand-gold border border-brand-gold/20 transition-all">5</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CENTER: CIRCULAR CHANCE WHEEL -->
+                    <div class="flex flex-col items-center justify-center relative my-4 md:my-0">
+                        <div class="relative w-52 h-52 flex items-center justify-center">
+                            <!-- SVG Gauge Circle -->
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                <!-- Background Track -->
+                                <circle cx="50" cy="50" r="42" stroke="rgba(255, 255, 255, 0.08)" stroke-width="8" fill="transparent" />
+                                <!-- Success Zone Segment -->
+                                <circle id="upgrade-circle-bar" cx="50" cy="50" r="42" stroke="url(#goldGradient)" stroke-width="8" fill="transparent" 
+                                        stroke-dasharray="263.89" stroke-dashoffset="131.94" stroke-linecap="round" class="transition-all duration-300" />
+                                <defs>
+                                    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#d4af37" />
+                                        <stop offset="100%" stop-color="#f59e0b" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+
+                            <!-- Center Display Pointer & Chance % -->
+                            <div id="dial-pointer-container" class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <div id="dial-pointer" class="w-full h-full relative transition-all">
+                                    <!-- Pointer Arrow Top -->
+                                    <div class="absolute top-1 left-1/2 -translate-x-1/2 w-2 h-4 bg-brand-gold rounded-full shadow-[0_0_10px_#d4af37]"></div>
+                                </div>
+                            </div>
+
+                            <div class="absolute flex flex-col items-center justify-center text-center">
+                                <span class="text-3xl font-extrabold text-white font-mono" id="chance-text">50.0%</span>
+                                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Шанс успеха</span>
+                            </div>
+                        </div>
+
+                        <div id="upgrade-result-msg" class="text-xs font-semibold mt-3 h-5 text-center transition-opacity"></div>
+                    </div>
+
+                    <!-- RIGHT ITEM: TARGET RESULT -->
+                    <div class="flex flex-col items-center space-y-3">
+                        <span class="text-xs text-gray-400 uppercase tracking-widest font-medium">Целевой предмет</span>
+                        <div id="upgrade-target-card" class="w-full glass-card rounded-xl p-5 flex flex-col items-center text-center border border-white/10 relative">
+                            <div id="target-icon-container" class="w-16 h-16 rounded-2xl bg-slate-800/40 border border-slate-400/40 flex items-center justify-center text-3xl font-bold text-slate-300 mb-3">
+                                4
+                            </div>
+                            <span id="target-name" class="font-semibold text-white text-base">Оценка 4</span>
+                            <span id="target-value" class="text-xs text-gray-400 mt-0.5">Ценность: 300 ₽</span>
+                        </div>
+
+                        <!-- Target selection buttons -->
+                        <div class="w-full space-y-1">
+                            <label class="text-[11px] text-gray-400 block text-center">Целевой ранг:</label>
+                            <div class="grid grid-cols-3 gap-1.5">
+                                <button onclick="setTargetGrade('4')" id="btn-target-4" class="py-1.5 rounded-lg bg-dark-700 hover:bg-dark-600 text-[11px] font-semibold text-slate-300 border border-slate-300/20 transition-all">4</button>
+                                <button onclick="setTargetGrade('5')" id="btn-target-5" class="py-1.5 rounded-lg bg-dark-700 hover:bg-dark-600 text-[11px] font-semibold text-brand-gold border border-brand-gold/20 transition-all">5</button>
+                                <button onclick="setTargetGrade('super')" id="btn-target-super" class="py-1.5 rounded-lg bg-dark-700 hover:bg-dark-600 text-[11px] font-semibold text-purple-400 border border-purple-500/20 transition-all">Супер</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDER CONTROLS -->
+                <div class="space-y-3 bg-dark-800/50 p-5 rounded-xl border border-white/5">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-300 font-medium">Желаемый шанс победы</span>
+                        <span class="text-brand-gold font-mono font-bold text-base" id="slider-chance-val">50%</span>
+                    </div>
+                    
+                    <input type="range" id="chance-slider" min="5" max="85" value="50" step="1" 
+                           oninput="onSliderChange(this.value)" 
+                           class="w-full h-2 bg-dark-600 rounded-lg appearance-none cursor-pointer accent-brand-gold">
+
+                    <!-- Quick Percent Buttons -->
+                    <div class="flex justify-between gap-2 pt-2">
+                        <button onclick="setQuickChance(10)" class="flex-1 py-1 rounded bg-dark-700 hover:bg-dark-600 text-xs text-gray-300 font-mono">10%</button>
+                        <button onclick="setQuickChance(25)" class="flex-1 py-1 rounded bg-dark-700 hover:bg-dark-600 text-xs text-gray-300 font-mono">25%</button>
+                        <button onclick="setQuickChance(50)" class="flex-1 py-1 rounded bg-dark-700 hover:bg-dark-600 text-xs text-gray-300 font-mono">50%</button>
+                        <button onclick="setQuickChance(75)" class="flex-1 py-1 rounded bg-dark-700 hover:bg-dark-600 text-xs text-gray-300 font-mono">75%</button>
+                    </div>
+                </div>
+
+                <!-- UPGRADE ACTION BUTTON -->
+                <div class="text-center pt-2">
+                    <button id="start-upgrade-btn" onclick="executeUpgrade()" class="w-full md:w-2/3 py-4 rounded-xl font-bold text-dark-900 bg-gradient-to-r from-brand-gold via-yellow-400 to-amber-500 shadow-lg shadow-brand-gold/20 hover:shadow-brand-gold/35 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200">
+                        Апгрейдить предмет
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: INVENTORY ================= -->
+        <section id="tab-inventory" class="hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Ваш Инвентарь</h2>
+                    <p class="text-sm text-gray-400">Предметы, полученные из кейсов или путем успешных апгрейдов.</p>
+                </div>
+                <button onclick="sellAllInventory()" id="sell-all-btn" class="px-4 py-2 rounded-xl bg-dark-800 hover:bg-red-950/40 border border-red-500/30 text-red-400 text-sm font-semibold transition-all flex items-center gap-2 self-start">
+                    <i data-lucide="coins" class="w-4 h-4"></i>
+                    Продать всё
+                </button>
+            </div>
+
+            <!-- INVENTORY GRID -->
+            <div id="inventory-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <!-- Rendered dynamically via JS -->
+            </div>
+
+            <!-- EMPTY STATE -->
+            <div id="inventory-empty" class="hidden py-16 text-center space-y-3">
+                <div class="w-16 h-16 rounded-2xl bg-dark-800 border border-white/5 flex items-center justify-center mx-auto text-gray-600">
+                    <i data-lucide="inbox" class="w-8 h-8"></i>
+                </div>
+                <p class="text-gray-400 text-base font-medium">Инвентарь пуст</p>
+                <p class="text-xs text-gray-600 max-w-sm mx-auto">Открывайте кейсы или играйте в апгрейд, чтобы заполнить коллекцию.</p>
+                <button onclick="switchTab('case')" class="mt-2 px-5 py-2 rounded-xl bg-brand-gold/10 text-brand-gold border border-brand-gold/20 hover:bg-brand-gold hover:text-dark-900 font-semibold text-xs transition-all">
+                    Перейти к кейсам
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- DROP WIN MODAL -->
+    <div id="drop-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 p-4">
+        <div class="glass-panel max-w-md w-full rounded-2xl p-6 text-center space-y-6 border border-white/10 scale-95 transition-transform duration-300 transform shadow-2xl" id="drop-modal-content">
+            <div class="space-y-1">
+                <span class="text-xs uppercase tracking-widest text-brand-gold font-semibold">Поздравляем!</span>
+                <h3 class="text-2xl font-bold text-white">Вы получили предмет</h3>
+            </div>
+
+            <!-- Card Result Container -->
+            <div id="modal-card-container" class="py-4">
+                <!-- Injected via JS -->
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="sellModalItem()" class="py-3 rounded-xl bg-dark-700 hover:bg-dark-600 text-gray-200 font-semibold text-sm transition-all border border-white/5">
+                    Продать за <span id="modal-sell-price">0 ₽</span>
+                </button>
+                <button onclick="claimModalItem()" class="py-3 rounded-xl bg-gradient-to-r from-brand-gold to-yellow-500 hover:from-yellow-400 hover:to-amber-500 text-dark-900 font-bold text-sm transition-all shadow-lg shadow-brand-gold/20">
+                    В инвентарь
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-white/5 bg-dark-900/80 py-6 px-4 lg:px-8 text-center text-xs text-gray-500">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-gray-300">KNYAZEV DROP</span>
+                <span>— Эксклюзивный формат без оценок 2.</span>
+            </div>
+            <p>© 2026 KNYAZEV DROP. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script>
+        /* ================= STATE & CONFIGURATION ================= */
+        const CASE_PRICE = 250;
+        
+        // Item Definitions
+        const ITEMS = {
+            '3': { id: '3', grade: '3', name: 'Оценка 3', value: 100, rarity: 'common', color: 'amber', dropChance: 50 },
+            '4': { id: '4', grade: '4', name: 'Оценка 4', value: 300, rarity: 'rare', color: 'slate', dropChance: 30 },
+            '5': { id: '5', grade: '5', name: 'Оценка 5', value: 750, rarity: 'epic', color: 'gold', dropChance: 15 },
+            'super': { id: 'super', grade: '👑', name: 'Супердроп от Князя', value: 2500, rarity: 'legendary', color: 'purple', dropChance: 5 }
+        };
+
+        let state = {
+            balance: 1000,
+            inventory: [],
+            isSpinning: false,
+            isUpgrading: false,
+            pendingModalDrop: null,
+            
+            // Upgrade State
+            upgradeBaseItem: ITEMS['3'],
+            upgradeTargetItem: ITEMS['4'],
+            upgradeChance: 50,
+        };
+
+        /* ================= INITIALIZATION ================= */
+        window.onload = function() {
+            lucide.createIcons();
+            loadLocalStorage();
+            updateBalanceUI();
+            renderInventoryUI();
+            populateRouletteTrack();
+            updateUpgradeUI();
+        };
+
+        function saveLocalStorage() {
+            localStorage.setItem('knyazev_state', JSON.stringify({
+                balance: state.balance,
+                inventory: state.inventory
+            }));
+        }
+
+        function loadLocalStorage() {
+            const saved = localStorage.getItem('knyazev_state');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    state.balance = parsed.balance ?? 1000;
+                    state.inventory = parsed.inventory ?? [];
+                } catch(e) {
+                    console.error("Failed to load saved state", e);
+                }
+            }
+        }
+
+        /* ================= TAB NAVIGATION ================= */
+        function switchTab(tabName) {
+            ['case', 'upgrade', 'inventory'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                const navBtn = document.getElementById(`nav-${t}`);
+                if (navBtn) {
+                    navBtn.classList.remove('text-white', 'bg-dark-700', 'shadow-sm');
+                    navBtn.classList.add('text-gray-400');
+                }
+            });
+
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-${tabName}`);
+            if (activeNav) {
+                activeNav.classList.add('text-white', 'bg-dark-700', 'shadow-sm');
+                activeNav.classList.remove('text-gray-400');
+            }
+        }
+
+        function addBalance() {
+            state.balance += 500;
+            updateBalanceUI();
+            saveLocalStorage();
+        }
+
+        function updateBalanceUI() {
+            document.getElementById('user-balance').innerText = `${state.balance.toLocaleString('ru-RU')} ₽`;
+        }
+
+        /* ================= CASE ROULETTE SYSTEM ================= */
+        function getCardHTML(item, extraClass = '') {
+            if (item.id === '3') {
+                return `
+                    <div class="flex-shrink-0 w-36 h-48 rounded-xl glass-card border border-amber-700/30 flex flex-col items-center justify-center p-3 text-center relative overflow-hidden ${extraClass}">
+                        <div class="w-16 h-16 rounded-2xl bg-amber-950/50 border border-amber-700/50 flex items-center justify-center text-3xl font-bold text-amber-500 mb-2">3</div>
+                        <span class="text-xs font-semibold text-white">Оценка 3</span>
+                        <span class="text-[10px] text-gray-400 mt-1">100 ₽</span>
+                    </div>`;
+            } else if (item.id === '4') {
+                return `
+                    <div class="flex-shrink-0 w-36 h-48 rounded-xl glass-card border border-slate-400/30 flex flex-col items-center justify-center p-3 text-center relative overflow-hidden ${extraClass}">
+                        <div class="w-16 h-16 rounded-2xl bg-slate-800/50 border border-slate-400/50 flex items-center justify-center text-3xl font-bold text-slate-300 mb-2">4</div>
+                        <span class="text-xs font-semibold text-white">Оценка 4</span>
+                        <span class="text-[10px] text-gray-400 mt-1">300 ₽</span>
+                    </div>`;
+            } else if (item.id === '5') {
+                return `
+                    <div class="flex-shrink-0 w-36 h-48 rounded-xl glass-card border border-brand-gold/40 flex flex-col items-center justify-center p-3 text-center relative overflow-hidden ${extraClass}">
+                        <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-brand-gold/40 flex items-center justify-center text-3xl font-bold text-brand-gold mb-2">5</div>
+                        <span class="text-xs font-semibold text-white">Оценка 5</span>
+                        <span class="text-[10px] text-gray-400 mt-1">750 ₽</span>
+                    </div>`;
+            } else {
+                return `
+                    <div class="flex-shrink-0 w-36 h-48 rounded-xl glass-card border border-purple-500/50 flex flex-col items-center justify-center p-3 text-center relative overflow-hidden glow-purple ${extraClass}">
+                        <div class="w-16 h-16 rounded-2xl bg-purple-950/60 border border-purple-500/60 flex items-center justify-center text-2xl font-bold text-purple-300 mb-2">👑</div>
+                        <span class="text-xs font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">Супердроп от Князя</span>
+                        <span class="text-[10px] text-purple-300/80 mt-1">2,500 ₽</span>
+                    </div>`;
+            }
+        }
+
+        function getRandomDropItem() {
+            const rand = Math.random() * 100;
+            if (rand < 5) return ITEMS['super'];
+            if (rand < 20) return ITEMS['5'];
+            if (rand < 50) return ITEMS['4'];
+            return ITEMS['3'];
+        }
+
+        function populateRouletteTrack() {
+            const track = document.getElementById('roulette-track');
+            track.innerHTML = '';
+            // Generate 80 random items for visual rolling sequence
+            for (let i = 0; i < 80; i++) {
+                const item = getRandomDropItem();
+                track.insertAdjacentHTML('beforeend', getCardHTML(item));
+            }
+        }
+
+        function spinRoulette() {
+            if (state.isSpinning) return;
+            if (state.balance < CASE_PRICE) {
+                alert('Недостаточно средств на балансе! Нажмите "+", чтобы пополнить.');
+                return;
+            }
+
+            state.balance -= CASE_PRICE;
+            updateBalanceUI();
+            saveLocalStorage();
+            state.isSpinning = true;
+
+            const openBtn = document.getElementById('open-case-btn');
+            openBtn.disabled = true;
+
+            const track = document.getElementById('roulette-track');
+            
+            // Reset track position
+            track.style.transition = 'none';
+            track.style.transform = 'translateX(0px)';
+            
+            // Re-populate with fresh randomness
+            populateRouletteTrack();
+
+            // Pick winning drop at index 55
+            const winningItem = getRandomDropItem();
+            const cards = track.children;
+            cards[55].outerHTML = getCardHTML(winningItem, 'winning-card-target');
+
+            // Force layout reflow
+            track.offsetHeight;
+
+            // Calculate precise offset to center card #55 under indicator
+            // Card width 144px (w-36) + gap 16px (gap-4) = 160px per step
+            const cardWidth = 144 + 16;
+            const containerWidth = track.parentElement.clientWidth;
+            // Slight random offset inside target card for realism (-40px to 40px)
+            const randomInnerOffset = (Math.random() - 0.5) * 80;
+            const targetX = (55 * cardWidth) - (containerWidth / 2) + (cardWidth / 2) + randomInnerOffset;
+
+            // Trigger smooth CSS animation
+            track.style.transition = 'transform 5.5s cubic-bezier(0.08, 0.82, 0.17, 1)';
+            track.style.transform = `translateX(-${targetX}px)`;
+
+            setTimeout(() => {
+                state.isSpinning = false;
+                openBtn.disabled = false;
+                showDropModal(winningItem);
+            }, 5700);
+        }
+
+        /* ================= MODAL HANDLERS ================= */
+        function showDropModal(item) {
+            state.pendingModalDrop = item;
+            const container = document.getElementById('modal-card-container');
+            container.innerHTML = getCardHTML(item, 'mx-auto scale-110 my-4');
+            document.getElementById('modal-sell-price').innerText = `${item.value} ₽`;
+
+            const modal = document.getElementById('drop-modal');
+            const content = document.getElementById('drop-modal-content');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            content.classList.remove('scale-95');
+            content.classList.add('scale-100');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('drop-modal');
+            const content = document.getElementById('drop-modal-content');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            state.pendingModalDrop = null;
+        }
+
+        function claimModalItem() {
+            if (state.pendingModalDrop) {
+                state.inventory.unshift({...state.pendingModalDrop, uid: Date.now() + Math.random()});
+                renderInventoryUI();
+                saveLocalStorage();
+            }
+            closeModal();
+        }
+
+        function sellModalItem() {
+            if (state.pendingModalDrop) {
+                state.balance += state.pendingModalDrop.value;
+                updateBalanceUI();
+                saveLocalStorage();
+            }
+            closeModal();
+        }
+
+        /* ================= UPGRADE LOGIC & CALCULATIONS ================= */
+        function setBaseGrade(gradeNum) {
+            state.upgradeBaseItem = ITEMS[gradeNum.toString()];
+            // Adjust default target if needed
+            if (gradeNum === 4 && state.upgradeTargetItem.id === '4') {
+                state.upgradeTargetItem = ITEMS['5'];
+            } else if (gradeNum === 5) {
+                state.upgradeTargetItem = ITEMS['super'];
+            }
+            updateUpgradeUI();
+        }
+
+        function setTargetGrade(targetKey) {
+            state.upgradeTargetItem = ITEMS[targetKey];
+            updateUpgradeUI();
+        }
+
+        function onSliderChange(val) {
+            state.upgradeChance = parseFloat(val);
+            updateUpgradeUI();
+        }
+
+        function setQuickChance(val) {
+            document.getElementById('chance-slider').value = val;
+            state.upgradeChance = val;
+            updateUpgradeUI();
+        }
+
+        function selectItemFromInventoryForUpgrade(itemUid) {
+            const invItem = state.inventory.find(i => i.uid === itemUid);
+            if (invItem) {
+                state.upgradeBaseItem = invItem;
+                switchTab('upgrade');
+                updateUpgradeUI();
+            }
+        }
+
+        function updateUpgradeUI() {
+            // Source Card
+            const src = state.upgradeBaseItem;
+            document.getElementById('source-name').innerText = src.name;
+            document.getElementById('source-value').innerText = `Ценность: ${src.value} ₽`;
+            
+            const srcIcon = document.getElementById('source-icon-container');
+            srcIcon.innerText = src.grade;
+            srcIcon.className = `w-16 h-16 rounded-2xl flex items-center justify-center text-3xl font-bold mb-3 ${
+                src.id === '3' ? 'bg-amber-950/40 border border-amber-700/40 text-amber-500' :
+                src.id === '4' ? 'bg-slate-800/40 border border-slate-400/40 text-slate-300' :
+                'bg-amber-500/10 border border-brand-gold/40 text-brand-gold'
+            }`;
+
+            // Target Card
+            const tgt = state.upgradeTargetItem;
+            document.getElementById('target-name').innerText = tgt.name;
+            document.getElementById('target-value').innerText = `Ценность: ${tgt.value} ₽`;
+            
+            const tgtIcon = document.getElementById('target-icon-container');
+            tgtIcon.innerText = tgt.grade;
+            tgtIcon.className = `w-16 h-16 rounded-2xl flex items-center justify-center text-3xl font-bold mb-3 ${
+                tgt.id === '4' ? 'bg-slate-800/40 border border-slate-400/40 text-slate-300' :
+                tgt.id === '5' ? 'bg-amber-500/10 border border-brand-gold/40 text-brand-gold' :
+                'bg-purple-950/50 border border-purple-500/50 text-purple-300'
+            }`;
+
+            // Slider & Text
+            const chance = state.upgradeChance;
+            document.getElementById('chance-text').innerText = `${chance.toFixed(1)}%`;
+            document.getElementById('slider-chance-val').innerText = `${chance}%`;
+
+            // SVG Circular Gauge Arc Update
+            // Full Circumference = 2 * PI * 42 = 263.89
+            const circumference = 263.89;
+            const offset = circumference - (chance / 100) * circumference;
+            const circleBar = document.getElementById('upgrade-circle-bar');
+            circleBar.style.strokeDashoffset = offset;
+        }
+
+        function executeUpgrade() {
+            if (state.isUpgrading) return;
+            
+            // If base item is from inventory, ensure user still has it
+            if (state.upgradeBaseItem.uid) {
+                const idx = state.inventory.findIndex(i => i.uid === state.upgradeBaseItem.uid);
+                if (idx === -1) {
+                    alert('Этот предмет больше не находится в инвентаре.');
+                    state.upgradeBaseItem = ITEMS['3'];
+                    updateUpgradeUI();
+                    return;
+                }
+            }
+
+            state.isUpgrading = true;
+            const upgradeBtn = document.getElementById('start-upgrade-btn');
+            upgradeBtn.disabled = true;
+            document.getElementById('upgrade-result-msg').innerText = '';
+
+            const pointer = document.getElementById('dial-pointer');
+            const targetChance = state.upgradeChance;
+
+            // Generate spin outcome (0 to 100)
+            const randomRoll = Math.random() * 100;
+            const isSuccess = randomRoll <= targetChance;
+
+            // Calculate rotation degrees:
+            // Top pointer starts at 0 deg. Success zone spans clockwise from 0 to (targetChance % * 360).
+            // Calculate exact landing angle
+            const successZoneDegrees = (targetChance / 100) * 360;
+            let landingAngle = 0;
+
+            if (isSuccess) {
+                // Land safely inside success zone
+                landingAngle = Math.random() * (successZoneDegrees - 10) + 5;
+            } else {
+                // Land outside success zone
+                landingAngle = successZoneDegrees + Math.random() * (360 - successZoneDegrees - 10) + 5;
+            }
+
+            // Add 5 full rotations for animation effect
+            const totalRotation = (360 * 5) + landingAngle;
+
+            pointer.classList.add('upgrade-dial');
+            pointer.style.transform = `rotate(${totalRotation}deg)`;
+
+            setTimeout(() => {
+                state.isUpgrading = false;
+                upgradeBtn.disabled = false;
+
+                // Remove used item if it was from inventory
+                if (state.upgradeBaseItem.uid) {
+                    state.inventory = state.inventory.filter(i => i.uid !== state.upgradeBaseItem.uid);
+                }
+
+                const msgBox = document.getElementById('upgrade-result-msg');
+                if (isSuccess) {
+                    msgBox.className = "text-sm font-bold text-green-400 mt-3 text-center";
+                    msgBox.innerText = `УСПЕХ! Вы получили "${state.upgradeTargetItem.name}"`;
+                    // Add won target item to inventory
+                    state.inventory.unshift({...state.upgradeTargetItem, uid: Date.now() + Math.random()});
+                } else {
+                    msgBox.className = "text-sm font-bold text-red-400 mt-3 text-center";
+                    msgBox.innerText = "НЕУДАЧА! Предмет сгорел.";
+                }
+
+                // Reset pointer orientation smoothly
+                setTimeout(() => {
+                    pointer.classList.remove('upgrade-dial');
+                    pointer.style.transform = `rotate(${landingAngle}deg)`;
+                }, 1000);
+
+                renderInventoryUI();
+                saveLocalStorage();
+            }, 4100);
+        }
+
+        /* ================= INVENTORY RENDERER ================= */
+        function renderInventoryUI() {
+            const grid = document.getElementById('inventory-grid');
+            const emptyState = document.getElementById('inventory-empty');
+            const badge = document.getElementById('inv-count-badge');
+
+            if (state.inventory.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                badge.classList.add('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            badge.innerText = state.inventory.length;
+            badge.classList.remove('hidden');
+
+            grid.innerHTML = state.inventory.map(item => `
+                <div class="glass-card rounded-xl p-4 flex flex-col items-center justify-between text-center relative group border border-white/5 hover:border-white/20 transition-all">
+                    <div class="my-2">
+                        <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-bold mx-auto mb-2 ${
+                            item.id === '3' ? 'bg-amber-950/40 text-amber-500 border border-amber-700/40' :
+                            item.id === '4' ? 'bg-slate-800/40 text-slate-300 border border-slate-400/40' :
+                            item.id === '5' ? 'bg-amber-500/10 text-brand-gold border border-brand-gold/40' :
+                            'bg-purple-950/50 text-purple-300 border border-purple-500/50 glow-purple'
+                        }">
+                            ${item.grade}
+                        </div>
+                        <span class="text-xs font-semibold text-white block truncate max-w-[120px]">${item.name}</span>
+                        <span class="text-[10px] text-gray-400 font-mono">${item.value} ₽</span>
+                    </div>
+
+                    <div class="w-full grid grid-cols-2 gap-1.5 pt-2 border-t border-white/5 opacity-90 group-hover:opacity-100">
+                        <button onclick="sellInventoryItem('${item.uid}')" class="py-1.5 rounded-lg bg-dark-700 hover:bg-red-950/50 text-red-400 text-[11px] font-medium transition-colors">
+                            Продать
+                        </button>
+                        <button onclick="selectItemFromInventoryForUpgrade('${item.uid}')" class="py-1.5 rounded-lg bg-brand-gold/10 hover:bg-brand-gold hover:text-dark-900 text-brand-gold text-[11px] font-semibold transition-colors">
+                            Апгрейд
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function sellInventoryItem(uid) {
+            const index = state.inventory.findIndex(i => i.uid === uid);
+            if (index !== -1) {
+                state.balance += state.inventory[index].value;
+                state.inventory.splice(index, 1);
+                updateBalanceUI();
+                renderInventoryUI();
+                saveLocalStorage();
+            }
+        }
+
+        function sellAllInventory() {
+            if (state.inventory.length === 0) return;
+            const total = state.inventory.reduce((sum, item) => sum + item.value, 0);
+            state.balance += total;
+            state.inventory = [];
+            updateBalanceUI();
+            renderInventoryUI();
+            saveLocalStorage();
+        }
+    </script>
+</body>
+</html>
