@@ -58,7 +58,9 @@ nav button{white-space:nowrap}@media(max-width:700px){nav{margin-left:0;flex:1 1
 .hero:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#ffffff0d 1px,transparent 1px),linear-gradient(90deg,#ffffff0d 1px,transparent 1px);background-size:22px 22px;pointer-events:none}
 .hero>*{position:relative}.mz{position:absolute;right:170px}
 .ht{flex:1;min-width:200px}.ht b{font-size:20px}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.chips span{background:#ffffff14;border:1px solid #ffffff22;border-radius:20px;padding:3px 10px;font-size:12px;color:#cfe6ff}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.chips span{display:inline-flex;align-items:center;gap:6px;background:#ffffff14;border:1px solid #ffffff22;border-radius:20px;padding:3px 10px;font-size:12px;color:#cfe6ff}
+.chip-icon{flex:0 0 auto;width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.chip-icon *{vector-effect:non-scaling-stroke}
 .pol{margin:0 0 0 auto;background:#fff;padding:6px 6px 5px;border-radius:6px;transform:rotate(3deg);box-shadow:0 8px 24px #0008;text-align:center;color:#0b0e12;font-size:11px;letter-spacing:1px}
 .hero .pol .cat{width:104px;height:104px;border-radius:3px;border:0;margin:0 0 4px;background:var(--cat) center/cover}
 .cat2{height:auto;aspect-ratio:1;position:relative}
@@ -68,7 +70,19 @@ nav button{white-space:nowrap}@media(max-width:700px){nav{margin-left:0;flex:1 1
 .ring:before{content:"";position:absolute;inset:9%;border-radius:50%;background:radial-gradient(#fff,#e6f2ff 72%,transparent 74%)}
 .ring svg{z-index:1}.arw{z-index:2}.hd{filter:drop-shadow(0 4px 6px #0007)}
 footer svg{vertical-align:-7px;margin-right:6px}
+/* Доска и схема лежат в одной колонке и центрируются по одной оси */
+.room{position:relative;display:flex;flex-direction:column;align-items:center;width:max-content;min-width:100%;padding:8px 0}
+.room>.bd{align-self:stretch;margin:0 8px 8px}
+.room>.map{flex:none}
 
+/* График в шапке */
+.plot{flex:0 1 300px;width:300px;max-width:100%;height:auto;margin-left:auto;overflow:visible;filter:drop-shadow(0 0 8px #2b8cff44)}
+.plot .cv,.plot .c2{fill:none;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:0}
+.plot .cv{stroke:#2b8cff;stroke-width:2.6;animation:plotdraw 2.6s ease-out both}
+.plot .c2{stroke:#9ad0ff;stroke-width:2;opacity:.75;animation:plotdraw 2.6s ease-out .5s both}
+@keyframes plotdraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@media(min-width:701px){.hero .plot+.mz+.pol{margin-left:0}}
+@media(max-width:700px){.plot{order:5;flex:1 1 100%;width:100%;max-width:300px;margin:0 auto}}
 /* adaptive */
 html{-webkit-text-size-adjust:100%}img,svg,canvas{max-width:100%}
 .g2>*{min-width:0}.mw{-webkit-overflow-scrolling:touch}
@@ -194,17 +208,17 @@ footer{padding:14px 10px}
 
 
 /* Clear navigation and compact responsive editing */
-#cbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}#cbar select{flex:1 1 180px;max-width:440px}
+#cbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}#cbar select{flex:0 1 184px;width:184px;min-width:100px;max-width:45vw}
 #t1 .row{row-gap:10px}#t1 .row label{display:flex;align-items:center;gap:8px}
 #t1 .mw{max-width:100%;overscroll-behavior:contain}#m1{touch-action:pan-x pan-y}
 .edit .desk.collision{border-color:#df5252;background:#fff1f1}
 #t1 .card>.row:first-child{align-items:center}#t1 #cn{flex:1 1 200px;max-width:360px}
 #t3 .card{overflow:hidden}#t3 #ui{min-width:0}
-@media(max-width:700px){#cbar{padding:10px}#cbar #classLink{flex:0 0 auto}#cbar select{flex:1 1 130px;max-width:none}#t1 .row>.b{flex:1 1 130px}#t1 #rr,#t1 #cc{width:64px}#t1 .row label{flex:1 1 130px}#t3 .upgrade-header{flex-wrap:wrap}.pl{grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr))}}
-@media(max-width:380px){.hero .pol{display:none}#cbar #classLink{width:100%}#t1 .row>.b{flex:1 1 100%}}
+@media(max-width:700px){#cbar{padding:10px}#cbar #classLink{flex:0 0 auto}#cbar select{flex:0 1 160px;width:160px;min-width:96px;max-width:48vw}#t1 .row>.b{flex:1 1 130px}#t1 #rr,#t1 #cc{width:64px}#t1 .row label{flex:1 1 130px}#t3 .upgrade-header{flex-wrap:wrap}.pl{grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr))}}
+@media(max-width:380px){.hero .pol{display:none}#cbar #classLink{width:auto}#t1 .row>.b{flex:1 1 100%}}
 
 /* Interface refinements */
-.upgrade-shop{padding:12px 0 20px;border-bottom:1px solid var(--l)}
+.upgrade-shop:not([hidden]){padding:12px 0 20px;border-bottom:1px solid var(--l)}
 [hidden]{display:none!important}
 #cbar #classLink{background:var(--a);color:white;border-color:var(--a)}
 #cbar #classLink:hover{filter:brightness(.94)}
@@ -223,6 +237,7 @@ footer{padding:14px 10px}
 .ring:not(.idle) .arw{animation:none}
 .target-buttons button,.up-action-row button{min-height:44px}
 @media(max-width:600px){.up-action-row,.target-buttons{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}.up-action-row button{flex:1 1 190px}.target-buttons button{flex:1 1 110px}footer{flex-wrap:wrap;text-align:center;justify-content:center;line-height:1.5}}
+#cbar{justify-content:flex-start}#cbar select{height:44px} .upgrade-shop[hidden]{display:none!important} @media(max-width:400px){#cbar{gap:8px}#cbar #classLink{padding-inline:12px}#cbar select{flex:1 1 105px;width:auto;max-width:calc(100% - 155px)}}
 </style>
 </head>
 <body>
@@ -231,6 +246,10 @@ footer{padding:14px 10px}
       <path d="M20 2l16 9v18l-16 9L4 29V11z" fill="none" stroke="#2b8cff" stroke-width="2.5" />
       <text x="20" y="24" text-anchor="middle" font-size="10" font-weight="800" fill="currentColor" font-family="system-ui,sans-serif">2007</text>
     </symbol>
+    <symbol id="ic-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M17 14.2c2.4 0 4 1.8 4 4.3"/></symbol>
+    <symbol id="ic-seat" viewBox="0 0 24 24"><path d="M7 3.5h8a1.5 1.5 0 0 1 1.5 1.5l.5 8H6l.5-8A1.5 1.5 0 0 1 7 3.5z"/><path d="M5 13h14v3.5H5z"/><path d="M7.5 16.5V21M16.5 16.5V21"/></symbol>
+    <symbol id="ic-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M7.8 12.3l3 3 5.6-6.2"/></symbol>
+    <symbol id="ic-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.6"/><path d="M12 9.4v5.2M10.2 11h2.9a1 1 0 0 1 0 2h-2.9"/></symbol>
   </svg>
 
   <header>
@@ -247,6 +266,7 @@ footer{padding:14px 10px}
         <span>Князев Drop · рассадка, кейсы и немного ∫</span>
         <div class="chips" id="chips"></div>
       </div>
+      <svg class="plot" viewBox="0 0 340 134" aria-hidden="true"><path class="cv" pathLength="1" d="M10 67C45-3 75-3 90 67S135 137 170 67 215-3 250 67 295 137 330 67"></path><path class="c2" pathLength="1" d="M40 130Q170-60 300 130"></path><text x="14" y="16" fill="#5d7ba3" font-size="11" font-family="ui-monospace,Menlo,monospace">y = sin x</text></svg>
       <i class="mz">∑ 1/n² = π²/6 &nbsp;·&nbsp; e^(iπ) + 1 = 0 &nbsp;·&nbsp; a² + b² = c²</i>
       <figure class="pol"><div class="cat"></div></figure>
     </div>
@@ -270,8 +290,7 @@ footer{padding:14px 10px}
       <div class="g2">
         <div class="card">
           <h2>Схема класса</h2>
-          <div class="bd">▲ Доска</div>
-          <div class="mw"><div id="m0"></div></div>
+          <div class="mw"><div class="room"><div class="bd">▲ Доска</div><div id="m0"></div></div></div>
         </div>
         <div>
           <div class="card">
@@ -292,14 +311,13 @@ footer{padding:14px 10px}
         <div class="row">
           <button class="b" id="nc">+ Класс</button><button class="b g" id="ad">+ Парта</button>
           <button class="b g" id="ar">+ Ряд</button>
-          <label class="m">Рядов <input id="rr" type="number" value="3" min="1" max="12" style="width:64px" /></label>
-          <label class="m">Парт в ряду <input id="cc" type="number" value="5" min="1" max="12" style="width:64px" /></label>
+          <label class="m">Рядов <input id="rr" type="number" value="5" min="1" max="12" style="width:64px" /></label>
+          <label class="m">Парт в ряду <input id="cc" type="number" value="3" min="1" max="12" style="width:64px" /></label>
           <button class="b g" id="gn">Создать сетку</button>
           <button class="b g" id="cx">Очистить схему</button>
         </div>
         <p class="m" id="sn"></p>
-        <div class="bd">▲ Доска · ФМШ 2007</div>
-        <div class="mw"><div id="m1"></div></div>
+        <div class="mw"><div class="room"><div class="bd">▲ Доска · ФМШ 2007</div><div id="m1"></div></div></div>
       </div>
 
       <div class="card">
@@ -372,7 +390,7 @@ function addCl(name) {
   const newClass = {
     id: U(),
     name,
-    desks: gen(3, 5),
+    desks: gen(5, 3),
     people: [],
     asg: {},
     pre: {}
@@ -382,11 +400,24 @@ function addCl(name) {
   sv();
   return newClass;
 }
+// Исправленные написания: старые сохранения переименовываем, а не дублируем.
+const NAME_FIXES = {
+  'авсиенко екатерина': 'Авсеенко Екатерина',
+  'воробьев богдан': 'Воробьёв Богдан'
+};
+// Старая стандартная схема: 3 ряда по 5 парт, нетронутая пользователем.
+const isOldDefaultGrid = desks => desks.length === 15 && desks.every(desk =>
+  desk.s && desk.s[0] === 1 && desk.s[1] === 1 &&
+  desk.x === 16 + Math.round((desk.x - 16) / 152) * 152 &&
+  desk.y === 16 + Math.round((desk.y - 16) / 88) * 88 &&
+  (desk.x - 16) / 152 >= 0 && (desk.x - 16) / 152 <= 4 &&
+  (desk.y - 16) / 88 >= 0 && (desk.y - 16) / 88 <= 2
+) && new Set(desks.map(desk => desk.x + ':' + desk.y)).size === 15;
 const DEFAULT_STUDENTS = [
-  'Авсиенко Екатерина',
+  'Авсеенко Екатерина',
   'Алексеева Анна',
   'Андросов Никита',
-  'Воробьев Богдан',
+  'Воробьёв Богдан',
   'Гореликов Александр',
   'Живица Евгения',
   'Жишко Есения',
@@ -410,7 +441,7 @@ function setupDefaultClasses() {
   // Старый стартовый класс назывался «Класс 10А». Если он пуст, сохраняем его схему,
   // но переименовываем, чтобы не потерять пользовательские настройки парт.
   const legacyTenA = S.cl.find(classItem => classItem.name === 'Класс 10А' && !(classItem.people || []).some(person => person.n && person.n.trim()));
-  if (!S.cl.length) addCl('Класс');
+  if (!S.cl.length) addCl('10А');
   let classTenA = S.cl.find(classItem => classItem.name === '10А');
   if (!classTenA && legacyTenA) {
     legacyTenA.name = '10А';
@@ -418,14 +449,25 @@ function setupDefaultClasses() {
   }
   if (!classTenA) classTenA = addCl('10А');
   let defaultClass = S.cl.find(classItem => classItem.name === 'Класс');
-  if (!defaultClass) defaultClass = addCl('Класс');
+  if (!defaultClass) defaultClass = classTenA;
   // Поддерживаем старые сохранения и добавляем только отсутствующие фамилии.
   for (const classItem of S.cl) {
-    classItem.desks = Array.isArray(classItem.desks) ? classItem.desks : gen(3, 5);
+    classItem.desks = Array.isArray(classItem.desks) ? classItem.desks : gen(5, 3);
     classItem.people = Array.isArray(classItem.people) ? classItem.people : [];
     classItem.asg = classItem.asg || {};
     classItem.pre = classItem.pre || {};
   }
+  for (const classItem of S.cl) {
+    classItem.people.forEach(person => {
+      const fixed = NAME_FIXES[String(person.n || '').trim().toLocaleLowerCase('ru')];
+      if (fixed) person.n = fixed;
+    });
+    // Один раз переводим нетронутую старую сетку 3×5 на новую 5×3 (только если нет рассадки и заданных мест).
+    if (!S.layout53 && isOldDefaultGrid(classItem.desks) && !Object.keys(classItem.asg).length && !Object.keys(classItem.pre).length) {
+      classItem.desks = gen(5, 3);
+    }
+  }
+  S.layout53 = true;
   classTenA.people = Array.isArray(classTenA.people) ? classTenA.people : [];
   classTenA.people.forEach(person => {
     if (!person.id) person.id = U();
@@ -442,10 +484,10 @@ function setupDefaultClasses() {
   }
   classTenA.people.sort((first, second) => first.n.localeCompare(second.n, 'ru'));
   if (!S.setupV3) {
-    S.cur = defaultClass.id;
+    S.cur = classTenA.id;
     S.setupV3 = true;
   }
-  if (!S.cl.some(classItem => classItem.id === S.cur)) S.cur = defaultClass.id;
+  if (!S.cl.some(classItem => classItem.id === S.cur)) S.cur = classTenA.id;
   sv();
 }
 setupDefaultClasses();
@@ -517,10 +559,11 @@ function map(element, classData, isEditing) {
     if (classData.asg[person.id]) assignedStudents[classData.asg[person.id]] = person.n;
   });
 
+  // Отступ справа равен отступу слева (16px) — иначе средний ряд смещается от центра доски.
   let width = 360;
   let height = 240;
   classData.desks.forEach(desk => {
-    width = Math.max(width, desk.x + 150);
+    width = Math.max(width, desk.x + 128 + 16);
     height = Math.max(height, desk.y + 80);
   });
 
@@ -629,14 +672,14 @@ $('#ad').onclick=()=> {
 };
 $('#ar').onclick=()=> {
   const c=cur(),y=c.desks.length?Math.max(...c.desks.map(d=>d.y))+88:16;
-  for(let j=0;j<nn('#cc',5);j++){const x=16+j*152;if(!c.desks.some(d=>Math.abs(d.x-x)<136&&Math.abs(d.y-y)<64))c.desks.push({id:U(),x,y,s:[1,1]});}
+  for(let j=0;j<nn('#cc',3);j++){const x=16+j*152;if(!c.desks.some(d=>Math.abs(d.x-x)<136&&Math.abs(d.y-y)<64))c.desks.push({id:U(),x,y,s:[1,1]});}
   sv();
   draw()
 };
 $('#gn').onclick=()=> {
   const c=cur();
   if(c.desks.length&&!confirm('Заменить схему новой сеткой?'))return;
-  c.desks=gen(nn('#rr',3),nn('#cc',5));
+  c.desks=gen(nn('#rr',5),nn('#cc',3));
   clean(c);
   sv();
   draw()
@@ -708,15 +751,17 @@ $('#px').onclick=()=> {
   rp()
 };
 function drawBar() {
-  $('#cbar').innerHTML=`<button class="b" id="classLink" type="button">Князев Class</button><select id=cs>${S.cl.map(c=>`<option value=${c.id}${c.id===S.cur?' selected':''}>${E(c.name)}</option>`).join('')}</select>`;
+  $('#cbar').innerHTML=`<button class="b" id="classLink" type="button">Князев Class</button><select id=cs aria-label="Текущий класс">${S.cl.map(c=>`<option value="${E(c.id)}"${c.id===S.cur?' selected':''}>${E(c.name)}</option>`).join('')}</select>`;
   $('#classLink').onclick=()=>showClass();
   $('#cs').onchange=e=> {
+    if(busy){e.target.value=S.cur;return toast('Дождитесь окончания розыгрыша')}
     S.cur=e.target.value;
     sv();
     $('#rt').innerHTML='';
     draw()
   };
   $('#nc').onclick=()=> {
+    if(busy)return toast('Дождитесь окончания розыгрыша');
     const n=prompt('Название класса','Класс 11Б');
     if(n) {
       addCl(n);
@@ -746,7 +791,8 @@ function drawDrop() {
   }).sort((a,b)=>a.n-b.n).map(({
     p,n
   })=>`<div class="li${n>998?' w':''}"><b>${n>998?'·':'№'+n}</b>${E(p.n)}${n>998?'':`<i class=ux data-u=${p.id} title="Освободить место">×</i>`}</div>`).join('')||'<p class=m>Список пуст</p>';
-  $('#sc').textContent=`${ps.length-un.length}/${ps.length}`
+  $('#sc').textContent=`${ps.length-un.length}/${ps.length}`;
+  drawChips()
 }
 function drawClass() {
   const c=cur();
@@ -823,8 +869,9 @@ async function drop() {
         pv=$(`#m0 [data-k="${fr[(si+i)%L].k}"]`);
         if(pv) {
           pv.classList.add('hl');
-          const dk=pv.parentNode,mw=$('#m0').parentNode;
-          mw.scrollLeft=dk.offsetLeft+64-mw.clientWidth/2
+          const dk=pv.parentNode,mw=$('#m0').closest('.mw');
+          const dr=dk.getBoundingClientRect(),mr=mw.getBoundingClientRect();
+          mw.scrollLeft+=dr.left+dr.width/2-(mr.left+mr.width/2)
         }
         $('#rs').textContent='Подбираем место… №'+fr[(si+i)%L].n;
         await sl((30+170*Math.pow(i/ns,3))*S.spd)
@@ -832,6 +879,7 @@ async function drop() {
     })(),sl(D*1000+100)])
   }
   if(Object.values(c.asg).includes(k)||c.asg[p.id]) {
+    document.querySelectorAll('#m0 .hl').forEach(n=>n.classList.remove('hl'));
     busy=0;
     return 0
   }
@@ -842,6 +890,8 @@ async function drop() {
   const s=seats(c).find(x=>x.k===k),e=$(`#m0 [data-k="${k}"]`);
   if(e) {
     e.classList.add('hit');
+    // Подсветка только на пару секунд, потом место возвращается к обычному виду.
+    setTimeout(() => e.classList.remove('hit'), 2500);
     e.scrollIntoView({
       block:'nearest',inline:'nearest'
     })
@@ -982,7 +1032,8 @@ const pick=w=> {
 };
 function drawChips() {
   const c=cur(),ps=c.people.filter(p=>p.n.trim());
-  $('#chips').innerHTML=`<span>👥 ${ps.length} учеников</span><span>🪑 ${seats(c).filter(s=>s.on).length} мест</span><span>✔ ${Object.keys(c.asg).length} рассажено</span><span>💰 ${S.bal} КК</span>`
+  const icon = id => `<svg class="chip-icon" aria-hidden="true" focusable="false"><use href="#${id}"></use></svg>`;
+  $('#chips').innerHTML=`<span>${icon('ic-people')}${ps.length} учеников</span><span>${icon('ic-seat')}${seats(c).filter(s=>s.on).length} мест</span><span>${icon('ic-check')}${Object.keys(c.asg).length} рассажено</span><span>${icon('ic-coin')}${S.bal} КК</span>`
 }
 function drawCases() {
   drawChips();
@@ -1013,7 +1064,7 @@ function drawCases() {
   const selectedItem = S.inv[sel];
   if (selectedItem && selectedItem.r < 3 && tg <= selectedItem.r) tg = selectedItem.r + 1;
   const canUpgrade = Boolean(selectedItem && selectedItem.r < 3);
-  const chance = canUpgrade ? 95 * selectedItem.v / IT[tg][2] : 0;
+  const chance = canUpgrade ? Math.min(96, 105 * selectedItem.v / IT[tg][2]) : 0;
   const circumference = 2 * Math.PI * 118;
   $('#ui').innerHTML = `
     <div class="upgrade-header">
@@ -1028,7 +1079,7 @@ function drawCases() {
       </div>
     </div>
 
-    <section class="upgrade-shop">
+    <section class="upgrade-shop" ${S.inv.length ? 'hidden' : ''}>
       <div class="section-heading"><h3>Магазин кейсов</h3></div>
       <div class="cg">${CS.map((item,index)=>`<button class="cse" data-up-case="${index}" type="button"><big>${index?'∑':'✎'}</big><b>${item[0]}</b><span>${item[1]} КК</span></button>`).join('')}</div>
     </section>
@@ -1056,7 +1107,7 @@ function drawCases() {
 
     <div class="upgrade-workspace">
       <div class="upgrade-slot">
-        <span class="slot-caption">1 · Исходная оценка</span>
+        <span class="slot-caption">Исходная оценка</span>
         ${selectedItem
           ? cell(selectedItem)
           : '<div class="it r0"><big>?</big>Выберите предмет</div>'}
@@ -1088,7 +1139,7 @@ function drawCases() {
       </div>
 
       <div class="upgrade-slot">
-        <span class="slot-caption">2 · Целевая оценка</span>
+        <span class="slot-caption">Целевая оценка</span>
         ${canUpgrade
           ? cell(it(tg))
           : '<div class="it r1"><big>?</big>Цель апгрейда</div>'}
@@ -1134,7 +1185,7 @@ $('#cb').onclick=e=> {
 $('#ui').onclick=e=> {
   const w=e.target.closest('.iw'),b=e.target.closest('button');
   if(b&&'upCase' in b.dataset&&!busy){const ci=Number(b.dataset.upCase);go(1);openC(ci);return;}
-  if(b&&b.dataset.t&&!busy) {
+  if(b&&'t' in b.dataset&&!busy) {
     tg=+b.dataset.t;
     drawCases()
   } else if(b&&'own'in b.dataset) {
@@ -1163,6 +1214,7 @@ $('#ui').onclick=e=> {
 };
 async function openC(ci) {
   if(busy)return;
+  if(!Number.isInteger(ci)||!CS[ci])return;
   const[,p,w]=CS[ci];
   if(S.bal<p)return toast('Не хватает КК');
   busy=1;
@@ -1190,7 +1242,7 @@ async function up(t) {
   if(busy||sel<0||!S.inv[sel]||t<=S.inv[sel].r||t>3)return;
   busy=1;
   $('#ures').innerHTML='';
-  const x=S.inv[sel],ch=95*x.v/IT[t][2],roll=Math.random()*100,a=$('#arw');
+  const x=S.inv[sel],ch=Math.min(96,105*x.v/IT[t][2]),roll=Math.random()*100,a=$('#arw');
   a.closest('.ring').classList.remove('idle');
   a.style.transition='none';
   a.style.transform='rotate(0deg)';
