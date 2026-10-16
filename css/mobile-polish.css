@@ -1,0 +1,171 @@
+/* v1.8.40 — унификация шапок, кейсов и портрета в hero */
+
+/* Карточки «Домашка» и «Самостоятельная»: читаемая подпись и стоимость
+   одинаковы в Cases и Upgrade, на телефонах и больших экранах. */
+.cse b{font-size:16px;line-height:1.2}
+.cse span{font-size:14px;line-height:1.15}
+
+/* В квадратной рамке возвращён портрет Князева вместо изображения кота. */
+.hero .pol .cat{
+  background:var(--hd) center bottom/contain no-repeat;
+  background-color:#f4f6f9;
+}
+
+@media(max-width:700px){
+  /* Одинаковая шкала заголовков разделов. */
+  #t0 .tab-heading h1,
+  #t1 .tab-heading h1,
+  #t2 .tab-heading h1,
+  #t3 .tab-heading h1,
+  #t4 .mog-hero h1,
+  #t5 .tab-heading h1{
+    font-size:clamp(17px,5vw,21px);
+    line-height:1.16;
+    letter-spacing:-.03em;
+    font-family:var(--font);
+  }
+  #t0 .tab-kicker,
+  #t1 .tab-kicker,
+  #t2 .tab-kicker,
+  #t3 .tab-kicker,
+  #t4 .mog-hero .tab-kicker,
+  #t5 .tab-kicker{
+    font-size:10px;
+    line-height:1.2;
+    letter-spacing:.045em;
+    margin-bottom:4px;
+    font-family:var(--font);
+  }
+
+  /* Сбалансированная шапка: баланс выше, бонусная полоса ниже и тоньше. */
+  #t2>.tab-heading,
+  #t3>.tab-heading,
+  #t4 .mog-hero{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    grid-template-rows:auto auto;
+    align-items:end;
+    gap:8px;
+    padding:12px;
+    min-height:0;
+  }
+  #t2>.tab-heading>div:first-child,
+  #t3>.tab-heading>div:first-child,
+  #t4 .mog-hero>div:first-child{
+    grid-column:1;
+    grid-row:1;
+    min-width:0;
+    align-self:end;
+  }
+  #t2 .tab-actions,
+  #t3 .tab-actions,
+  #t4 .mog-hero .tab-actions{display:contents}
+
+  #t2 #caseBn,
+  #t3 #upBn,
+  #t4 #mogBn{
+    grid-column:1 / -1;
+    grid-row:2;
+    justify-self:stretch;
+    width:100%;
+    min-width:0;
+    height:35px;
+    min-height:35px;
+    padding:4px 12px;
+    font-size:13px;
+    line-height:1.1;
+    font-family:var(--font);
+    font-weight:600;
+    white-space:nowrap;
+  }
+  #t2 .balance-pill,
+  #t3 .balance-pill,
+  #t4 .balance-pill{
+    grid-column:2;
+    grid-row:1;
+    align-self:end;
+    justify-self:end;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:3px;
+    min-width:88px;
+    min-height:54px;
+    margin:0;
+    padding:9px 11px;
+    border-radius:10px;
+    font-family:var(--font);
+  }
+  #t2 .balance-pill span,
+  #t3 .balance-pill span,
+  #t4 .balance-pill span{font-size:11px;line-height:1.1}
+  #t2 .balance-pill strong,
+  #t3 .balance-pill strong,
+  #t4 .balance-pill strong{font-size:16px;line-height:1.15;white-space:nowrap}
+
+  /* Те же две компактные колонки в Cases и Upgrade. */
+  #t2 .cg,
+  #t3 #ui .cg{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+  }
+  #t2 .cse,
+  #t3 #ui .cse{
+    box-sizing:border-box;
+    min-width:0;
+    padding:11px 6px;
+    align-items:center;
+    text-align:center;
+    gap:5px;
+  }
+  #t2 .cse big,
+  #t3 #ui .cse big{font-size:28px;line-height:1}
+  #t2 .cse b,
+  #t3 #ui .cse b{
+    max-width:100%;
+    font-size:clamp(12px,3.8vw,15px);
+    line-height:1.15;
+    letter-spacing:-.04em;
+    white-space:nowrap;
+  }
+  #t2 .cse span,
+  #t3 #ui .cse span{font-size:13px;line-height:1.1}
+
+  /* Портрет возвращён в квадрат справа от текста. На узких экранах он уменьшается,
+     а тексту резервируется место, чтобы изображение не перекрывало заголовок. */
+  .hero .pol{
+    display:block!important;
+    position:absolute;
+    right:8px;
+    top:35%;
+    z-index:2;
+    margin:0;
+    padding:4px;
+    border-radius:7px;
+    background:#fff;
+    transform:rotate(3deg);
+    box-shadow:0 2px 8px #0002;
+  }
+  .hero .pol .cat{
+    width:clamp(76px,25vw,104px);
+    height:clamp(76px,25vw,104px);
+    margin:0;
+    border:0;
+    border-radius:4px;
+    background:var(--hd) center bottom/contain no-repeat;
+    background-color:#f4f6f9;
+  }
+  .hero .ht{padding-right:clamp(82px,27vw,112px);min-width:0}
+}
+
+@media(max-width:380px){
+  /* На самых узких телефонах сохраняем место для длинного названия кейса. */
+  #t2 .cse,
+  #t3 #ui .cse{padding-inline:4px}
+  #t2 .cse b,
+  #t3 #ui .cse b{font-size:12px;letter-spacing:-.04em}
+  #t2 .balance-pill,
+  #t3 .balance-pill,
+  #t4 .balance-pill{min-width:82px;padding-inline:8px}
+  .hero .ht{padding-right:82px}
+}
