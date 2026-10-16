@@ -127,3 +127,100 @@ nav button .nv-name{color:inherit;font-weight:400}
   #t2 .balance-pill,#t3 .balance-pill,#t4 .balance-pill{padding:8px 10px;flex:0 0 auto}
   #t2 .balance-pill strong,#t3 .balance-pill strong,#t4 .balance-pill strong{font-size:var(--fs-l)}
 }
+
+
+/* v1.8.39: mobile balance beside the section title, full-width bonus below;
+   keep the two Cases choices compact and side by side on phones. */
+@media(max-width:700px){
+  #t2>.tab-heading,
+  #t3>.tab-heading,
+  #t4 .mog-hero{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    grid-template-rows:auto auto;
+    align-items:end;
+    gap:10px 8px;
+    padding:12px;
+    min-height:0;
+  }
+  #t2>.tab-heading>div:first-child,
+  #t3>.tab-heading>div:first-child,
+  #t4 .mog-hero>div:first-child{
+    grid-column:1;
+    grid-row:1;
+    flex:none;
+    align-self:end;
+    min-width:0;
+  }
+  #t2>.tab-heading .tab-actions,
+  #t3>.tab-heading .tab-actions,
+  #t4 .mog-hero .tab-actions{
+    display:contents;
+    width:auto;
+  }
+  #t2 #caseBn,
+  #t3 #upBn,
+  #t4 #mogBn{
+    grid-column:1 / -1;
+    grid-row:2;
+    justify-self:stretch;
+    width:100%;
+    min-width:0;
+    min-height:42px;
+    padding-inline:12px;
+    white-space:nowrap;
+  }
+  #t2 .balance-pill,
+  #t3 .balance-pill,
+  #t4 .balance-pill{
+    grid-column:2;
+    grid-row:1;
+    align-self:end;
+    justify-self:end;
+    min-width:0;
+    margin:0;
+    padding:6px 9px;
+  }
+  #t2 .balance-pill span,
+  #t3 .balance-pill span,
+  #t4 .balance-pill span{font-size:10px;line-height:1.1}
+  #t2 .balance-pill strong,
+  #t3 .balance-pill strong,
+  #t4 .balance-pill strong{font-size:15px;line-height:1.15;white-space:nowrap}
+  #t2 .tab-heading h1,
+  #t3 .tab-heading h1,
+  #t4 .mog-hero h1{
+    font-size:clamp(17px,5.3vw,23px);
+    line-height:1.15;
+    letter-spacing:-.035em;
+  }
+  #t2 .tab-kicker,
+  #t3 .tab-kicker,
+  #t4 .mog-hero .tab-kicker{
+    font-size:9px;
+    line-height:1.2;
+    letter-spacing:.045em;
+    margin-bottom:4px;
+  }
+  #t2 .cg{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+  }
+  #t2 .cse{
+    box-sizing:border-box;
+    min-width:0;
+    padding:10px 6px;
+    align-items:center;
+    text-align:center;
+    gap:4px;
+  }
+  #t2 .cse big{font-size:26px;line-height:1}
+  #t2 .cse b{
+    max-width:100%;
+    font-size:clamp(10.5px,3.5vw,13px);
+    line-height:1.15;
+    letter-spacing:-.035em;
+    white-space:nowrap;
+  }
+  #t2 .cse span{font-size:12px;line-height:1.1}
+}
