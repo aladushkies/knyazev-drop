@@ -13,8 +13,7 @@ const claimBonus=()=> {
   sv();
   // Во время спина полная перерисовка уничтожила бы колесо/ленту — обновляем только баланс.
   if(busy)drawChips();else drawCases();
-  toast(`Бонус получен: +${ECON.bonus.amount} КК`);
-  return true;
+  return true
 };
 function drawCases() {
   drawChips();
