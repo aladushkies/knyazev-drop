@@ -1,0 +1,114 @@
+/* Доработки: навигация, управление классами, инвентарь кейсов */
+/* Clear navigation and compact responsive editing */
+#cbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}#cbar select{flex:0 1 184px;width:184px;min-width:100px;max-width:45vw;min-height:38px;border-radius:10px;border:1px solid var(--l);background:#fff;padding:0 12px}
+#t1 .row{row-gap:10px}#t1 .row label{display:flex;align-items:center;gap:8px}
+#t1 .mw{max-width:100%;overscroll-behavior:contain}#m1{touch-action:pan-x pan-y}
+.edit .desk.collision{border-color:var(--err);background:var(--err-bg)}
+#t1 .card>.row:first-child{align-items:center}#t1 #cn{flex:1 1 200px;max-width:360px}
+#t3 .card{overflow:hidden}#t3 #ui{min-width:0}
+@media(max-width:700px){#cbar{padding:10px}#cbar #classLink{flex:0 0 auto}#cbar select{flex:0 1 160px;width:160px;min-width:96px;max-width:48vw}#t1 .row>.b{flex:1 1 130px}#t1 #rr,#t1 #cc{width:64px}#t1 .row label{flex:1 1 130px}#t3 .upgrade-header{flex-wrap:wrap}.pl{grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr))}}
+@media(max-width:380px){.hero .pol{display:none}#cbar #classLink{width:auto}#t1 .row>.b{flex:1 1 100%}}
+
+/* Interface refinements */
+.upgrade-shop:not([hidden]){padding:0 0 20px;border-bottom:1px solid var(--l)}
+[hidden]{display:none!important}
+#cbar #classLink{background:var(--s2);color:var(--t);border-color:transparent}
+#cbar #classLink:hover{background:var(--l)}
+.class-manager{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:16px 0;padding:14px;border:1px solid var(--l);border-radius:var(--r);background:var(--s1)}
+.class-manager label{font-size:var(--fs-s);color:var(--m);font-weight:700}
+.class-manager select{flex:1 1 160px;min-width:0}.class-manager input{flex:1 1 140px;min-width:0}
+.cases-inventory{margin-top:22px;border-top:1px solid var(--l);padding-top:16px}
+.cases-items{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,170px),1fr));gap:12px;margin-top:12px}
+.cases-item{border:1px solid var(--l);border-radius:var(--r);padding:12px;display:flex;align-items:center;flex-direction:column;gap:8px;background:#fff}
+.cases-item .it{flex:none}.cases-item strong{color:var(--a)}
+.item-actions{width:100%;display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.item-actions .b{flex:1 1 65px;padding:9px 7px}
+@media(max-width:600px){.class-manager{align-items:stretch}.class-manager label{flex:1 1 100%}.class-manager select,.class-manager input{flex:1 1 100%}#t1 .card>.row:first-child{gap:12px}#t1 #backDrop{margin-left:0!important}.cases-items{grid-template-columns:repeat(2,minmax(0,1fr))}.cases-item{padding:8px}.item-actions .b{flex:1 1 100%}}
+@media(max-width:350px){.cases-items{grid-template-columns:1fr}}
+/* Спокойная анимация колеса до розыгрыша */
+.ring.idle .arw{animation:sw 12s linear infinite;will-change:transform}
+.ring:not(.idle) .arw{animation:none}
+.target-buttons button,.up-action-row button{min-height:44px}
+@media(max-width:600px){.up-action-row,.target-buttons{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}.up-action-row button{flex:1 1 190px}.target-buttons button{flex:1 1 110px}footer{flex-wrap:wrap;text-align:center;justify-content:center;line-height:1.5}}
+#cbar{justify-content:flex-start}#cbar select{height:44px} .upgrade-shop[hidden]{display:none!important} @media(max-width:400px){#cbar{gap:8px}#cbar #classLink{padding-inline:12px}#cbar select{flex:1 1 105px;width:auto;max-width:calc(100% - 155px)}}
+
+/* Телефон: вкладки всегда на виду, график живёт внутри блока с заголовком */
+@media(max-width:700px){
+  header{flex-wrap:wrap;gap:6px 10px;padding:8px 12px}
+  nav{order:3;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;width:100%;margin-left:0}
+  nav button{display:flex;align-items:center;justify-content:center;padding:8px 4px;font-size:var(--fs-s);font-weight:500;white-space:nowrap}
+  .nv-pre{display:none}
+  .hero{flex-wrap:nowrap;align-items:center;gap:12px;padding:14px;min-height:0}
+  .hero .ht{position:relative;z-index:1;flex:1 1 auto;min-width:0}
+  .hero>.plot{position:absolute;z-index:0;top:50%;right:0;width:62%;max-width:none;height:auto;margin:0;flex:none;transform:translateY(-50%);opacity:.3;pointer-events:none}
+  .hero .pol,.mz{display:none}
+}
+
+/* v1.4: shared surfaces, mobile school header and case inventory */
+#casesInventory>.cases-inventory{margin:14px 0 18px;padding:18px;background:#fff;border:1px solid var(--l);border-radius:var(--r)}
+#t2>.vw{margin-top:14px}
+#t4 .mog-score-overview{grid-template-columns:minmax(0,1fr)}
+
+@media(max-width:700px){body[data-tab="3"] .hero{display:flex!important;position:relative;overflow:hidden}body[data-tab="3"] .hero>.plot{display:block!important}#casesInventory>.cases-inventory{padding:12px}#t4 .mog-hero{border-radius:var(--r)}}
+
+/* v1.5: consistent tab headings and control alignment */
+.tab-heading{box-sizing:border-box;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;min-height:78px;margin:0 0 14px;padding:16px 20px;background:#fff;border:1px solid var(--l);border-radius:var(--r);text-align:left}
+.tab-heading>div:first-child{min-width:0;flex:1 1 200px}
+.tab-kicker{display:block;color:var(--m);font-size:var(--fs-xs);font-weight:700;letter-spacing:.065em;margin-bottom:5px}
+.tab-heading h1{font-size:var(--fs-xl);font-weight:700;letter-spacing:-.025em;line-height:1.2;margin:0;color:var(--t)}
+.tab-heading p{margin:6px 0 0;color:var(--m);font-size:var(--fs-s)}
+.tab-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tab-actions .b{min-height:40px}
+#t4 .mog-hero{margin:0 0 14px;padding:16px 20px;min-height:78px}
+#t4 .mog-hero h1{font-size:var(--fs-xl);margin:0;color:var(--t)}
+#t2 #cb>.row:first-child{justify-content:flex-end;gap:10px;min-height:40px}
+#t3 .upgrade-header{padding-top:0}
+#t0 .stage .row{gap:8px}
+@media(max-width:700px){.tab-heading,#t4 .mog-hero{padding:13px 14px;min-height:68px;margin-bottom:10px}.tab-heading h1,#t4 .mog-hero h1{font-size:var(--fs-xl)}.tab-actions{width:100%}.tab-actions .b{width:100%}#t2 #cb>.row:first-child{justify-content:flex-start}#t0 .stage .row .b{flex:1 1 140px;min-height:44px}}
+
+#casesInventory:empty{display:none}#casesInventory{min-width:0}#casesInventory .cases-item{min-width:0}#casesInventory .it{max-width:100%}
+
+
+/* Единый стиль навигации: тёмная выбранная вкладка с тонкой неброской обводкой. */
+nav button{border:1px solid transparent;border-radius:12px}
+nav .on{background:#1b2431;color:#fff;border-color:#243044}
+.target-buttons .b.is-selected{background:var(--t);color:#fff;border-color:var(--t)}
+@media(max-width:700px){
+  .mw{overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+  .mw .desk{width:136px;height:64px}
+  .mw .seat{min-width:66px;padding:2px}
+  .mw .seat input{width:20px;height:20px}
+  #t1 .mw{scroll-snap-type:none}
+}
+
+
+/* v1.8.3: navigation labels follow the tab state; avoid blue emphasis in the nav. */
+.brand-word{color:var(--a)}
+.tab-heading h1 .brand-word,#t4 .mog-hero h1 .brand-word{color:var(--a)}
+nav button .nv-name{color:inherit;font-weight:400}
+#cbar .class-link-stack{display:flex;flex-direction:column;align-items:flex-start;gap:3px;line-height:1.2;flex:0 0 auto}
+#cbar .class-link-stack .b{min-height:40px}
+#cbar .class-link-caption{display:block;max-width:225px;color:var(--m);font-size:var(--fs-xs);font-weight:700;letter-spacing:.065em;line-height:1.2;text-transform:uppercase}
+@media(max-width:700px){#cbar .class-link-caption{max-width:205px}}
+
+
+/* v1.8.5: Russian combinatorics notation C_n^k: n below, k above. */
+#fmsg .ways-formula{display:inline-flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px;margin-left:3px;vertical-align:middle}
+#fmsg .combination{position:relative;display:inline-block;vertical-align:middle;font:italic 1.08em Georgia,"Times New Roman",serif;line-height:1;padding-right:.92em;margin:0 .05em}
+#fmsg .combination-letter{display:inline-block;line-height:1}
+#fmsg .combination sup,#fmsg .combination sub{position:absolute;left:.8em;font-family:var(--font);font-size:.62em;font-style:normal;font-weight:400;line-height:1}
+#fmsg .combination sup{top:-.24em}
+#fmsg .combination sub{bottom:-.14em}
+#fmsg .ways-value{white-space:nowrap}
+
+
+/* v1.8.7: ярлык рассадки над возвращённой кнопкой Class; общий стиль баланса и оценок. */
+#cbar #classLink{background:var(--s2);color:var(--t);border-color:transparent}
+#cbar #classLink:hover{background:var(--l)}
+#t0 .stage .m .brand-word{color:var(--m-t);font-weight:400!important}
+.balance-pill{display:flex;flex:0 0 auto;flex-direction:column;align-items:flex-end;gap:2px;padding:10px 14px;border:1px solid var(--l);border-radius:var(--r);background:var(--a2)}
+.balance-pill span{color:var(--m);font-size:var(--fs-xs)}
+.balance-pill strong{color:var(--a);font-size:var(--fs-l);line-height:1.2}
+@media(max-width:480px){.balance-pill{padding:8px 10px}.balance-pill strong{font-size:var(--fs-l)}}
+
+/* v1.8.18: единый белый инвентарь в Cases и Upgrade (карточка из .card). */
+.inventory-section{margin-top:12px}

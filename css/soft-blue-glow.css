@@ -1,0 +1,17 @@
+/* Мягкое свечение только у hero, сцены и колеса. Кнопки и вкладки без подсветки. */
+.hero {
+  background: radial-gradient(circle at 85% 20%, #1d3a63 0%, #0b0e12 60%);
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(#ffffff0d 1px, transparent 1px), linear-gradient(90deg, #ffffff0d 1px, transparent 1px);
+  background-size: 22px 22px;
+  pointer-events: none;
+}
+.hero > * { position: relative; }
+.hero > .mz { position: absolute; }
+.hero .plot { filter: drop-shadow(0 0 8px #2b8cff44); }
+.stage { background: radial-gradient(circle at 50% -20%, #1d3a63, #0b0e12 65%); }
+.ring.win circle:last-of-type { filter: drop-shadow(0 0 7px #0b0e1233); }

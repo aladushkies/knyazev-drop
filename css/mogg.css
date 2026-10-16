@@ -1,0 +1,181 @@
+/* Князев MOGG — раскладка и компоненты раздела.
+   Цвета, шрифт, размеры и радиусы берутся из variables.css, как и на остальных вкладках.
+   Все селекторы начинаются с #t4, поэтому другие вкладки не затрагиваются. */
+
+#t4 .mog-app{color:var(--t);font-size:var(--fs-s);line-height:1.5;min-width:0}
+#t4 .mog-app *{box-sizing:border-box}
+#t4 .mog-hidden{display:none!important}
+#t4 .mog-visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+#t4 .mog-kicker,#t4 .mog-score-kicker,#t4 .mog-preview-top{display:block;color:var(--m);font-size:var(--fs-xs);font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+
+/* Шапка раздела: белая карточка, как .card на остальных вкладках */
+#t4 .mog-hero{background:#fff;border:1px solid var(--l);border-radius:var(--r);padding:16px 20px;margin-bottom:14px;box-sizing:border-box;min-height:78px}
+#t4 .mog-eyebrow{display:flex;align-items:center;gap:8px;color:var(--a);font-size:var(--fs-xs);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+#t4 .mog-eyebrow-line{width:20px;height:2px;background:var(--a)}
+#t4 .mog-hero h2{margin:10px 0 6px;font-size:var(--fs-xl);line-height:1.15;letter-spacing:-.02em;font-weight:700}
+#t4 .mog-hero h2 span{color:var(--a)}
+#t4 .mog-hero p{max-width:560px;margin:0;color:var(--m);font-size:var(--fs-m)}
+
+/* Две панели */
+#t4 .mog-workspace{display:grid;grid-template-columns:minmax(280px,.83fr) minmax(0,1.4fr);align-items:start;gap:14px}
+#t4 .mog-panel{background:#fff;border:1px solid var(--l);border-radius:var(--r);min-width:0;overflow:hidden;padding:14px}
+#t4 .mog-results-column{min-width:0}
+#t4 .mog-panel-heading{margin-bottom:14px}
+#t4 .mog-panel-heading h3{margin:2px 0 0;font-size:var(--fs-l);font-weight:700;line-height:1.25}
+
+/* Зона загрузки */
+#t4 .mog-drop-zone{min-height:170px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;background:#fff;border:1px dashed var(--l2);border-radius:var(--r);padding:20px 14px;cursor:pointer;transition:border-color .15s,background .15s}
+#t4 .mog-drop-zone:hover{border-color:var(--a)}
+#t4 .mog-drop-zone.mog-dragging{border:1px solid var(--a);background:var(--a2)}
+#t4 .mog-drop-zone:focus-visible,#t4 .mog-upload-panel:focus-within .mog-drop-zone{outline:2px solid var(--a);outline-offset:1px}
+#t4 .mog-upload-icon{width:40px;height:40px;display:grid;place-items:center;margin-bottom:8px;border:1px solid var(--l);border-radius:var(--r-s);color:var(--a);background:#fff}
+#t4 .mog-upload-icon svg{width:20px;height:20px}
+#t4 .mog-drop-zone strong{font-size:var(--fs-m);font-weight:700}
+#t4 .mog-drop-subtitle{color:var(--m);font-size:var(--fs-s)}
+#t4 .mog-file-types{margin-top:10px;color:var(--m);font-size:var(--fs-xs);font-weight:500;letter-spacing:.06em}
+#t4 .mog-paste-hint{color:var(--m);font-size:var(--fs-xs)}
+
+/* Предпросмотр */
+#t4 .mog-preview-wrap{border:1px solid var(--l);border-radius:var(--r);background:var(--s1);overflow:hidden}
+#t4 .mog-preview-top,#t4 .mog-preview-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px}
+#t4 .mog-preview-wrap>img{display:block;width:100%;max-height:300px;object-fit:contain;background:var(--s2)}
+#t4 .mog-preview-foot{justify-content:flex-start;border-top:1px solid var(--l);color:var(--m);font-size:var(--fs-s)}
+#t4 .mog-preview-foot #fileInfo{flex:1;min-width:0;overflow-wrap:anywhere}
+#t4 .mog-status-dot{flex:0 0 8px;width:8px;height:8px;border-radius:50%;background:var(--ok)}
+#t4 .mog-text-button{padding:2px 0;border:0;background:none;color:var(--a);font:inherit;font-size:var(--fs-s);font-weight:500;letter-spacing:0;text-transform:none;cursor:pointer}
+#t4 .mog-text-button:hover{text-decoration:underline}
+#t4 .mog-icon-button{width:28px;height:28px;border:1px solid var(--l);border-radius:var(--r-s);background:#fff;color:var(--m);font-size:var(--fs-l);line-height:1;cursor:pointer}
+#t4 .mog-icon-button:hover{border-color:var(--a);color:var(--a)}
+
+/* Профиль и кнопка */
+#t4 .mog-control-group{margin-top:14px}
+#t4 .mog-control-group label{display:block;margin-bottom:6px;color:var(--m);font-size:var(--fs-s);font-weight:500}
+#t4 .mog-control-group select{width:100%;min-height:40px}
+#t4 .mog-control-hint{margin:6px 0 0;color:var(--m);font-size:var(--fs-xs);line-height:1.5}
+#t4 .mog-primary-button,#t4 .mog-secondary-button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;border:0;border-radius:var(--r-s);font:inherit;font-size:var(--fs-m);font-weight:500;cursor:pointer}
+#t4 .mog-primary-button{width:100%;margin-top:14px;background:var(--a);color:#fff}
+#t4 .mog-primary-button:hover:not(:disabled){filter:brightness(.94)}
+#t4 .mog-primary-button:disabled{opacity:.4;cursor:not-allowed}
+#t4 .mog-secondary-button{flex:0 0 auto;min-height:40px;padding:8px 14px;background:var(--s2);color:var(--t)}
+#t4 .mog-secondary-button:hover{background:var(--l)}
+
+/* Статусы */
+#t4 .mog-progress-box{display:flex;align-items:center;gap:12px;margin-top:12px;padding:10px 12px;border:1px solid var(--l);border-radius:var(--r-s);background:var(--s1)}
+#t4 .mog-progress-box strong{display:block;font-size:var(--fs-s);font-weight:700}
+#t4 .mog-progress-box p{margin:2px 0 0;color:var(--m);font-size:var(--fs-xs)}
+#t4 .mog-spinner{flex:0 0 18px;width:18px;height:18px;border:2px solid var(--l);border-top-color:var(--a);border-radius:50%;animation:mog-spin .8s linear infinite}
+@keyframes mog-spin{to{transform:rotate(360deg)}}
+#t4 .mog-error-box{margin:12px 0 0;padding:10px 12px;border:1px solid var(--err);border-radius:var(--r-s);background:var(--err-bg);color:var(--err);font-size:var(--fs-s)}
+#t4 .mog-privacy-note{margin:12px 0 0;color:var(--m);font-size:var(--fs-xs);line-height:1.5}
+
+/* Пустое состояние */
+#t4 .mog-empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;padding:8px 12px 16px;text-align:center}
+#t4 .mog-face-placeholder{width:min(100%,220px);margin-bottom:12px;color:var(--m);opacity:.82}
+#t4 .mog-face-placeholder img{display:block;width:100%;height:220px;object-fit:contain;margin:0 auto}
+#t4 .mog-empty-state h4{margin:0 0 6px;font-size:var(--fs-m);font-weight:700}
+#t4 .mog-empty-state>p{max-width:400px;margin:0;color:var(--m);font-size:var(--fs-s)}
+
+/* Итоговая оценка: тёмная карточка, самый заметный блок отчёта */
+#t4 .mog-score-overview{margin:0 0 18px;padding:18px;border-radius:var(--r);background:var(--t);color:#fff}
+#t4 .mog-score-main{display:grid;grid-template-columns:152px minmax(0,1fr);gap:20px;align-items:center}
+#t4 .mog-score-ring{--score-angle:180deg;position:relative;display:grid;place-items:center;width:152px;height:152px;border-radius:50%;background:conic-gradient(var(--a) var(--score-angle),var(--tl) 0);isolation:isolate}
+#t4 .mog-score-ring:before{content:"";position:absolute;inset:9px;border-radius:50%;background:var(--t)}
+#t4 .mog-score-face-contour{position:absolute;inset:0;width:100%;height:100%;z-index:0;object-fit:contain;filter:brightness(0) invert(1);opacity:.22;pointer-events:none;clip-path:circle(50%)}
+#t4 .mog-score-ring-inner{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center}
+#t4 .mog-score-ring-inner strong{margin-top:2px;color:#fff;font-size:48px;font-weight:700;line-height:1;letter-spacing:-.03em}
+#t4 .mog-score-outof{margin-top:4px;color:var(--m-t);font-size:var(--fs-xs)}
+#t4 .mog-score-summary .mog-score-kicker{color:var(--m-t)}
+#t4 .mog-tier-badge{display:inline-block;max-width:100%;margin:6px 0 4px;padding:4px 14px;border-radius:var(--r-s);background:var(--a);color:#fff;font-size:var(--fs-xl);font-weight:700;line-height:1.25;letter-spacing:-.01em;overflow-wrap:anywhere}
+#t4 .mog-score-summary h4{margin:4px 0 6px;color:#fff;font-size:var(--fs-l);font-weight:700;line-height:1.3}
+#t4 .mog-score-summary p{margin:0;color:var(--m-t);font-size:var(--fs-s)}
+#t4 .mog-tier-ladder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:18px 0 0;padding:0;list-style:none}
+#t4 .mog-tier-step{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;padding:8px 2px;border:1px solid var(--tl);border-radius:var(--r-s);background:var(--t2);color:var(--m-t);text-align:center;font-size:var(--fs-xs)}
+#t4 .mog-tier-step strong{font-size:var(--fs-s);font-weight:700;line-height:1.2}
+#t4 .mog-tier-step.is-passed{color:var(--on-t)}
+#t4 .mog-tier-step.is-current{border-color:var(--a);background:var(--a);color:#fff}
+
+/* Карта ориентиров */
+#t4 .mog-annotated-wrap{margin:16px 0 20px}
+#t4 .mog-annotated-header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;color:var(--m);font-size:var(--fs-xs);font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+#t4 .mog-annotated-actions{display:flex;align-items:center;gap:12px;letter-spacing:0;text-transform:none}
+#t4 .mog-new-button{min-height:34px;padding:6px 12px;font-size:var(--fs-s)}
+#t4 #reportContent{scroll-margin-top:110px}
+#t4 .mog-annotated-wrap canvas{display:block;width:auto;max-width:100%;max-height:410px;margin:0 auto;border:1px solid var(--l);border-radius:var(--r-s);background:var(--s2)}
+#t4 .mog-annotated-caption{margin:8px 0 0;color:var(--m);font-size:var(--fs-xs)}
+
+/* Метрики */
+#t4 .mog-metric-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:12px}
+#t4 .mog-metric-heading h4{margin:2px 0 0;font-size:var(--fs-l);font-weight:700}
+#t4 .mog-metric-hint{color:var(--m);font-size:var(--fs-xs)}
+#t4 .mog-metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#t4 .mog-metric-card{min-width:0;padding:12px;border:1px solid var(--l);border-radius:var(--r-s);background:var(--s1)}
+#t4 .mog-metric-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+#t4 .mog-metric-card h4{margin:0;font-size:var(--fs-s);font-weight:700;line-height:1.35}
+#t4 .mog-metric-score{color:var(--a);font-size:var(--fs-s);font-weight:700;white-space:nowrap}
+#t4 .mog-metric-bar{height:4px;margin:10px 0;overflow:hidden;border-radius:999px;background:var(--l)}
+#t4 .mog-metric-bar span{display:block;height:100%;border-radius:999px;background:var(--a)}
+#t4 .mog-metric-card p{margin:0;color:var(--m);font-size:var(--fs-xs)}
+#t4 .mog-metric-more{margin-top:8px;padding-top:8px;border-top:1px solid var(--l);color:var(--m);font-size:var(--fs-xs);overflow-wrap:anywhere}
+
+/* Формула и низ отчёта */
+#t4 .mog-details-block{margin-top:16px;border-top:1px solid var(--l)}
+#t4 .mog-details-toggle{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding:12px 0;border:0;background:none;color:var(--t);font:inherit;font-size:var(--fs-s);font-weight:700;text-align:left;cursor:pointer}
+#t4 .mog-toggle-plus{color:var(--a);font-size:var(--fs-l);font-weight:400;transition:transform .15s}
+#t4 .mog-details-toggle[aria-expanded="true"] .mog-toggle-plus{transform:rotate(45deg)}
+#t4 .mog-formula-content{color:var(--m);font-size:var(--fs-s)}
+#t4 .mog-formula-content p{margin:0 0 8px}
+#t4 .mog-formula-content ul{margin:0 0 8px;padding-left:18px}
+#t4 .mog-formula-content li{margin:4px 0}
+#t4 .mog-formula-warning{padding:8px 12px;border-left:2px solid var(--a);background:var(--s1)}
+#t4 .mog-report-bottom{margin-top:14px;padding-top:14px;border-top:1px solid var(--l)}
+#t4 .mog-report-disclaimer{display:block;color:var(--m);font-size:var(--fs-xs)}
+
+/* Адаптив */
+@media(max-width:850px){
+  #t4 .mog-workspace{grid-template-columns:minmax(0,1fr)}
+  #t4 .mog-empty-state{min-height:300px}
+}
+
+/* Телефон: свой интерфейс MOGG.
+   До анализа виден только блок загрузки. После анализа отчёт идёт первым, а фото
+   показывается один раз: исходный предпросмотр сворачивается в строку с именем файла,
+   остаётся только снимок с точками. */
+@media(max-width:700px){
+  body[data-tab="3"] .hero{display:flex}
+  #t4 .mog-hero{padding:13px 14px;margin-bottom:10px;min-height:68px}
+  #t4 .mog-hero h2{margin:8px 0 4px}
+  #t4 .mog-hero p{font-size:var(--fs-s)}
+  #t4 .mog-workspace{gap:10px}
+  #t4:not(.mog-analyzed) .mog-results-column{display:none}
+  #t4.mog-analyzed .mog-results-column{order:-1}
+  #t4.mog-analyzed .mog-results-column>.mog-panel-heading,#t4.mog-analyzed .mog-upload-panel>.mog-panel-heading{display:none}
+  #t4.mog-analyzed .mog-preview-top,#t4.mog-analyzed .mog-preview-wrap>img{display:none}
+  #t4.mog-analyzed .mog-preview-foot{border-top:0}
+  #t4 .mog-drop-zone{min-height:140px}
+}
+@media(hover:none){
+  #t4 .mog-paste-hint,#t4 .mog-drop-subtitle{display:none}
+}
+@media(max-width:560px){
+  #t4 .mog-score-overview{padding:14px}
+  #t4 .mog-score-main{grid-template-columns:112px minmax(0,1fr);gap:14px}
+  #t4 .mog-score-ring{width:112px;height:112px}
+  #t4 .mog-score-ring:before{inset:7px}
+  #t4 .mog-score-ring-inner strong{font-size:36px}
+  #t4 .mog-tier-badge{font-size:var(--fs-l);padding:3px 10px}
+  #t4 .mog-metric-grid{grid-template-columns:1fr}
+  #t4 .mog-metric-heading{align-items:flex-start;flex-direction:column;gap:4px}
+  #t4 .mog-annotated-header{align-items:stretch;flex-direction:column;gap:8px}
+  #t4 .mog-annotated-actions{justify-content:space-between}
+}
+
+
+/* v1.8.2: updated natural face illustration in both MOGG states. */
+#t4 .mog-face-placeholder img{max-width:180px}
+#t4 .mog-score-ring .mog-score-face-contour{object-fit:contain}
+
+/* Кнопка бонуса и пилюля баланса в шапке — тот же шрифт, что в Cases/Upgrade. */
+#t4 .tab-actions .b{font-size:var(--fs-m)}
+
+/* Кликабельное превью: нажатие открывает проводник. */
+#sourcePreview{cursor:pointer}

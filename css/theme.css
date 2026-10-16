@@ -1,0 +1,41 @@
+/* Оформление: hero-блок, чипы, полароид с котом, график, сцена розыгрыша */
+
+.fmb{display:flex;align-items:center;gap:6px;color:var(--m-t);font-size:var(--fs-s);letter-spacing:.5px}
+.hero{position:relative;overflow:hidden;background:var(--t);color:#fff;border-radius:var(--r);padding:16px 18px;margin-bottom:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}.hero b{display:block;font-size:var(--fs-l)}.hero span{color:var(--m-t);font-size:var(--fs-s)}.hero .cat{margin-left:auto;width:84px;height:84px;border-radius:50%;border:3px solid var(--a);background:var(--cat) center/cover;position:relative}
+.mz{position:absolute;right:120px;bottom:6px;font-style:normal;color:var(--tl);font-size:var(--fs-xs);white-space:nowrap}@media(max-width:700px){.mz{display:none}}
+.bd{text-align:center;font-size:var(--fs-xs);letter-spacing:2px;color:var(--m);border:1px dashed var(--l);border-radius:var(--r-s);padding:3px;margin-bottom:6px}.cat2{height:200px;border-radius:var(--r);background:var(--cat) center 55%/cover}
+.sv{position:relative;overflow:hidden;height:74px;margin:12px auto;max-width:560px;border:1px solid var(--tl);border-radius:var(--r);background:var(--t2)}.sv:after{content:"";position:absolute;left:50%;top:0;bottom:0;width:3px;background:var(--a);margin-left:-1px}
+.sk{flex:0 0 84px;height:54px;margin-right:6px;border:1px solid var(--tl);border-radius:var(--r-s);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--on-t)}
+.cg{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:8px}.cse{border:1px solid var(--l);background:#fff;border-radius:var(--r);padding:14px;cursor:pointer;text-align:left;font:inherit;display:flex;flex-direction:column;gap:2px;transition:.2s;color:var(--t)}.cse:hover{border-color:var(--a)}.cse big{font-size:32px;color:var(--a)}.cse span{color:var(--a);font-weight:700}.cse small{color:var(--m)}
+.upg{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;margin:14px 0}.uc .it{width:120px;height:130px}.ring{position:relative;width:280px;max-width:100%;aspect-ratio:1}.ring svg,.arw{position:absolute;inset:0;width:100%;height:100%}.arw{transform-origin:50% 50%}.idle .arw{animation:sw 12s linear infinite}@keyframes sw{to{transform:rotate(360deg)}}
+.hd{position:absolute;left:50%;top:50%;width:112px;height:128px;margin:-64px 0 0 -56px;background:var(--hd) center/contain no-repeat}.ring.lose{opacity:.65}.ctr{text-align:center}.pct{font-size:26px;font-weight:800;color:var(--t);margin:4px 0 8px}
+
+nav button{white-space:nowrap}@media(max-width:700px){nav{margin-left:0;flex:1 1 100%;overflow-x:auto}}
+.hero{padding:18px 20px;min-height:132px}
+.hero>*{position:relative}.mz{position:absolute;right:170px}
+.ht{flex:1;min-width:200px}.ht b{font-size:20px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.chips span{display:inline-flex;align-items:center;gap:6px;background:var(--t2);border:1px solid var(--tl);border-radius:999px;padding:3px 10px;font-size:var(--fs-xs);color:var(--on-t)}
+.chip-icon{flex:0 0 auto;width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.chip-icon *{vector-effect:non-scaling-stroke}
+.pol{margin:0 0 0 auto;background:#fff;padding:6px 6px 5px;border-radius:var(--r-s);transform:rotate(3deg);text-align:center;color:var(--t);font-size:var(--fs-xs)}
+.hero .pol .cat{width:104px;height:104px;border-radius:var(--r-s);border:0;margin:0 0 4px;background:var(--cat) center/cover}
+.cat2{height:auto;aspect-ratio:1;position:relative}
+.cat2:after{content:"КОТ-АРБИТР · ФМШ 2007";position:absolute;left:10px;bottom:10px;background:var(--t);color:#fff;font-size:var(--fs-xs);letter-spacing:.06em;padding:4px 8px;border-radius:var(--r-s)}
+.li{display:flex;align-items:center;gap:4px}.ux{margin-left:auto;cursor:pointer;color:var(--m);font-style:normal;padding:0 6px}.ux:hover{color:var(--err)}
+.sv{height:78px}.sk{height:56px;font-size:var(--fs-l);background:var(--t2)}
+.ring:before{content:"";position:absolute;inset:9%;border-radius:50%;background:#fff}
+.ring svg{z-index:1}.arw{z-index:2}
+footer svg{vertical-align:-7px;margin-right:6px}
+/* Доска и схема лежат в одной колонке и центрируются по одной оси */
+.room{position:relative;display:flex;flex-direction:column;align-items:center;width:max-content;min-width:100%;padding:8px 0}
+.room>.bd{align-self:stretch;margin:0 8px 8px}
+.room>.map{flex:none}
+
+/* График в шапке */
+.plot{flex:0 1 300px;width:300px;max-width:100%;height:auto;margin-left:auto;overflow:visible}
+.plot .cv,.plot .c2{fill:none;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:0}
+.plot .cv{stroke:#2b8cff;stroke-width:2.6;animation:plotdraw 2.6s ease-out both}
+.plot .c2{stroke:#9ad0ff;stroke-width:2;opacity:.75;animation:plotdraw 2.6s ease-out .5s both}
+@keyframes plotdraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@media(min-width:701px){.hero .plot+.mz+.pol{margin-left:0}}
+@media(max-width:700px){.plot{order:5;flex:1 1 100%;width:100%;max-width:300px;margin:0 auto}}
