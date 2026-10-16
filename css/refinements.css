@@ -7,7 +7,7 @@
 #t1 .card>.row:first-child{align-items:center}#t1 #cn{flex:1 1 200px;max-width:360px}
 #t3 .card{overflow:hidden}#t3 #ui{min-width:0}
 @media(max-width:700px){#cbar{padding:10px}#cbar #classLink{flex:0 0 auto}#cbar select{flex:0 1 160px;width:160px;min-width:96px;max-width:48vw}#t1 .row>.b{flex:1 1 130px}#t1 #rr,#t1 #cc{width:64px}#t1 .row label{flex:1 1 130px}#t3 .upgrade-header{flex-wrap:wrap}.pl{grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr))}}
-@media(max-width:380px){.hero .pol{display:none}#cbar #classLink{width:auto}#t1 .row>.b{flex:1 1 100%}}
+@media(max-width:700px){.hero .pol{display:none}#cbar #classLink{width:auto}#t1 .row>.b{flex:1 1 100%}}
 
 /* Interface refinements */
 .upgrade-shop:not([hidden]){padding:0 0 20px;border-bottom:1px solid var(--l)}

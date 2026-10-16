@@ -66,6 +66,23 @@
   .team-discord{align-items:stretch;padding:16px}
   .team-discord-link{width:100%}
 }
-@media(max-width:360px){
+@media(max-width:700px){
   #t5 .tab-actions{grid-template-columns:minmax(0,1fr)}
+}
+
+
+/* v1.8.37: одинаковая компактная раскладка кнопок на всей мобильной ширине до 700 px. */
+@media(max-width:700px){
+  /* Действия рассадки остаются в две колонки, как на узком телефоне. */
+  #t0 .stage .row .b{flex:1 1 calc(50% - 8px);min-width:0}
+  /* В конструкторе класса каждое действие занимает отдельную строку. */
+  #t1 .row>.b{flex:1 1 100%;min-width:0}
+  /* Действия инвентаря и апгрейда не собираются в несколько колонок. */
+  .item-actions .b{flex:1 1 100%;min-width:0}
+  .up-action-row .b{flex:1 1 100%;min-width:0}
+  /* Выбор целевого предмета сохраняет компактную сетку из двух колонок. */
+  .target-buttons .b{flex:1 1 calc(50% - 8px);min-width:0}
+  /* Кнопки в блоке команды располагаются вертикально. */
+  #t5 .tab-actions{grid-template-columns:minmax(0,1fr)}
+  #t5 .tab-actions>.b{grid-column:1 / -1}
 }
