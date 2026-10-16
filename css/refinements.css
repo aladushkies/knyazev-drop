@@ -112,3 +112,18 @@ nav button .nv-name{color:inherit;font-weight:400}
 
 /* v1.8.18: единый белый инвентарь в Cases и Upgrade (карточка из .card). */
 .inventory-section{margin-top:12px}
+
+
+/* v1.8.38: larger phone navigation labels and desktop-like bonus/balance rows. */
+@media(max-width:700px){
+  nav button{min-width:0;padding-inline:2px;font-size:clamp(15px,4.15vw,16px);font-weight:500;letter-spacing:-.015em}
+  #t2 .tab-actions,#t3 .tab-actions,#t4 .tab-actions{
+    width:100%;display:flex;flex-direction:row;align-items:center;justify-content:flex-end;
+    flex-wrap:nowrap;gap:8px;min-width:0
+  }
+  #t2 .tab-actions .b,#t3 .tab-actions .b,#t4 .tab-actions .b{
+    width:auto;min-width:116px;flex:0 0 auto;white-space:nowrap;padding-inline:12px;min-height:42px
+  }
+  #t2 .balance-pill,#t3 .balance-pill,#t4 .balance-pill{padding:8px 10px;flex:0 0 auto}
+  #t2 .balance-pill strong,#t3 .balance-pill strong,#t4 .balance-pill strong{font-size:var(--fs-l)}
+}
