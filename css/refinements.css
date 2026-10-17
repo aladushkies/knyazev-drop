@@ -63,7 +63,7 @@
 #t2 #cb>.row:first-child{justify-content:flex-end;gap:10px;min-height:40px}
 #t3 .upgrade-header{padding-top:0}
 #t0 .stage .row{gap:8px}
-@media(max-width:700px){.tab-heading,#t4 .mog-hero{padding:13px 14px;min-height:68px;margin-bottom:10px}.tab-heading h1,#t4 .mog-hero h1{font-size:var(--fs-xl)}.tab-actions{width:100%}.tab-actions .b{width:100%}#t2 #cb>.row:first-child{justify-content:flex-start}#t0 .stage .row .b{flex:1 1 140px;min-height:44px}}
+@media(max-width:700px){.tab-heading,#t4 .mog-hero{padding:13px 14px;min-height:68px;margin-bottom:10px}.tab-heading h1,#t4 .mog-hero h1{font-size:var(--fs-xl)}.tab-actions{display:flex;align-items:center;gap:8px;margin-left:auto}#t2 #cb>.row:first-child{justify-content:flex-end}}
 
 #casesInventory:empty{display:none}#casesInventory{min-width:0}#casesInventory .cases-item{min-width:0}#casesInventory .it{max-width:100%}
 
