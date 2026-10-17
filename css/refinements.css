@@ -51,19 +51,19 @@
 @media(max-width:700px){body[data-tab="3"] .hero{display:flex!important;position:relative;overflow:hidden}body[data-tab="3"] .hero>.plot{display:block!important}#casesInventory>.cases-inventory{padding:12px}#t4 .mog-hero{border-radius:var(--r)}}
 
 /* v1.5: consistent tab headings and control alignment */
-.tab-heading{box-sizing:border-box;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;min-height:78px;margin:0 0 14px;padding:16px 20px;background:#fff;border:1px solid var(--l);border-radius:var(--r);text-align:left}
+.tab-heading{box-sizing:border-box;display:flex;justify-content:space-between;align-items:center;flex-wrap:nowrap;gap:12px;min-height:78px;margin:0 0 14px;padding:16px 20px;background:#fff;border:1px solid var(--l);border-radius:var(--r);text-align:left}
 .tab-heading>div:first-child{min-width:0;flex:1 1 200px}
-.tab-kicker{display:block;color:var(--m);font-size:var(--fs-xs);font-weight:700;letter-spacing:.065em;margin-bottom:5px}
+.tab-kicker{display:block;color:var(--m);font-size:var(--fs-xs);font-weight:700;letter-spacing:.065em;margin-bottom:3px;text-transform:uppercase}
 .tab-heading h1{font-size:var(--fs-xl);font-weight:700;letter-spacing:-.025em;line-height:1.2;margin:0;color:var(--t)}
 .tab-heading p{margin:6px 0 0;color:var(--m);font-size:var(--fs-s)}
-.tab-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tab-actions{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;margin-left:auto;flex:0 0 auto}
 .tab-actions .b{min-height:40px}
 #t4 .mog-hero{margin:0 0 14px;padding:16px 20px;min-height:78px}
 #t4 .mog-hero h1{font-size:var(--fs-xl);margin:0;color:var(--t)}
 #t2 #cb>.row:first-child{justify-content:flex-end;gap:10px;min-height:40px}
 #t3 .upgrade-header{padding-top:0}
 #t0 .stage .row{gap:8px}
-@media(max-width:700px){.tab-heading,#t4 .mog-hero{padding:13px 14px;min-height:68px;margin-bottom:10px}.tab-heading h1,#t4 .mog-hero h1{font-size:var(--fs-xl)}.tab-actions{display:flex;align-items:center;gap:8px;margin-left:auto}#t2 #cb>.row:first-child{justify-content:flex-end}}
+@media(max-width:700px){.tab-heading,#t4 .mog-hero{padding:10px 12px;min-height:62px;margin-bottom:10px;gap:8px}.tab-heading h1,#t4 .mog-hero h1{font-size:clamp(18px,4.8vw,26px);line-height:1.15;margin:0}.tab-kicker{font-size:10px;margin-bottom:2px}.tab-actions{display:flex;align-items:center;gap:6px;margin-left:auto}#t2 #cb>.row:first-child{justify-content:flex-end}}
 
 #casesInventory:empty{display:none}#casesInventory{min-width:0}#casesInventory .cases-item{min-width:0}#casesInventory .it{max-width:100%}
 

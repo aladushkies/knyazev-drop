@@ -18,7 +18,7 @@
 
 /* Две панели */
 #t4 .mog-workspace{display:grid;grid-template-columns:minmax(280px,.83fr) minmax(0,1.4fr);align-items:start;gap:14px}
-#t4 .mog-panel{background:#fff;border:1px solid var(--l);border-radius:var(--r);min-width:0;overflow:hidden;padding:14px}
+#t4 .mog-panel{background:#fff;border:1px solid var(--l);border-radius:var(--r);min-width:0;overflow:hidden;padding:16px}
 #t4 .mog-results-column{min-width:0}
 #t4 .mog-panel-heading{margin-bottom:14px}
 #t4 .mog-panel-heading h3{margin:2px 0 0;font-size:var(--fs-l);font-weight:700;line-height:1.25}
@@ -151,6 +151,7 @@
   #t4.mog-analyzed .mog-results-column>.mog-panel-heading,#t4.mog-analyzed .mog-upload-panel>.mog-panel-heading{display:none}
   #t4.mog-analyzed .mog-preview-top,#t4.mog-analyzed .mog-preview-wrap>img{display:none}
   #t4.mog-analyzed .mog-preview-foot{border-top:0}
+  #t4 .mog-panel{padding:14px}
   #t4 .mog-drop-zone{min-height:140px}
 }
 @media(hover:none){
