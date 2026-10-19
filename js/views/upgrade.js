@@ -1,5 +1,17 @@
 // Вкладка «Князев Upgrade»: колесо апгрейда оценок
 let ins = 0; // страховка текущего спина (только если ECON.insurance.enabled)
+// Фоновое вращение стрелки (анимация sw, 12 с на оборот) не сбрасывается при перерисовке:
+// фаза задаётся отрицательной задержкой от общей точки отсчёта.
+const IDLE_PERIOD = 12000;
+let idleStart = performance.now();
+const idlePhaseDelay = () => `-${((performance.now() - idleStart) % IDLE_PERIOD) / 1000}s`;
+const resumeIdleFrom = deg => { idleStart = performance.now() - (((deg % 360) + 360) % 360) / 360 * IDLE_PERIOD; };
+const currentArrowAngle = el => {
+  const t = getComputedStyle(el).transform;
+  if (!t || t === 'none') return 0;
+  const m = new DOMMatrixReadOnly(t);
+  return ((Math.atan2(m.b, m.a) * 180 / Math.PI) + 360) % 360;
+};
 function drawUpgrade() {
   if(sel>=S.inv.length)sel=-1;
   const selectedItem = S.inv[sel];
@@ -33,7 +45,7 @@ function drawUpgrade() {
             <path d="M140 3l7 11h-14z" fill="#0b0e12" />
             <circle cx="140" cy="140" r="118" fill="none" stroke="url(#ga)" stroke-width="14" stroke-dasharray="${circumference * chance / 100} ${circumference}" transform="rotate(-90 140 140)" />
           </svg>
-          <div class="arw" id="arw">
+          <div class="arw" id="arw" style="animation-delay:${idlePhaseDelay()}">
             <svg viewBox="0 0 280 280" aria-hidden="true">
               <path d="M140 12L162 56H146V140H134V56H118Z" fill="#0b0e12" />
             </svg>
@@ -121,12 +133,21 @@ async function up(t) {
     S.bal-=cost;insured=1;
   }
   const ch=Math.min(ECON.upgrade.cap,ECON.upgrade.coef*x.v/IT[t][2]),roll=Math.random()*100,a=$('#arw'),ring=a.closest('.ring');
+  // Стрелка не прыгает: фиксируем текущий угол, быстро докручиваем до 0 и только потом запускаем спин.
+  const from=currentArrowAngle(a);
   ring.classList.remove('idle');
+  a.style.animation='none';
   a.style.transition='none';
-  a.style.transform='rotate(0deg)';
+  a.style.transform=`rotate(${from}deg)`;
   void a.offsetWidth;
+  const rewind=from>0.5?Math.max(.15,(360-from)/360*.6)*S.spd:0;
+  if(rewind){
+    a.style.transition=`transform ${rewind}s ease-in`;
+    a.style.transform='rotate(360deg)';
+    await sl(rewind*1000);
+  }
   a.style.transition=`transform ${4.2*S.spd}s cubic-bezier(.1,.6,.1,1)`;
-  a.style.transform=`rotate(${1800+roll*3.6}deg)`;
+  a.style.transform=`rotate(${360+1800+roll*3.6}deg)`;
   await sl(4.2*S.spd*1000+300);
   const ok=roll<ch;
   ring.classList.add(ok?'win':'lose');
@@ -144,5 +165,7 @@ async function up(t) {
   ins=0;
   sv();
   busy=0;
+  // Фоновое вращение продолжается с того места, где остановилась стрелка.
+  resumeIdleFrom(roll*3.6);
   drawCases()
 }

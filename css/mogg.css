@@ -183,3 +183,11 @@
 #t4 .mog-feature-list li{display:flex;justify-content:space-between;gap:10px;color:var(--m);font-size:var(--fs-xs);line-height:1.4}
 #t4 .mog-feature-list li span:last-child{flex:0 0 auto;color:var(--t);font-variant-numeric:tabular-nums;text-align:right}
 #t4 .mog-score-summary p.mog-tier-phrase{margin:0 0 8px;color:#fff;font-size:var(--fs-m,1rem);font-weight:600}
+
+/* «Подробности» — неприметно, светло-серым, и вплотную к пояснению о проценте */
+#t4 .mog-details-block{margin-top:12px;border-top:0}
+#t4 .mog-details-toggle,#t4 .mog-details-toggle span,#t4 .mog-details-toggle .mog-toggle-plus{color:#a3abb8!important;font-weight:400!important}
+#t4 .mog-details-toggle{font-size:var(--fs-xs);padding:4px 0;justify-content:flex-start}
+#t4 .mog-details-toggle:hover{color:var(--m)}
+#t4 .mog-report-bottom{margin-top:2px;padding-top:0;border-top:0}
+#t4 .mog-report-disclaimer{color:#a3abb8}

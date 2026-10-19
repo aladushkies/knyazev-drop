@@ -20,6 +20,12 @@ const go=i=> {
   if(i===3&&window.KD)KD.refreshMogg();
 };
 $('#teamLink').onclick=showTeam;
+// Лого «Δ Князев Drop» и «ФМШ 2007» в шапке ведут на вкладку Drop.
+const goHome=()=>{go(0);if(activeTab===0)window.scrollTo(0,0)};
+document.querySelectorAll('.home-link').forEach(el=>{
+  el.onclick=goHome;
+  el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();goHome()}};
+});
 $('#backTeam').onclick=()=>go(0);
 $('#nv').onclick=e=> {
   const i=[...$('#nv').children].indexOf(e.target.closest('button'));

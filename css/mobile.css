@@ -182,3 +182,29 @@ html.wish-open{overflow:hidden}
   .hero>.plot{opacity:.3}
   .hero>.mz{display:none}
 }
+
+/* Лого и «ФМШ 2007» в шапке ведут на Князев Drop */
+.home-link{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.home-link:focus-visible{outline:2px solid var(--a);outline-offset:3px;border-radius:6px}
+
+/* Посвящение: одна строка с обычным пробелом; размер шрифта подгоняет js/views/hero.js */
+.chips .chip-dedication{display:inline-block;gap:0;min-width:0;max-width:100%;overflow:hidden;white-space:nowrap;text-wrap:nowrap}
+.chips .chip-dedication .chip-extra{white-space:inherit}
+@media(max-width:700px){
+  .chips .chip-dedication{display:inline-block}
+}
+
+/* Фраза под плашкой уровня — тем же шрифтом, что «% схожести» */
+#t4 .mog-tier-note{display:block;margin-top:6px;color:var(--m-t);font-size:var(--fs-xs);line-height:1.4}
+#t4 .mog-tier-note[hidden]{display:none}
+@media(max-width:560px){
+  #t4 .mog-score-main{grid-template-areas:"ring kicker" "ring badge" "ring phrase" "note note"}
+  #t4 .mog-tier-note{grid-area:phrase;align-self:start}
+}
+
+/* Админка: форма пароля для сброса счётчиков */
+.reset-form{margin-top:12px;padding-top:12px;border-top:1px solid var(--l)}
+.reset-form label{display:block;margin-bottom:6px;font-size:var(--fs-s);font-weight:600}
+.reset-form .row{flex-wrap:wrap;gap:8px}
+.reset-form input{flex:1 1 180px;min-width:0}
+.reset-msg{min-height:1.4em;margin:6px 0 0;color:var(--err)}

@@ -1,7 +1,7 @@
 // Страница «Князев Team»: данные о людях в одном месте, каждый человек выводится один раз.
 // Разовый бонус за заход на страницу: флаг S.tb хранится в сохранении (localStorage, kd1).
 const TEAM_BONUS = 500;
-// Участники выводятся по алфавиту (фамилия, затем имя), порядок в массиве не важен.
+// Участники выводятся в случайном порядке при каждом открытии страницы (Фишер — Йейтс).
 const TEAM = [
   { n: 'Андросов Никита',   r: 'дизайн · структурирование идей' },
   { n: 'Зеленов Степан',    r: 'разработка' },
@@ -9,11 +9,22 @@ const TEAM = [
   { n: 'Прохоров Марк',     r: 'спонсор' },
   { n: 'Селицкий Лев',      r: 'разработка · дизайн' },
   { n: 'Слепых Алёна',      r: 'спонсор' }
-].sort((a, b) => a.n.localeCompare(b.n, 'ru'));
+];
+const shuffled = list => {
+  const a = list.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = R(i + 1);
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+};
 let teamBonusJustClaimed = false;
 let teamBonusHideTimer = null;
 function drawTeam() {
-  $('#teamList').innerHTML = TEAM.map(p => `<li><b>${E(p.n)}</b><span>${E(p.r)}</span></li>`).join('');
+  $('#teamList').innerHTML = shuffled(TEAM).map(p => `<li><b>${E(p.n)}</b><span>${E(p.r)}</span></li>`).join('');
+  drawTeamBonus();
+}
+function drawTeamBonus() {
   const bn = $('#teamBn');
   // Уже полученный ранее бонус не занимает место в шапке. После получения
   // оставляем короткое подтверждение, а затем убираем кнопку целиком.
@@ -29,7 +40,7 @@ const claimTeamBonus = () => {
   sv();
   toast(`Спасибо, что заглянули: +${TEAM_BONUS} КК`);
   drawChips();
-  drawTeam();
+  drawTeamBonus();
   if (teamBonusHideTimer) clearTimeout(teamBonusHideTimer);
   teamBonusHideTimer = setTimeout(() => {
     teamBonusJustClaimed = false;

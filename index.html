@@ -17,11 +17,11 @@
   <link rel="stylesheet" href="css/responsive.css?v=2.0.0" />
   <link rel="stylesheet" href="css/upgrade.css?v=2.0.0" />
   <link rel="stylesheet" href="css/refinements.css?v=2.0.0" />
-  <link rel="stylesheet" href="css/mogg.css?v=2.0.0" />
+  <link rel="stylesheet" href="css/mogg.css?v=2.2.2" />
   <link rel="stylesheet" href="css/soft-blue-glow.css?v=2.0.0" />
   <link rel="stylesheet" href="css/team.css?v=2.0.0" />
   <link rel="stylesheet" href="css/topup.css?v=2.0.0" />
-  <link rel="stylesheet" href="css/mobile.css?v=2.1.5" />
+  <link rel="stylesheet" href="css/mobile.css?v=2.3.0" />
 </head>
 <body>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -36,8 +36,8 @@
   </svg>
 
   <header>
-    <div class="logo">Δ Князев <b>Drop</b></div>
-    <div class="fmb"><svg width="28" height="28"><use href="#fmsh" /></svg>ФМШ 2007</div>
+    <div class="logo home-link" role="link" tabindex="0" aria-label="Перейти на Князев Drop">Δ Князев <b>Drop</b></div>
+    <div class="fmb home-link" role="link" tabindex="0" aria-label="Перейти на Князев Drop"><svg width="28" height="28" aria-hidden="true"><use href="#fmsh" /></svg>ФМШ 2007</div>
     <nav id="nv"></nav>
   </header>
 
@@ -47,7 +47,7 @@
       <div class="ht">
         <b>Физико-математическая школа 2007</b>
         <span>Князев <span class="brand-word">Drop</span> · рассадка, кейсы и немного ∫</span>
-        <div class="chips" id="chips"><span>Посвящается Князеву Алексею Андреевичу<span class="chip-extra"> (для тех, кто не догадался)</span></span></div>
+        <div class="chips" id="chips"><span class="chip-dedication" id="dedication">Посвящается Князеву Алексею Андреевичу<span class="chip-extra"> (для тех, кто не догадался)</span></span></div>
       </div>
       <svg class="plot" viewBox="0 0 340 134" aria-hidden="true"><path class="cv" pathLength="1" d="M10 67C45-3 75-3 90 67S135 137 170 67 215-3 250 67 295 137 330 67"></path><path class="c2" pathLength="1" d="M40 130Q170-60 300 130"></path><text x="14" y="16" fill="#5d7ba3" font-size="11" font-family="ui-monospace,Menlo,monospace">y = sin x</text></svg>
       <i class="mz">∑ 1/n² = π²/6 &nbsp;·&nbsp; e^(iπ) + 1 = 0 &nbsp;·&nbsp; a² + b² = c²</i>
@@ -168,12 +168,12 @@
               <div class="mog-report-content mog-hidden" id="reportContent">
                 <div class="mog-score-overview">
                   <div class="mog-score-main">
-                    <div class="mog-score-ring" id="scoreRing" style="--score-angle:0deg"><img class="mog-score-face-contour" src="assets/images/mogg-face.png?v=2.0.0" alt="" aria-hidden="true" loading="lazy"><div class="mog-score-ring-inner" aria-label="Процент схожести с гуру"><strong id="scoreValue">0</strong><span class="mog-score-outof">% схожести</span></div></div>
-                    <div class="mog-score-summary" aria-live="polite"><span class="mog-score-kicker">Схожесть с гуру</span><div class="mog-tier-badge" id="tierBadge">Ученик гуру</div><p id="scoreSummaryText" class="mog-hidden"></p></div>
+                    <div class="mog-score-ring" id="scoreRing" style="--score-angle:0deg"><div class="mog-score-ring-inner" aria-label="Процент схожести с гуру"><strong id="scoreValue">0</strong><span class="mog-score-outof">% схожести</span></div></div>
+                    <div class="mog-score-summary" aria-live="polite"><span class="mog-score-kicker">Схожесть с гуру</span><div class="mog-tier-badge" id="tierBadge">Ученик гуру</div><span class="mog-tier-note" id="tierPhrase" hidden></span></div>
                   </div>
                 </div>
                 <div class="mog-report-actions"><button class="mog-secondary-button mog-new-button" id="resetBtn" type="button">Новый анализ</button></div>
-                <div class="mog-details-block"><button class="mog-details-toggle" id="formulaToggle" type="button" aria-expanded="false" aria-controls="formulaContent"><span>Много умных слов</span><span class="mog-toggle-plus" aria-hidden="true">+</span></button><div class="mog-formula-content mog-hidden" id="formulaContent"><p>Лицо сначала фронтализуется: по 3D-ориентирам MediaPipe строится система координат самого лица, поэтому умеренный наклон и поворот головы почти не влияют. Затем считаются 16 безразмерных признаков (отношения расстояний, трети лица, межзрачковое расстояние, наклон глаз). Отличие каждого признака от гуру делится на его типичный разброс у школьников 11–18 лет (z), z ограничивается 3, квадраты усредняются с весами, итог = 100·exp(−½·(D/1,15)²).</p><p class="mog-formula-warning">Поворот головы, очки, волосы на лице и яркая мимика снижают точность. Цвет кожи, глаз и волос не сравнивается. Это эвристика на двумерном фото: она не распознаёт личность и не оценивает привлекательность.</p></div></div>
+                <div class="mog-details-block"><button class="mog-details-toggle" id="formulaToggle" type="button" aria-expanded="false" aria-controls="formulaContent"><span>Подробности</span><span class="mog-toggle-plus" aria-hidden="true">+</span></button><div class="mog-formula-content mog-hidden" id="formulaContent"><p>Лицо сначала фронтализуется: по 3D-ориентирам MediaPipe строится система координат самого лица, поэтому умеренный наклон и поворот головы почти не влияют. Затем считаются 16 безразмерных признаков (отношения расстояний, трети лица, межзрачковое расстояние, наклон глаз). Отличие каждого признака от гуру делится на его типичный разброс у школьников 11–18 лет (z), z ограничивается 3, квадраты усредняются с весами, итог = 100·exp(−½·(D/1,15)²).</p><p class="mog-formula-warning">Поворот головы, очки, волосы на лице и яркая мимика снижают точность. Цвет кожи, глаз и волос не сравнивается. Это эвристика на двумерном фото: она не распознаёт личность и не оценивает привлекательность.</p></div></div>
                 <div class="mog-report-bottom"><span class="mog-report-disclaimer">Процент отражает только сходство пропорций с эталоном и <s>не</s> определяет привлекательность или ценность человека.</span></div>
               </div>
             </section>
@@ -194,9 +194,9 @@
         <div class="team-discord-copy">
           <span class="team-discord-kicker">СООБЩЕСТВО ПРОЕКТА</span>
           <h2>Князев <span class="brand-word">Team</span> в Discord</h2>
-          <p>Обсуждаем идеи, делимся обновлениями и собираем предложения для следующих версий.</p>
+          <p>Обсуждаем идеи, делимся обновлениями и собираем предложения для следующих версий. Напишите нам список вашего класса и мы добавим его в Князев <span class="brand-word">Drop</span>.</p>
         </div>
-        <a class="team-discord-link" href="https://discord.gg/fy7SUYG8T" target="_blank" rel="noopener noreferrer">Присоединиться к серверу <span aria-hidden="true">↗</span></a>
+        <a class="team-discord-link" href="https://discord.gg/fy7SUYG8T" target="_blank" rel="noopener noreferrer">Присоединиться к серверу</a>
       </div>
     </section>
   </main>
@@ -232,14 +232,14 @@
   <script src="js/views/hero.js?v=2.0.0"></script>
   <script src="js/views/drop.js?v=2.0.0"></script>
   <script src="js/views/cases.js?v=2.0.0"></script>
-  <script src="js/views/upgrade.js?v=2.0.0"></script>
-  <script src="js/views/team.js?v=2.0.0"></script>
+  <script src="js/views/upgrade.js?v=2.3.0"></script>
+  <script src="js/views/team.js?v=2.3.0"></script>
   <script src="js/views/topup.js?v=2.0.0"></script>
-  <script src="js/core/visits.js?v=2.1.0"></script>
-  <script src="js/admin/auth.js?v=2.1.0"></script>
+  <script src="js/core/visits.js?v=2.3.0"></script>
+  <script src="js/admin/auth.js?v=2.3.0"></script>
   <script src="js/views/wish.js?v=2.1.0"></script>
-  <script src="js/main.js?v=2.0.0"></script>
+  <script src="js/main.js?v=2.3.0"></script>
   <script defer src="js/vendor/tasks-vision-1.1.0.js"></script>
-  <script src="js/mogg/app.bundle.js?v=2.0.0"></script>
+  <script src="js/mogg/app.bundle.js?v=2.3.0"></script>
 </body>
 </html>

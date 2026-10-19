@@ -124,12 +124,12 @@ function isValidReference(values) {
 }
 
 const BANDS = [
-  { key: 'other', max: 30, range: 'ниже 30 %', label: 'Другая вселенная', phrase: 'С гуру у вас общего — разве что любовь к задачам. Зато вы уникальны!' },
-  { key: 'weak', max: 45, range: '30–45 %', label: 'Дальний родственник', phrase: 'Что-то от гуру проглядывает, но издалека и в тумане. Путь к просветлению долог.' },
-  { key: 'moderate', max: 60, range: '45–60 %', label: 'Ученик гуру', phrase: 'Типичный ученик матпрактикума: сходство есть, но до гуру ещё пара контрольных.' },
-  { key: 'clear', max: 75, range: '60–75 %', label: 'Подающий надежды', phrase: 'Заметное сходство! Наденьте розовую рубашку в полоску — и могут перепутать.' },
-  { key: 'strong', max: 90, range: '75–90 %', label: 'Почти гуру', phrase: 'Очень похоже. Ещё чуть-чуть — и вас попросят объяснить задачу у доски.' },
-  { key: 'match', max: Infinity, range: 'от 90 %', label: 'Гуру, это вы?', phrase: 'Гуру, это вы?' },
+  { key: 'other', max: 30, range: 'ниже 30 %', label: 'Другая вселенная', phrase: '' },
+  { key: 'weak', max: 45, range: '30–45 %', label: 'Дальний родственник', phrase: '' },
+  { key: 'moderate', max: 60, range: '45–60 %', label: 'Ученик гуру', phrase: 'До гуру ещё пара контрольных.' },
+  { key: 'clear', max: 75, range: '60–75 %', label: 'Подающий надежды', phrase: 'Наденьте розовую рубашку в полоску — и могут перепутать.' },
+  { key: 'strong', max: 90, range: '75–90 %', label: 'Почти гуру', phrase: 'Ещё чуть-чуть — и вас попросят объяснить задачу у доски.' },
+  { key: 'match', max: Infinity, range: 'от 90 %', label: 'Гуру, это вы?', phrase: 'Это вы, Ваше Вылечиство?' },
 ];
 
 function getSimilarityBand(percent) {
@@ -379,8 +379,6 @@ function resetReport() {
   emptyState.classList.remove('mog-hidden');
   reportContent.classList.add('mog-hidden');
   mogSection.classList.remove('mog-analyzed');
-  el('formulaContent').classList.add('mog-hidden');
-  el('formulaToggle').setAttribute('aria-expanded', 'false');
 }
 
 // ---- Определение формата файла -------------------------------------------------
@@ -591,9 +589,8 @@ function renderReport(metrics) {
   el('scoreValue').textContent = String(Math.round(percent));
   el('tierBadge').textContent = metrics.band.label;
   el('tierBadge').dataset.band = metrics.band.key;
-  const notes = [metrics.pose.warning, metrics.expressionWarning].filter(Boolean);
-  el('scoreSummaryText').textContent = notes.join(' ');
-  el('scoreSummaryText').classList.toggle('mog-hidden', !notes.length);
+  el('tierPhrase').textContent = metrics.band.phrase;
+  el('tierPhrase').hidden = !metrics.band.phrase;
   el('scoreRing').style.setProperty('--score-angle', `${percent / 100 * 360}deg`);
   mogSection.classList.add('mog-analyzed');
   if (metrics.band.key === 'match') grantGuruBonus();
