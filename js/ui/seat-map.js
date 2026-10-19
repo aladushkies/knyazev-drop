@@ -1,3 +1,15 @@
+// Схема рассадки (только просмотр) ужимается под ширину экрана телефона, чтобы был виден весь класс.
+// Очень большие классы не уменьшаются сильнее MIN_MAP_ZOOM — их можно прокрутить.
+const MIN_MAP_ZOOM = 0.62;
+function fitMap(element) {
+  const box = element.closest('.mw');
+  element.style.zoom = '';
+  if (!box || !box.clientWidth) return;
+  const width = parseFloat(element.style.width) || element.offsetWidth;
+  const room = box.clientWidth - 2;
+  const zoom = width > room ? Math.max(MIN_MAP_ZOOM, room / width) : 1;
+  if (zoom < 1) element.style.zoom = zoom.toFixed(3);
+}
 // Отрисовка схемы класса (парты и места)
 function map(element, classData, isEditing) {
   const seatList = seats(classData);

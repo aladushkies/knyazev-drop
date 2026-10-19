@@ -20,7 +20,9 @@ function vkeys(now = Date.now()) {
 // Повторы при 429 (лимит сервиса: 30 запросов за 10 секунд с одного IP).
 async function vreq(kind, key) {
   for (let i = 0; i < 4; i++) {
-    const r = await fetch(`${VB}/${kind}/${VN}/${key}`);
+    // Зависший запрос не должен навсегда оставлять панель в состоянии «…».
+    const signal = typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? AbortSignal.timeout(10000) : undefined;
+    const r = await fetch(`${VB}/${kind}/${VN}/${key}`, { cache: 'no-store', signal });
     if (r.status === 429) { await sl(1500 * (i + 1)); continue; }
     if (r.status === 404 && kind === 'get') return 0;
     if (!r.ok) throw new Error('visits ' + r.status);
@@ -42,18 +44,12 @@ async function visitHit() {
     await Promise.all([k.r, k.d, k.m, k.a].map(key => vreq('hit', key)));
   } catch (e) { console.warn('Счётчик заходов недоступен', e); }
 }
+// Счётчик «пожелало здоровья гуру»: каждое нажатие «Да» в опросе — +1.
+const WISH_KEY = 'wish-health';
+const wishHit = () => vreq('hit', WISH_KEY).catch(e => console.warn('Счётчик пожеланий недоступен', e));
 async function visitStats() {
-  const now = Date.now(), k = vkeys(now);
-  // Текущая и 12 предыдущих пятиминутных корзин охватывают последний час.
-  const currentBucket = Math.floor(now / FIVE_MINUTES);
-  const recentKeys = Array.from({ length: 13 }, (_, i) => `r5-${currentBucket - i}`);
-  const [recent, d, m, a] = await Promise.all([
-    Promise.all(recentKeys.map(key => vreq('get', key)))
-      .then(values => values.reduce((sum, value) => sum + value, 0)),
-    vreq('get', k.d),
-    vreq('get', k.m),
-    vreq('get', k.a)
-  ]);
-  return { h: recent, d, m, a };
+  const k = vkeys();
+  const [w, d, m, a] = await Promise.all([vreq('get', WISH_KEY), vreq('get', k.d), vreq('get', k.m), vreq('get', k.a)]);
+  return { w, d, m, a };
 }
 visitHit();

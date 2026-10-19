@@ -1,0 +1,18 @@
+/* Кнопки-иконки и кнопка пополнения КК. Цвета, радиусы и шрифт — из variables.css. */
+
+/* Строка заголовка карточки: заголовок слева, иконка справа, отступы от краёв карточки сохраняются. */
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 10px}
+.card-head h2{margin:0;min-width:0}
+.icon-btn{flex:0 0 auto;display:grid;place-items:center;width:40px;height:40px;padding:0;border:1px solid var(--l);border-radius:var(--r-s);background:#fff;color:var(--t);cursor:pointer;transition:border-color .16s,color .16s,background .16s}
+.icon-btn:hover{border-color:var(--a);color:var(--a);background:var(--a2)}
+.icon-btn svg{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* Кружок «+» рядом с балансом: сразу даёт КК. Пока идёт пауза, кольцо показывает, сколько осталось. */
+.topup-btn{--topup-progress:1;position:relative;flex:0 0 auto;display:grid;place-items:center;width:40px;height:40px;padding:0;border:0;border-radius:50%;background:var(--a);color:#fff;cursor:pointer;transition:filter .16s,transform .16s,background .2s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.topup-btn:hover{filter:brightness(.94)}
+.topup-btn:active{transform:scale(.94)}
+.topup-btn svg{position:relative;z-index:1;display:block;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.topup-btn.is-cooling{background:conic-gradient(var(--a) calc(var(--topup-progress) * 360deg),var(--l2) 0);cursor:default}
+.topup-btn.is-cooling::before{content:"";position:absolute;inset:3px;border-radius:50%;background:#fff}
+.topup-btn.is-cooling svg{color:var(--m)}
+.topup-btn.is-cooling:hover{filter:none}

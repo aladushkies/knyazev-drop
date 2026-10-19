@@ -1,25 +1,19 @@
 // Страница «Князев Team»: данные о людях в одном месте, каждый человек выводится один раз.
 // Разовый бонус за заход на страницу: флаг S.tb хранится в сохранении (localStorage, kd1).
 const TEAM_BONUS = 500;
+// Участники выводятся по алфавиту (фамилия, затем имя), порядок в массиве не важен.
 const TEAM = [
-  { n: 'Селицкий Лев',      r: 'разработка · дизайн' },
-  { n: 'Зеленов Степан',    r: 'разработка' },
   { n: 'Андросов Никита',   r: 'дизайн · структурирование идей' },
-  { n: 'Максимович Михаил', r: 'разработка · спонсор · владелец домена' },
+  { n: 'Зеленов Степан',    r: 'разработка' },
+  { n: 'Максимович Михаил', r: 'разработка · дизайн · спонсор · владелец домена' },
   { n: 'Прохоров Марк',     r: 'спонсор' },
-  { n: 'Слепых Алена',      r: 'спонсор' }
-];
-const TEAM_AI = [
-  { n: 'Claude', url: 'https://claude.ai/' },
-  { n: 'ChatGPT', url: 'https://chatgpt.com/' },
-  { n: 'Gemini', url: 'https://gemini.google.com/' },
-  { n: 'Kimi', url: 'https://kimi.ai/' }
-];
+  { n: 'Селицкий Лев',      r: 'разработка · дизайн' },
+  { n: 'Слепых Алёна',      r: 'спонсор' }
+].sort((a, b) => a.n.localeCompare(b.n, 'ru'));
 let teamBonusJustClaimed = false;
 let teamBonusHideTimer = null;
 function drawTeam() {
   $('#teamList').innerHTML = TEAM.map(p => `<li><b>${E(p.n)}</b><span>${E(p.r)}</span></li>`).join('');
-  $('#teamAi').innerHTML = TEAM_AI.map(ai => `<a class="team-ai-name" href="${E(ai.url)}" target="_blank" rel="noopener noreferrer">${E(ai.n)}</a>`).join('');
   const bn = $('#teamBn');
   // Уже полученный ранее бонус не занимает место в шапке. После получения
   // оставляем короткое подтверждение, а затем убираем кнопку целиком.

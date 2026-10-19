@@ -4,6 +4,7 @@ function drawDrop() {
   clean(c);
   const ps=c.people.filter(p=>p.n.trim()),un=ps.filter(p=>!c.asg[p.id]),ss=seats(c);
   map($('#m0'),c,0);
+  fitMap($('#m0'));
   const free=ss.filter(s=>s.on&&!Object.values(c.asg).includes(s.k)).length;
   const rt=$('#rt');
   if(!rt.children.length&&!busy) {
@@ -170,7 +171,7 @@ $('#au').onclick=async()=> {
   }
   if(busy)return;
   auto=1;
-  $('#au').textContent='Стоп';
+  $('#au').textContent='Сто��';
   while(auto&&await drop())await sl(700*S.spd);
   auto=0;
   $('#au').textContent='Авто до конца'
@@ -210,7 +211,14 @@ function downloadScheme() {
         g.fillStyle = '#0b1526'; g.font = '700 15px system-ui,sans-serif';
         g.fillText(String(s.n), cx, y + 25);
         const nm = assigned[s.k];
-        if (nm) { g.fillStyle = '#475569'; g.font = '12px system-ui,sans-serif'; g.fillText(nm.split(' ')[0], cx, y + 45); }
+        if (nm) {
+          const label = nm.trim().split(/\s+/)[0];
+          let size = 12;
+          g.font = `${size}px system-ui,sans-serif`;
+          while (size > 8 && g.measureText(label).width > 62) g.font = `${--size}px system-ui,sans-serif`;
+          g.fillStyle = '#475569';
+          g.fillText(label, cx, y + 45, 64);
+        }
       } else {
         g.fillStyle = '#94a3b8'; g.font = '700 15px system-ui,sans-serif';
         g.fillText('—', cx, y + 30);
@@ -220,8 +228,15 @@ function downloadScheme() {
   }
   g.fillStyle = '#94a3b8'; g.font = '11px system-ui,sans-serif';
   g.fillText('ФМШ 2007 · Князев Drop гарантирует биекцию', W / 2, H - 16);
-  const a = document.createElement('a');
-  a.download = `knyazevdrop-rassadka-${c.name}.png`;
-  a.href = cv.toDataURL('image/png');
-  a.click();
+  return saveCanvasImage(cv, `knyazevdrop-rassadka-${c.name}.png`)
+    .then(saved => { if (saved) toast('Фото рассадки сохранено'); })
+    .catch(error => { console.warn('Не удалось сохранить рассадку', error); toast('Не удалось сохранить фото рассадки'); });
 }
+let fitTimer = 0;
+window.addEventListener('resize', () => { clearTimeout(fitTimer); fitTimer = setTimeout(() => fitMap($('#m0')), 120); });
+let schemeSaving = false;
+$('#dlScheme').onclick = () => {
+  if (schemeSaving) return;
+  schemeSaving = true;
+  Promise.resolve(downloadScheme()).finally(() => { schemeSaving = false; });
+};

@@ -1,5 +1,5 @@
 // Точка входа: навигация по вкладкам и первая отрисовка
-const TN=['Drop','Cases','Upgrade','MOGG'];
+const TN=['Drop','Cases','Upgrade','Mogg'];
 // «Князев » скрывается на телефоне, чтобы все четыре вкладки помещались в экран
 $('#nv').innerHTML=TN.map(n=>`<button type="button"><span class="nv-pre">Князев </span><span class="nv-name">${n}</span></button>`).join('');
 let activeTab=0;
@@ -21,8 +21,6 @@ const go=i=> {
 };
 $('#teamLink').onclick=showTeam;
 $('#backTeam').onclick=()=>go(0);
-$('#teamToMogg').onclick=()=>{go(3);window.scrollTo(0,0)};
-const mtl=$('#mogTeamLink');if(mtl)mtl.onclick=showTeam;
 $('#nv').onclick=e=> {
   const i=[...$('#nv').children].indexOf(e.target.closest('button'));
   if(i>=0)go(i)
@@ -36,25 +34,14 @@ function draw() {
 $('#st').innerHTML=Array.from({
   length:12
 },()=>cell(it(pick(CS[0][2])))).join('');
-// Мост в бандл MOGG (завёрнут в IIFE): баланс, бонус и оплата анализа КК.
+// Мост для MOGG (отдельные скрипты в js/mogg): баланс и оплата анализа в КК.
 window.KD = {
   bal: () => S.bal,
   cost: () => ECON.mogg.analysisCost,
-  bonusAmount: () => ECON.bonus.amount,
-  claimBonus: () => claimBonus(),
-  spend: v => { if (S.bal < v) return false; S.bal -= v; sv(); drawChips(); return true },
-  refund: v => { S.bal += v; sv(); drawChips() },
-  refreshMogg: () => {
-    if (typeof syncPills === 'function') syncPills();
-    const hint = document.getElementById('mogCostHint');
-    if (hint) hint.textContent = `Анализ стоит ${ECON.mogg.analysisCost} КК — списывается с баланса, при ошибке возвращается.`;
-  }
+  spend: v => { if (S.bal < v) return false; S.bal -= v; sv(); syncPills(); return true },
+  refund: v => { S.bal += v; sv(); syncPills() },
+  refreshMogg: () => syncPills()
 };
-
-// Кнопки бонуса в шапках вкладок Cases/Upgrade (элементы статичны, вешаем один раз).
-const bindBn = id => { const b = document.getElementById(id); if (b) b.onclick = () => claimBonus(); };
-bindBn('caseBn'); bindBn('upBn');
-const dls = document.getElementById('dlScheme'); if (dls) dls.onclick = () => downloadScheme();
 
 // Награда прерванного кейса (экономика v2.0, разд. 3): результат определяется
 // в момент открытия и пишется в S.pend; если вкладку закрыли посреди рулетки,

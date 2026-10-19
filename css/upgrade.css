@@ -47,7 +47,7 @@
 .upgrade-wheel-column .ring { width: 100%; max-width: 280px; }
 .upgrade-wheel-column .pct { margin: 5px 0 0; font-size: clamp(30px, 4vw, 38px); line-height: 1; color: var(--t); font-weight: 800; }
 .chance-caption { margin-top: 3px; color: var(--m); font-size: var(--fs-xs); }
-.upgrade-risk { margin-top: 7px; color: var(--err); font-size: var(--fs-s); font-weight: 800; text-align: center; }
+.upgrade-risk { margin-top: 7px; color: #a3abb8; font-size: var(--fs-s); font-weight: 400; text-align: center; }
 .wheel-help { margin-top: 3px; color: var(--m); font-size: var(--fs-xs); }
 .upgrade-controls { padding: 0 0 4px; text-align: center; }
 .target-buttons, .up-action-row { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; }
@@ -58,7 +58,6 @@
 .upgrade-empty { margin: 12px 0; padding: 18px; border: 1px dashed var(--l); border-radius:var(--r); color: var(--m); background: var(--s1); text-align: center; }
 .upgrade-topline { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 @media (max-width: 700px) {
-  #t3 .upgrade-shop{padding:14px;margin-bottom:10px}
   .upgrade-workspace { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px 8px; padding: 15px 10px; }
   .upgrade-wheel-column { grid-column: 1 / -1; grid-row: 2; }
   .upgrade-slot:nth-child(3) { grid-column: 2; grid-row: 1; }
@@ -76,10 +75,5 @@
 }
 
 
-/* В Upgrade кейсы и оценки используют ту же синюю палитру, что и Cases. */
-#t3 .cse big,#t3 .cse span{color:var(--a)}
 
-/* Скелет как в Cases (v1.8.15): #ui — не карточка, белой «полосы соединения»
-   между кейсами и колесом нет; карточка только у блока кейсов. */
 #t3 #ui.card{background:transparent;border:0;padding:0;margin-bottom:0}
-#t3 .upgrade-shop{background:#fff;border:1px solid var(--l);border-radius:var(--r);padding:16px;margin-bottom:14px}

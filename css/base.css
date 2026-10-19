@@ -1,7 +1,11 @@
 /* Базовые стили: сброс, шапка, навигация, кнопки, поля ввода */
 *{box-sizing:border-box}body{margin:0;font:var(--fs-m)/1.45 var(--font);background:var(--bg);color:var(--t);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
 button,input,select,textarea{font-family:inherit}
-header{background:var(--t);color:#fff;display:flex;gap:12px;align-items:center;padding:10px 18px;flex-wrap:wrap;position:sticky;top:0;z-index:9}
+header{background:var(--t);color:#fff;display:flex;gap:12px;align-items:center;padding:10px 18px;flex-wrap:wrap;position:sticky;top:0;z-index:9;isolation:isolate}
+/* Заливка шапки продолжается вверх и в стороны: при оттягивании страницы (iOS/macOS),
+   при зуме и горизонтальной прокрутке над и рядом с шапкой не видно пустоты. */
+header::before{content:"";position:absolute;z-index:-1;top:-100vh;bottom:0;left:0;right:0;background:var(--t);pointer-events:none}
+html{overflow-x:hidden}
 .logo{font-weight:800;font-size:21px;letter-spacing:-.5px}.logo b{color:var(--a)}
 nav{display:flex;gap:4px;margin-left:auto}nav button{background:0;border:0;color:var(--m-t);padding:8px 12px;border-radius:var(--r-s);cursor:pointer;font:inherit}nav .on{background:transparent;border:1px solid rgba(148,163,184,.55);color:#fff;border-radius:10px}
 main{max-width:1100px;margin:0 auto;padding:14px}.card{background:#fff;border:1px solid var(--l);border-radius:var(--r);padding:14px;margin-bottom:14px}

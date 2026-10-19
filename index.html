@@ -10,16 +10,18 @@
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="stylesheet" href="css/variables.css?v=1.8.1" />
-  <link rel="stylesheet" href="css/base.css?v=1.8.1" />
-  <link rel="stylesheet" href="css/components.css?v=1.8.10" />
-  <link rel="stylesheet" href="css/theme.css?v=1.8.1" />
-  <link rel="stylesheet" href="css/responsive.css?v=1.8.1" />
-  <link rel="stylesheet" href="css/upgrade.css?v=1.8.16" />
-  <link rel="stylesheet" href="css/refinements.css?v=1.8.24" />
-  <link rel="stylesheet" href="css/mogg.css?v=1.8.17" />
-  <link rel="stylesheet" href="css/soft-blue-glow.css?v=1.8.1" />
-  <link rel="stylesheet" href="css/team.css?v=1.8.36" />
+  <link rel="stylesheet" href="css/variables.css?v=2.0.0" />
+  <link rel="stylesheet" href="css/base.css?v=2.1.0" />
+  <link rel="stylesheet" href="css/components.css?v=2.0.0" />
+  <link rel="stylesheet" href="css/theme.css?v=2.0.0" />
+  <link rel="stylesheet" href="css/responsive.css?v=2.0.0" />
+  <link rel="stylesheet" href="css/upgrade.css?v=2.0.0" />
+  <link rel="stylesheet" href="css/refinements.css?v=2.0.0" />
+  <link rel="stylesheet" href="css/mogg.css?v=2.0.0" />
+  <link rel="stylesheet" href="css/soft-blue-glow.css?v=2.0.0" />
+  <link rel="stylesheet" href="css/team.css?v=2.0.0" />
+  <link rel="stylesheet" href="css/topup.css?v=2.0.0" />
+  <link rel="stylesheet" href="css/mobile.css?v=2.1.5" />
 </head>
 <body>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -45,7 +47,7 @@
       <div class="ht">
         <b>Физико-математическая школа 2007</b>
         <span>Князев <span class="brand-word">Drop</span> · рассадка, кейсы и немного ∫</span>
-        <div class="chips" id="chips"></div>
+        <div class="chips" id="chips"><span>Посвящается Князеву Алексею Андреевичу<span class="chip-extra"> (для тех, кто не догадался)</span></span></div>
       </div>
       <svg class="plot" viewBox="0 0 340 134" aria-hidden="true"><path class="cv" pathLength="1" d="M10 67C45-3 75-3 90 67S135 137 170 67 215-3 250 67 295 137 330 67"></path><path class="c2" pathLength="1" d="M40 130Q170-60 300 130"></path><text x="14" y="16" fill="#5d7ba3" font-size="11" font-family="ui-monospace,Menlo,monospace">y = sin x</text></svg>
       <i class="mz">∑ 1/n² = π²/6 &nbsp;·&nbsp; e^(iπ) + 1 = 0 &nbsp;·&nbsp; a² + b² = c²</i>
@@ -70,7 +72,7 @@
 
       <div class="g2">
         <div class="card">
-          <div class="row" style="justify-content:space-between;align-items:center"><h2>Схема класса</h2><button class="b g" id="dlScheme" type="button">Скачать фото рассадки</button></div>
+          <div class="card-head"><h2>Схема класса</h2><button class="icon-btn" id="dlScheme" type="button" aria-label="Скачать фото рассадки" title="Скачать фото рассадки"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 11v7.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V11"/><path d="M12 4v10"/><path d="M8.2 10.4 12 14.2l3.8-3.8"/></svg></button></div>
           <div class="mw"><div class="room"><div class="bd">▲ Доска</div><div id="m0"></div></div></div>
         </div>
         <div>
@@ -115,80 +117,64 @@
     </section>
 
     <section id="t2" hidden>
-      <div class="tab-heading"><div><span class="tab-kicker">ФМШ 2007 / КЕЙСЫ</span><h1>Князев <span class="brand-word">Cases</span></h1></div><div class="tab-actions"><button class="b g" id="caseBn" type="button">Бонус +100</button><div class="balance-pill"><span>Баланс</span><strong id="caseBal">— КК</strong></div></div></div>
-      <div class="card" id="cb"></div>
-      <div class="vw" id="vw"><div class="st" id="st"></div></div>
-      <div id="res"></div>
+      <div class="tab-heading"><div><span class="tab-kicker">ФМШ 2007 / КЕЙСЫ</span><h1>Князев <span class="brand-word">Cases</span></h1></div><div class="tab-actions"><button class="topup-btn" id="caseBn" data-topup type="button" aria-label="Пополнить КК" title="Пополнить КК"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 6v12M6 12h12"/></svg></button><div class="balance-pill"><span>Баланс</span><strong id="caseBal">— КК</strong></div></div></div>
+      <div class="card case-card" id="caseCard">
+        <div id="cb"></div>
+        <div class="vw" id="vw"><div class="st" id="st"></div></div>
+        <div id="res" aria-live="polite"></div>
+      </div>
       <div id="casesInventory"></div>
-      
     </section>
-    <section id="t3" hidden><div class="tab-heading"><div><span class="tab-kicker">ФМШ 2007 / УЛУЧШЕНИЕ</span><h1>Князев <span class="brand-word">Upgrade</span></h1></div><div class="tab-actions"><button class="b g" id="upBn" type="button">Бонус +100</button><div class="balance-pill"><span>Баланс</span><strong id="upBal">— КК</strong></div></div></div><div class="card" id="ui"></div><div id="ures" aria-live="polite"></div></section>
+    <section id="t3" hidden><div class="tab-heading"><div><span class="tab-kicker">ФМШ 2007 / УЛУЧШЕНИЕ</span><h1>Князев <span class="brand-word">Upgrade</span></h1></div><div class="tab-actions"><button class="topup-btn" id="upBn" data-topup type="button" aria-label="Пополнить КК" title="Пополнить КК"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 6v12M6 12h12"/></svg></button><div class="balance-pill"><span>Баланс</span><strong id="upBal">— КК</strong></div></div></div><div class="card" id="ui"></div><div id="ures" aria-live="polite"></div></section>
 
     <section id="t4" hidden aria-labelledby="mogTitle">
       <div id="mogApp" class="mog-app">
-        <div class="tab-heading mog-hero"><div><span class="tab-kicker">ФМШ 2007 / АНАЛИЗ</span><h1 id="mogTitle">Князев <span class="brand-word">MOGG</span></h1></div><div class="tab-actions"><button class="b g" id="mogBn" type="button">Бонус +100</button><div class="balance-pill"><span>Баланс</span><strong id="mogBal">— КК</strong></div></div></div>
+        <div class="tab-heading mog-hero">
+          <div><span class="tab-kicker">ФМШ 2007 / АНАЛИЗ</span><h1 id="mogTitle">Князев <span class="brand-word">Mogg</span></h1></div>
+          <div class="tab-actions"><button class="topup-btn" id="mogBn" data-topup type="button" aria-label="Пополнить КК" title="Пополнить КК"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 6v12M6 12h12"/></svg></button><div class="balance-pill"><span>Баланс</span><strong id="mogBal">— КК</strong></div></div>
+        </div>
 
         <div class="mog-workspace" aria-label="Анализ фотографии">
           <aside class="mog-panel mog-upload-panel">
-            <div class="mog-panel-heading">
-              <div><span class="mog-kicker">01 / ИСХОДНЫЕ ДАННЫЕ</span><h3>Фотография</h3></div>
-            </div>
+            <div class="mog-panel-heading"><span class="mog-kicker">01 / ИСХОДНЫЕ ДАННЫЕ</span></div>
             <input id="fileInput" class="mog-visually-hidden" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" aria-label="Выбрать фотографию">
             <label class="mog-drop-zone" id="dropZone" for="fileInput" tabindex="0" aria-label="Выбрать фотографию или перетащить файл">
-              <div class="mog-upload-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M4 15.5v3A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5v-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <span class="mog-upload-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M4 15.5v3A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5v-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
               <strong>Выбрать фотографию</strong>
-              <span class="mog-drop-subtitle">или перетащи сюда</span>
-              <span class="mog-file-types">ДО 12 МБ</span>
+              <span class="mog-drop-subtitle">лицо анфас, без очков · или перетащи сюда</span>
+              <span class="mog-file-types">JPG, PNG, WebP · до 12 МБ</span>
               <span class="mog-paste-hint">Ctrl+V — вставить фото</span>
             </label>
 
             <div class="mog-preview-wrap mog-hidden" id="previewWrap">
               <div class="mog-preview-top"><span>ПРЕДПРОСМОТР</span><button class="mog-text-button" id="changePhotoBtn" type="button">Изменить</button></div>
-              <img id="sourcePreview" alt="Предпросмотр выбранной фотографии">
-              <div class="mog-preview-foot"><span class="mog-status-dot"></span><span id="fileInfo">Фото выбрано</span><button class="mog-icon-button" id="removePhotoBtn" type="button" aria-label="Удалить фотографию">×</button></div>
+              <img id="sourcePreview" alt="Предпросмотр выбранной фотографии" title="Нажми, чтобы выбрать другое фото">
+              <div class="mog-preview-foot"><span class="mog-status-dot" aria-hidden="true"></span><span id="fileInfo">Фото выбрано</span><button class="mog-icon-button" id="removePhotoBtn" type="button" aria-label="Удалить фотографию">×</button></div>
             </div>
 
-            <div class="mog-control-group">
-              <label for="profileSelect">Пресет оценки</label>
-              <select id="profileSelect">
-                <option value="neutral" selected>Универсальный</option>
-                <option value="masculine">Мужской</option>
-                <option value="feminine">Женский</option>
-              </select>
-              <p class="mog-control-hint">Пресет задаёт эталон пропорций для выбранного пола. Пол по фото не определяется: выбери свой, и оценка будет точнее.</p>
-            </div>
-            <button class="mog-primary-button" id="analyzeBtn" type="button" disabled><span id="analyzeBtnText">Проанализировать лицо</span></button>
-            <p class="mog-control-hint" id="mogCostHint"></p>
+            <button class="mog-primary-button" id="analyzeBtn" type="button" disabled><span id="analyzeBtnText">Сравнить с гуру</span></button>
             <div class="mog-progress-box mog-hidden" id="progressBox" role="status"><span class="mog-spinner" aria-hidden="true"></span><div><strong id="progressTitle">Подготовка модели…</strong><p id="progressText">Загружаются компоненты MediaPipe.</p></div></div>
             <p id="errorBox" class="mog-error-box mog-hidden" role="alert"></p>
-            <p class="mog-privacy-note">Фото не отправляется на сервер сайта. Библиотека и модель загружаются из CDN/Google; у внешних сервисов могут быть технические метрики.</p>
-            <p class="mog-privacy-note">Идея и алгоритм обработки лиц — Захаревич Илья. <button class="mog-text-button" id="mogTeamLink" type="button">О команде</button></p>
           </aside>
 
           <div class="mog-results-column">
-            <section class="mog-panel mog-result-panel" id="resultPanel">
-              <div class="mog-panel-heading">
-                <div><span class="mog-kicker">02 / ОТЧЁТ</span><h3>Результат анализа</h3></div>
-              </div>
+            <section class="mog-panel mog-result-panel" id="resultPanel" aria-label="Отчёт">
+              <div class="mog-panel-heading mog-report-heading"><span class="mog-kicker">02 / ОТЧЁТ</span><button class="mog-secondary-button mog-new-button mog-reset-top" id="resetBtnTop" type="button">Новый анализ</button></div>
               <div class="mog-empty-state" id="emptyState">
-                <div class="mog-face-placeholder" aria-hidden="true"><img src="assets/images/mogg-face.png?v=1.8.3" alt="" loading="lazy"></div>
                 <h4>Здесь появится отчёт</h4>
-                <p>Выбери чёткое фото с одним лицом. Сайт найдёт ориентиры, рассчитает пропорции и покажет вклад каждой группы параметров.</p>
+                <p>Нужно чёткое фото анфас.<br>Сайт сравнит пропорции лица с Алексеем Андреевичем&nbsp;(гуру).</p>
               </div>
 
               <div class="mog-report-content mog-hidden" id="reportContent">
                 <div class="mog-score-overview">
                   <div class="mog-score-main">
-                    <div class="mog-score-ring" id="scoreRing" style="--score-angle:0deg"><img class="mog-score-face-contour" src="assets/images/mogg-face.png?v=1.8.3" alt="" aria-hidden="true" loading="lazy"><div class="mog-score-ring-inner" aria-label="Общая оценка MOGG"><strong id="scoreValue">5.0</strong><span class="mog-score-outof">из 10</span></div></div>
-                    <div class="mog-score-summary"><span class="mog-score-kicker">Твой уровень</span><div class="mog-tier-badge" id="tierBadge">MTN</div><h4 id="tierName">Средний диапазон</h4><p id="scoreSummaryText">Ориентировочная геометрия лица по шкале 0–10.</p></div>
+                    <div class="mog-score-ring" id="scoreRing" style="--score-angle:0deg"><img class="mog-score-face-contour" src="assets/images/mogg-face.png?v=2.0.0" alt="" aria-hidden="true" loading="lazy"><div class="mog-score-ring-inner" aria-label="Процент схожести с гуру"><strong id="scoreValue">0</strong><span class="mog-score-outof">% схожести</span></div></div>
+                    <div class="mog-score-summary" aria-live="polite"><span class="mog-score-kicker">Схожесть с гуру</span><div class="mog-tier-badge" id="tierBadge">Ученик гуру</div><p id="scoreSummaryText" class="mog-hidden"></p></div>
                   </div>
-                  
                 </div>
-                <div class="mog-annotated-wrap"><div class="mog-annotated-header"><span>КАРТА ОРИЕНТИРОВ</span><div class="mog-annotated-actions"><button class="mog-text-button" id="downloadBtn" type="button">Скачать фото с точками</button><button class="mog-secondary-button mog-new-button" id="resetBtn" type="button">Новый анализ</button></div></div><canvas id="annotatedCanvas" aria-label="Фотография с отмеченными ориентирами лица"></canvas><p class="mog-annotated-caption">Точки отмечают ориентиры MediaPipe. Ошибки возможны при повороте головы, волосах, очках или плохом освещении.</p></div>
-                <div class="mog-metric-heading"><div><span class="mog-kicker">03 / РАЗБОР</span><h4>Четыре группы параметров</h4></div><span class="mog-metric-hint">0–100, ориентировочно</span></div>
-                <div class="mog-metric-grid" id="metricGrid"></div>
-                <div class="mog-details-block"><button class="mog-details-toggle" id="formulaToggle" type="button" aria-expanded="false"><span>Как рассчитан результат</span><span class="mog-toggle-plus">+</span></button><div class="mog-formula-content mog-hidden" id="formulaContent"><p>Итог строится из приближённых геометрических метрик: гармония, структура (эталон выбранного пресета), геометрия контура и вторичные пропорции. Веса групп зависят от пресета и указаны ниже. Это эвристика сайта, а не научно валидированная оценка привлекательности.</p><ul id="formulaList"></ul><p class="mog-formula-warning">По фронтальному снимку нельзя надёжно оценить профиль максиллы, forward growth, трёхмерный угол ветви челюсти, глубину посадки глаз, процент подкожного жира, состояние кожи или зубов. Эти признаки не оцениваются напрямую.</p></div></div>
-                <div class="mog-report-bottom"><span class="mog-report-disclaimer">Внешность многомерна. Число не определяет привлекательность или ценность человека.</span></div>
+                <div class="mog-report-actions"><button class="mog-secondary-button mog-new-button" id="resetBtn" type="button">Новый анализ</button></div>
+                <div class="mog-details-block"><button class="mog-details-toggle" id="formulaToggle" type="button" aria-expanded="false" aria-controls="formulaContent"><span>Много умных слов</span><span class="mog-toggle-plus" aria-hidden="true">+</span></button><div class="mog-formula-content mog-hidden" id="formulaContent"><p>Лицо сначала фронтализуется: по 3D-ориентирам MediaPipe строится система координат самого лица, поэтому умеренный наклон и поворот головы почти не влияют. Затем считаются 16 безразмерных признаков (отношения расстояний, трети лица, межзрачковое расстояние, наклон глаз). Отличие каждого признака от гуру делится на его типичный разброс у школьников 11–18 лет (z), z ограничивается 3, квадраты усредняются с весами, итог = 100·exp(−½·(D/1,15)²).</p><p class="mog-formula-warning">Поворот головы, очки, волосы на лице и яркая мимика снижают точность. Цвет кожи, глаз и волос не сравнивается. Это эвристика на двумерном фото: она не распознаёт личность и не оценивает привлекательность.</p></div></div>
+                <div class="mog-report-bottom"><span class="mog-report-disclaimer">Процент отражает только сходство пропорций с эталоном и <s>не</s> определяет привлекательность или ценность человека.</span></div>
               </div>
             </section>
           </div>
@@ -204,28 +190,13 @@
         <ul class="team-list" id="teamList"></ul>
       </div>
 
-      <div class="card team-thanks">
-        <div>
-          <span class="team-section-title">Отдельная благодарность</span>
-          <h2>Захаревич Илья</h2>
-          <p>За идею и реализацию алгоритма обработки лиц — ключевой части Князев <span class="brand-word">MOGG</span>.</p>
-        </div>
-        <button class="b g" id="teamToMogg" type="button">Открыть Князев MOGG</button>
-      </div>
-
-      <div class="card team-ai">
-        <h2 class="team-section-title">Нейросети</h2>
-        <p class="team-ai-intro">Инструменты, которые помогали в разработке проекта:</p>
-        <div class="team-ai-list" id="teamAi" aria-label="Нейросети, помогавшие проекту"></div>
-      </div>
-
       <div class="card team-discord">
         <div class="team-discord-copy">
           <span class="team-discord-kicker">СООБЩЕСТВО ПРОЕКТА</span>
           <h2>Князев <span class="brand-word">Team</span> в Discord</h2>
           <p>Обсуждаем идеи, делимся обновлениями и собираем предложения для следующих версий.</p>
         </div>
-        <a class="team-discord-link" href="https://discord.gg/fy7SUYG8T" target="_blank" rel="noopener noreferrer">Присоединиться к серверу</a>
+        <a class="team-discord-link" href="https://discord.gg/fy7SUYG8T" target="_blank" rel="noopener noreferrer">Присоединиться к серверу <span aria-hidden="true">↗</span></a>
       </div>
     </section>
   </main>
@@ -235,28 +206,40 @@
     <span id="adm">ФМШ 2007 · ∀ ученик ∃! место — Князев Drop гарантирует биекцию</span><button class="foot-link" id="teamLink" type="button">Князев <span class="brand-word">Team</span> · благодарности</button>
   </footer>
   <dialog id="dg"></dialog>
+  <div class="wish" id="wish" role="dialog" aria-modal="true" aria-labelledby="wishTitle" hidden>
+    <div class="wish-card">
+      <p class="wish-kicker">ФМШ 2007 · ВАЖНОЕ</p>
+      <h2 id="wishTitle">Князев заболел, пожелаете ему здоровья?</h2>
+      <p class="wish-note" id="wishNote" role="alert" hidden>Это не нажимается, нажмите «Да»</p>
+      <div class="wish-actions"><button class="b" id="wishNo" type="button" aria-describedby="wishNote">Нет</button><button class="b primary" id="wishYes" type="button">Да</button></div>
+    </div>
+  </div>
   <div id="ts"></div>
-  <script src="js/core/utils.js?v=1.8.1"></script>
-  <script src="js/data/economy.js?v=1.8.14"></script>
-  <script src="js/core/state.js?v=1.8.26"></script>
-  <script src="js/data/students.js?v=1.8.1"></script>
-  <script src="js/data/cases.js?v=1.8.24"></script>
-  <script src="js/models/seating.js?v=1.8.4"></script>
-  <script src="js/models/classes.js?v=1.8.1"></script>
-  <script src="js/ui/toast.js?v=1.8.1"></script>
-  <script src="js/ui/seat-map.js?v=1.8.1"></script>
-  <script src="js/ui/desk-dnd.js?v=1.8.1"></script>
-  <script src="js/views/class-editor.js?v=1.8.24"></script>
-  <script src="js/views/people.js?v=1.8.24"></script>
-  <script src="js/views/header.js?v=1.8.7"></script>
-  <script src="js/views/hero.js?v=1.8.26"></script>
-  <script src="js/views/drop.js?v=1.8.36"></script>
-  <script src="js/views/cases.js?v=1.8.24"></script>
-  <script src="js/views/upgrade.js?v=1.8.24"></script>
-  <script src="js/views/team.js?v=1.8.36"></script>
-  <script src="js/core/visits.js?v=1.8.1"></script>
-  <script src="js/admin/auth.js?v=1.8.1"></script>
-  <script src="js/main.js?v=1.8.26"></script>
-  <script defer src="js/mogg/app.bundle.js?v=1.8.36"></script>
+  <script src="js/core/utils.js?v=2.0.0"></script>
+  <script src="js/data/economy.js?v=2.0.0"></script>
+  <script src="js/core/state.js?v=2.0.0"></script>
+  <script src="js/core/save-image.js?v=2.0.0"></script>
+  <script src="js/data/students.js?v=2.0.0"></script>
+  <script src="js/data/cases.js?v=2.0.0"></script>
+  <script src="js/models/seating.js?v=2.0.0"></script>
+  <script src="js/models/classes.js?v=2.0.0"></script>
+  <script src="js/ui/toast.js?v=2.0.0"></script>
+  <script src="js/ui/seat-map.js?v=2.0.0"></script>
+  <script src="js/ui/desk-dnd.js?v=2.0.0"></script>
+  <script src="js/views/class-editor.js?v=2.0.0"></script>
+  <script src="js/views/people.js?v=2.0.0"></script>
+  <script src="js/views/header.js?v=2.0.0"></script>
+  <script src="js/views/hero.js?v=2.0.0"></script>
+  <script src="js/views/drop.js?v=2.0.0"></script>
+  <script src="js/views/cases.js?v=2.0.0"></script>
+  <script src="js/views/upgrade.js?v=2.0.0"></script>
+  <script src="js/views/team.js?v=2.0.0"></script>
+  <script src="js/views/topup.js?v=2.0.0"></script>
+  <script src="js/core/visits.js?v=2.1.0"></script>
+  <script src="js/admin/auth.js?v=2.1.0"></script>
+  <script src="js/views/wish.js?v=2.1.0"></script>
+  <script src="js/main.js?v=2.0.0"></script>
+  <script defer src="js/vendor/tasks-vision-1.1.0.js"></script>
+  <script src="js/mogg/app.bundle.js?v=2.0.0"></script>
 </body>
 </html>

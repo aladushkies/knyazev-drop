@@ -1,0 +1,184 @@
+/* Финальная доводка: переносы строк и мобильная версия. Подключается последним. */
+
+/* Переносы: заголовки без «висящих» слов, абзацы без одиноких слов в последней строке. */
+h1,h2,h3,h4,.ht b{text-wrap:balance}
+p,.chips span,.mog-drop-subtitle,.mog-report-disclaimer{text-wrap:pretty}
+.chips .chip-extra{display:inline!important;background:none;border:0;border-radius:0;padding:0;margin:0;font:inherit;color:inherit;white-space:pre-wrap}
+dialog{outline:none}
+.vs-time,.vs-error{margin:4px 0 10px}
+.vs-error{color:var(--err)}
+#t2 .case-card{padding-bottom:12px}
+#t2 .res-card{margin:6px auto;width:160px;height:130px}
+#ts{bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+
+@media(max-width:700px){
+  /* Шапка и вкладки */
+  header{padding:8px 10px 6px;gap:4px 10px}
+  .logo{font-size:17px}
+  .fmb{font-size:11px;gap:4px}
+  .fmb svg{width:22px;height:22px}
+  nav{gap:4px}
+  nav button{min-height:36px;padding:6px 4px;font-size:var(--fs-s);border-radius:10px}
+  main{padding:8px}
+  .card{padding:12px;margin-bottom:8px}
+
+  /* Hero: компактная плашка, текст не наезжает на график */
+  .hero{padding:12px;gap:10px;margin-bottom:8px}
+  .hero>svg:first-child{flex:0 0 40px;width:40px;height:40px}
+  .hero .ht b{font-size:15px;line-height:1.25}
+  .hero .ht>span{display:block;margin-top:2px;font-size:var(--fs-xs);line-height:1.35}
+  .chips{margin-top:8px}
+  .chips span{display:block;border-radius:10px;padding:4px 8px;font-size:11px;line-height:1.35}
+
+  /* Заголовки вкладок: название слева, баланс и «+» справа в одной строке */
+  .tab-heading,#t4 .mog-hero{padding:12px 14px;min-height:0;margin-bottom:8px;gap:10px}
+  .tab-heading h1,#t4 .mog-hero h1{font-size:22px}
+  .tab-kicker{font-size:10.5px;margin-bottom:3px}
+  .tab-heading:has(.balance-pill){flex-wrap:nowrap}
+  .tab-heading:has(.balance-pill)>div:first-child{flex:1 1 auto}
+  .tab-heading:has(.balance-pill) .tab-actions{width:auto;flex:0 0 auto;flex-wrap:nowrap;gap:6px}
+  .balance-pill{flex:0 0 auto;align-items:flex-end;padding:6px 10px;gap:0}
+  .balance-pill span{font-size:11px}
+  .balance-pill strong{font-size:15px;white-space:nowrap}
+  .topup-btn{width:36px;height:36px}
+
+  /* Drop: кнопка Class и выбор класса в одну строку */
+  #cbar{width:100%;padding:0;flex-wrap:nowrap;gap:8px}
+  #cbar .b{width:auto}
+  #cbar #classLink{flex:0 0 auto;min-height:40px;padding-inline:12px}
+  #cbar select{flex:1 1 auto;width:auto;min-width:0;max-width:none;height:40px;min-height:40px}
+  .stage{padding:14px 10px;margin-bottom:8px}
+  #nm{font-size:clamp(26px,9vw,40px)}
+  .sv{height:66px;margin:10px auto}
+  .sk{height:48px;font-size:var(--fs-m)}
+  #rs{min-height:0!important}
+  #t0 .stage .row{margin-top:8px!important}
+  #t0 .stage .row .b{min-height:42px;font-size:14px;padding:8px 10px}
+  #fmsg{margin-top:10px!important;font-size:var(--fs-xs)}
+  .g2{gap:8px}
+  .mw{border-radius:var(--r-s)}
+  .li{padding:6px 0;font-size:14px}
+
+  /* Cases: два кейса в ряд, лента компактнее */
+  .cg,#t2 .cg{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:0}
+  .cse{padding:10px 12px;gap:0}
+  .cse big{font-size:24px;line-height:1.2}
+  .cse b{font-size:14px;overflow-wrap:anywhere}
+  .cse span{font-size:var(--fs-s)}
+  #t2 .case-card .vw{height:112px;margin-top:10px}
+  #t2 .res-card{width:124px;height:104px}
+  #t2 .res-card big{font-size:32px}
+  .vw .st{top:8px}
+  .vw .it{flex:0 0 88px;width:88px;height:94px;font-size:11px}
+  .vw .it big{font-size:30px}
+  .section-heading h3{font-size:var(--fs-m)}
+
+  /* Upgrade */
+  .upgrade-workspace{padding:12px 8px;margin:0 0 8px;gap:10px 8px}
+  .upgrade-slot{gap:6px}
+  .upgrade-slot .it{width:min(100%,116px);height:118px;flex-basis:118px}
+  .upgrade-slot .it big{font-size:34px}
+  .slot-subtitle{font-size:11px}
+  .upgrade-wheel-column .ring{max-width:220px}
+  .hd{width:96px;height:110px;margin:-55px 0 0 -48px}
+  .upgrade-wheel-column .pct{font-size:30px}
+  .upgrade-risk{margin-top:4px;font-size:var(--fs-xs)}
+  .target-buttons,.up-action-row{flex-wrap:nowrap;gap:8px}
+  .target-buttons{margin-bottom:8px}
+  .target-buttons .b,.up-action-row .b{flex:1 1 0;min-width:0;min-height:42px;padding:8px 6px;font-size:14px}
+  .inv{grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px}
+  .inv .it{width:100%;height:96px}
+  .inv .it big{font-size:30px}
+
+  /* MOGG */
+  #t4 .mog-panel{padding:12px}
+  #t4 .mog-panel-heading{margin-bottom:10px}
+  #t4 .mog-drop-zone{min-height:120px;padding:16px 12px}
+  #t4 .mog-upload-icon{width:36px;height:36px;margin-bottom:6px}
+  #t4 .mog-primary-button{margin-top:10px}
+  #t4 .mog-preview-wrap>img{max-height:220px}
+  #t4 .mog-preview-foot{font-size:var(--fs-xs)}
+  #t4 .mog-score-overview{margin-bottom:12px}
+  #t4 .mog-score-summary p{font-size:var(--fs-xs);line-height:1.45}
+  #t4 .mog-report-actions .mog-new-button{width:100%}
+
+  /* Футер и окно статистики */
+  footer{padding:12px 10px 18px;font-size:var(--fs-xs);line-height:1.5}
+  footer svg{width:18px;height:18px;vertical-align:-5px;margin-right:4px}
+  .foot-link{display:table;margin:8px auto 0;font-size:var(--fs-xs)}
+  dialog{padding:14px;width:calc(100% - 16px)}
+  .admin-head h2{font-size:15px}
+  .vs{gap:6px}
+  .vs b{font-size:var(--fs-m)}
+}
+
+/* Телефон: кольцо и вердикт в одной строке, пояснения — на всю ширину под ними */
+@media(max-width:560px){
+  #t4 .mog-score-main{grid-template-columns:104px minmax(0,1fr);grid-template-areas:"ring kicker" "ring badge" "note note";column-gap:14px;row-gap:0;align-items:center}
+  #t4 .mog-score-summary{display:contents}
+  #t4 .mog-score-ring{grid-area:ring;width:104px;height:104px}
+  #t4 .mog-score-ring-inner strong{font-size:32px}
+  #t4 .mog-score-summary .mog-score-kicker{grid-area:kicker;align-self:end}
+  #t4 .mog-tier-badge{grid-area:badge;align-self:start;justify-self:start;margin:4px 0 0}
+  #t4 #scoreSummaryText{grid-area:note;margin-top:12px}
+}
+
+@media(max-width:380px){
+  .logo{font-size:16px}
+  nav button{font-size:12px;padding-inline:2px}
+  .tab-heading h1,#t4 .mog-hero h1{font-size:20px}
+  .balance-pill{padding:5px 8px}
+  .balance-pill span{display:none}
+  .balance-pill strong{font-size:14px}
+  .topup-btn{width:34px;height:34px}
+  #cbar #classLink{padding-inline:10px}
+  .cse{padding:9px 10px}
+  .cse b{font-size:13px}
+  #t4 .mog-score-main{grid-template-columns:96px minmax(0,1fr);gap:12px}
+  #t4 .mog-score-ring{width:96px;height:96px}
+  #t4 .mog-score-ring-inner strong{font-size:30px}
+  #t4 .mog-tier-badge{font-size:var(--fs-m)}
+}
+
+/* Опрос «Князев заболел» — в духе cookie-баннера: затемнение на весь экран, карточка снизу */
+html.wish-open{overflow:hidden}
+.wish{position:fixed;inset:0;z-index:100;display:flex;align-items:flex-end;justify-content:center;padding:16px;background:rgba(15,23,42,.55);backdrop-filter:blur(3px);animation:wishIn .22s ease-out}
+.wish[hidden]{display:none}
+.wish.is-leaving{opacity:0;transition:opacity .2s}
+.wish-card{width:100%;max-width:640px;background:var(--s,#fff);color:var(--t);border:1px solid var(--l);border-radius:var(--r);box-shadow:0 18px 48px rgba(15,23,42,.28);padding:20px 22px;animation:wishUp .28s cubic-bezier(.2,.8,.2,1)}
+.wish-kicker{margin:0 0 6px;font-size:var(--fs-xs);letter-spacing:2px;color:var(--m);font-weight:700}
+.wish-card h2{margin:0;font-size:20px;line-height:1.3;text-wrap:balance}
+.wish-note{margin:10px 0 0;color:var(--err,#d33);font-size:var(--fs-s);font-weight:700}
+.wish-note.is-shaking{animation:wishShake .35s}
+.wish-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
+.wish-actions .b{min-width:110px;min-height:42px}
+@keyframes wishIn{from{opacity:0}}
+@keyframes wishUp{from{transform:translateY(24px);opacity:0}}
+@keyframes wishShake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@media(max-width:560px){
+  .wish{padding:10px}
+  .wish-card{padding:16px}
+  .wish-card h2{font-size:18px}
+  .wish-actions .b{flex:1 1 0}
+}
+
+/* Телефон: фото гуру остаётся, пояснение в чипе убираем ради места */
+@media(max-width:700px){
+  .chips .chip-extra{display:none!important}
+  .hero .pol{display:block!important}
+}
+
+/* ПК/планшет: надписи плашки не переносятся — при нехватке места они наезжают на график,
+   а график уходит под них и становится прозрачнее (как на телефоне). */
+@media(min-width:701px){
+  .hero{container-type:inline-size;flex-wrap:nowrap}
+  .hero .ht{position:relative;z-index:2;flex:0 0 auto;min-width:0;white-space:nowrap}
+  .hero .ht b,.hero .ht>span,.chips span{white-space:nowrap;text-wrap:nowrap}
+  .chips{flex-wrap:nowrap}
+  .hero>.plot{position:absolute;z-index:0;top:50%;right:142px;width:300px;margin:0;transform:translateY(-50%);pointer-events:none;transition:opacity .25s}
+  .hero .pol{position:relative;z-index:1;margin-left:auto!important;flex:0 0 auto}
+}
+@container (max-width:1000px){
+  .hero>.plot{opacity:.3}
+  .hero>.mz{display:none}
+}

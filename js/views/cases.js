@@ -1,32 +1,15 @@
-// Вкладка «Князев Cases»: открытие кейсов, инвентарь, бонус
-// Бонус за вход (+ECON.bonus.amount КК раз в ECON.bonus.cooldownMs мс).
-// Общий для Cases, Upgrade и MOGG. Эксплойт Б-1: часы, переведённые назад,
-// не сбрасывают кулдаун — ожидание отсчитывается заново (полный кулдаун),
-// но бонус не блокируется навсегда, если часы вернули к правильному времени.
-const claimBonus=()=> {
-  const now=Date.now();
-  if(now<S.bt){S.bt=now;sv()}
-  const w=ECON.bonus.cooldownMs-(now-S.bt);
-  if(w>0){toast('Бонус через '+Math.ceil(w/1000)+' с');return false}
-  S.bt=now;
-  S.bal+=ECON.bonus.amount;
-  sv();
-  // Во время спина полная перерисовка уничтожила бы колесо/ленту — обновляем только баланс.
-  if(busy)drawChips();else drawCases();
-  return true
-};
+// Вкладка «Князев Cases»: открытие кейсов и инвентарь
 function drawCases() {
   drawChips();
-  // Баланс и бонус живут в шапке вкладки (см. index.html, #caseBn/#caseBal).
+  // Баланс и кнопка пополнения живут в шапке вкладки (см. index.html, #caseBn/#caseBal).
+  // Кейсы и лента рулетки — в одной карточке (#caseCard): #cb перерисовывается, лента остаётся.
   $('#cb').innerHTML = `
-    <p class="m">ФМШ 2007 · условная валюта «Князев-коины» (КК).</p>
     <div class="cg">
       ${CS.map((item, index) => `
-        <button class="cse" data-c="${index}">
-          <big>${index ? '∑' : '✎'}</big>
+        <button class="cse" data-c="${index}" type="button"${busy ? ' disabled' : ''}>
+          <big aria-hidden="true">${index ? '∑' : '✎'}</big>
           <b>${item[0]}</b>
           <span>${item[1]} КК</span>
-
         </button>
       `).join('')}
     </div>
@@ -37,11 +20,10 @@ function drawCases() {
       <div class="section-heading">
         <div>
           <h3>Инвентарь</h3>
-          <p class="m">Продайте карточку или улучшите её во вкладке Upgrade.</p>
         </div>
-        <span class="inventory-counter">${S.inv.length} предмет(ов)</span>
+        <span class="inventory-counter">${itemsCount(S.inv.length)}</span>
       </div>
-      ${S.inv.length ? `<div class="cases-items">${S.inv.map((item,index)=>`<div class="cases-item">${cell(item)}<strong>${item.v} КК</strong><div class="item-actions">${item.o?'<span class="m">Личная оценка</span>':`<button class="b g" data-case-sell="${index}" type="button">Продать</button>`}${item.r<3?`<button class="b g" data-case-up="${index}" type="button">Улучшить</button>`:''}</div></div>`).join('')}</div>`:'<div class="upgrade-empty">Инвентарь пока пуст. Откройте кейс «Домашка» или «Самостоятельная».</div>'}
+      ${S.inv.length ? `<div class="cases-items">${S.inv.map((item,index)=>`<div class="cases-item">${cell(item)}<strong>${item.v} КК</strong><div class="item-actions">${item.o?'<span class="m">Личная оценка</span>':`<button class="b g" data-case-sell="${index}" type="button">Продать</button>`}${item.r<3?`<button class="b g" data-case-up="${index}" type="button">Улучшить</button>`:''}</div></div>`).join('')}</div>`:'<div class="upgrade-empty">Инвентарь пуст</div>'}
     </section>
   `;
   drawUpgrade();
@@ -75,7 +57,9 @@ async function openC(ci) {
   st.innerHTML=a.map(j=>cell(it(j))).join('');
   void st.offsetWidth;
   st.style.transition=`transform ${5*S.spd}s cubic-bezier(.1,.7,.1,1)`;
-  st.style.transform=`translateX(${$('#vw').offsetWidth/2-50*110-52+(Math.random()-.5)*70}px)`;
+  // Шаг и ширина карточки берутся из вёрстки: на телефоне карточки ленты меньше.
+  const [c0,c1]=st.children,cw=c0.offsetWidth,step=c1.offsetLeft-c0.offsetLeft;
+  st.style.transform=`translateX(${$('#vw').offsetWidth/2-50*step-cw/2+(Math.random()-.5)*cw*.65}px)`;
   await sl(5*S.spd*1000+200);
   const x=it(win);
   S.inv.push(x);
@@ -83,5 +67,5 @@ async function openC(ci) {
   sv();
   busy=0;
   drawCases();
-  $('#res').innerHTML=`<div class=rsl><span class=m>Князев Result</span><div class="it r${x.r}" style="margin:6px auto;width:160px;height:130px"><big>${x.g}</big>${E(x.n)}<small>${RN[x.r]} · ${x.v} КК</small></div></div>`
+  $('#res').innerHTML=`<div class=rsl><span class=m>Князев Result</span><div class="it r${x.r} res-card"><big>${x.g}</big>${E(x.n)}<small>${RN[x.r]} · ${x.v} КК</small></div></div>`
 }

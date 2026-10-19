@@ -23,6 +23,6 @@ footer{padding:14px 10px}
 .inv{grid-template-columns:repeat(auto-fill,minmax(88px,1fr))}.inv .it{width:100%}
 .upg{gap:8px}.uc .it{width:92px;height:108px}.ring{width:min(240px,72vw)}
 .pct{font-size:22px}
-.hero .pol{display:none}
+
 }
 @media(pointer:coarse){.b,nav button{min-height:40px}.seat input{width:18px;height:18px}}

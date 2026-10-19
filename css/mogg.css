@@ -9,7 +9,7 @@
 #t4 .mog-kicker,#t4 .mog-score-kicker,#t4 .mog-preview-top{display:block;color:var(--m);font-size:var(--fs-xs);font-weight:500;letter-spacing:.06em;text-transform:uppercase}
 
 /* Шапка раздела: белая карточка, как .card на остальных вкладках */
-#t4 .mog-hero{background:#fff;border:1px solid var(--l);border-radius:var(--r);padding:16px 20px;margin-bottom:14px;box-sizing:border-box;min-height:78px}
+#t4 .mog-hero{background:#fff;border:1px solid var(--l);border-radius:var(--r);padding:18px 20px;margin-bottom:14px}
 #t4 .mog-eyebrow{display:flex;align-items:center;gap:8px;color:var(--a);font-size:var(--fs-xs);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
 #t4 .mog-eyebrow-line{width:20px;height:2px;background:var(--a)}
 #t4 .mog-hero h2{margin:10px 0 6px;font-size:var(--fs-xl);line-height:1.15;letter-spacing:-.02em;font-weight:700}
@@ -18,7 +18,7 @@
 
 /* Две панели */
 #t4 .mog-workspace{display:grid;grid-template-columns:minmax(280px,.83fr) minmax(0,1.4fr);align-items:start;gap:14px}
-#t4 .mog-panel{background:#fff;border:1px solid var(--l);border-radius:var(--r);min-width:0;overflow:hidden;padding:16px}
+#t4 .mog-panel{background:#fff;border:1px solid var(--l);border-radius:var(--r);min-width:0;overflow:hidden;padding:14px}
 #t4 .mog-results-column{min-width:0}
 #t4 .mog-panel-heading{margin-bottom:14px}
 #t4 .mog-panel-heading h3{margin:2px 0 0;font-size:var(--fs-l);font-weight:700;line-height:1.25}
@@ -94,14 +94,16 @@
 #t4 .mog-tier-step.is-passed{color:var(--on-t)}
 #t4 .mog-tier-step.is-current{border-color:var(--a);background:var(--a);color:#fff}
 
-/* Карта ориентиров */
-#t4 .mog-annotated-wrap{margin:16px 0 20px}
-#t4 .mog-annotated-header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;color:var(--m);font-size:var(--fs-xs);font-weight:500;letter-spacing:.06em;text-transform:uppercase}
-#t4 .mog-annotated-actions{display:flex;align-items:center;gap:12px;letter-spacing:0;text-transform:none}
 #t4 .mog-new-button{min-height:34px;padding:6px 12px;font-size:var(--fs-s)}
 #t4 #reportContent{scroll-margin-top:110px}
-#t4 .mog-annotated-wrap canvas{display:block;width:auto;max-width:100%;max-height:410px;margin:0 auto;border:1px solid var(--l);border-radius:var(--r-s);background:var(--s2)}
-#t4 .mog-annotated-caption{margin:8px 0 0;color:var(--m);font-size:var(--fs-xs)}
+#t4 .mog-report-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#t4 .mog-reset-top{display:none}
+#t4 .mog-report-actions{display:flex;justify-content:flex-end;margin:0 0 4px}
+@media(min-width:861px){
+  #t4.mog-analyzed .mog-reset-top{display:inline-flex}
+  #t4 .mog-report-actions{display:none}
+}
+#t4 #sourcePreview{cursor:pointer}
 
 /* Метрики */
 #t4 .mog-metric-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:12px}
@@ -142,7 +144,7 @@
    остаётся только снимок с точками. */
 @media(max-width:700px){
   body[data-tab="3"] .hero{display:flex}
-  #t4 .mog-hero{padding:13px 14px;margin-bottom:10px;min-height:68px}
+  #t4 .mog-hero{padding:14px;margin-bottom:10px}
   #t4 .mog-hero h2{margin:8px 0 4px}
   #t4 .mog-hero p{font-size:var(--fs-s)}
   #t4 .mog-workspace{gap:10px}
@@ -151,7 +153,6 @@
   #t4.mog-analyzed .mog-results-column>.mog-panel-heading,#t4.mog-analyzed .mog-upload-panel>.mog-panel-heading{display:none}
   #t4.mog-analyzed .mog-preview-top,#t4.mog-analyzed .mog-preview-wrap>img{display:none}
   #t4.mog-analyzed .mog-preview-foot{border-top:0}
-  #t4 .mog-panel{padding:14px}
   #t4 .mog-drop-zone{min-height:140px}
 }
 @media(hover:none){
@@ -166,8 +167,6 @@
   #t4 .mog-tier-badge{font-size:var(--fs-l);padding:3px 10px}
   #t4 .mog-metric-grid{grid-template-columns:1fr}
   #t4 .mog-metric-heading{align-items:flex-start;flex-direction:column;gap:4px}
-  #t4 .mog-annotated-header{align-items:stretch;flex-direction:column;gap:8px}
-  #t4 .mog-annotated-actions{justify-content:space-between}
 }
 
 
@@ -175,8 +174,12 @@
 #t4 .mog-face-placeholder img{max-width:180px}
 #t4 .mog-score-ring .mog-score-face-contour{object-fit:contain}
 
-/* Кнопка бонуса и пилюля баланса в шапке — тот же шрифт, что в Cases/Upgrade. */
-#t4 .tab-actions .b{font-size:var(--fs-m)}
 
-/* Кликабельное превью: нажатие открывает проводник. */
-#sourcePreview{cursor:pointer}
+/* Эталон и список признаков */
+#t4 .mog-reference-card{display:flex;gap:12px;align-items:center}
+#t4 .mog-reference-card img{flex:0 0 auto;width:72px;height:90px;object-fit:cover;object-position:50% 25%;border:1px solid var(--l);border-radius:var(--r-s);background:var(--s2)}
+#t4 .mog-reference-card .mog-control-hint{margin:0}
+#t4 .mog-feature-list{display:grid;gap:4px;margin:10px 0 0;padding:10px 0 0;border-top:1px solid var(--l);list-style:none}
+#t4 .mog-feature-list li{display:flex;justify-content:space-between;gap:10px;color:var(--m);font-size:var(--fs-xs);line-height:1.4}
+#t4 .mog-feature-list li span:last-child{flex:0 0 auto;color:var(--t);font-variant-numeric:tabular-nums;text-align:right}
+#t4 .mog-score-summary p.mog-tier-phrase{margin:0 0 8px;color:#fff;font-size:var(--fs-m,1rem);font-weight:600}

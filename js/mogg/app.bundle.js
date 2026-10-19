@@ -1,8 +1,23 @@
 /* GENERATED FILE — не редактируйте вручную.
-   Источник: js/mogg-source/metrics.js + app.js. Пересборка: npm run build */
+   Источник: mogg/src/metrics.js + app.js. Пересборка: cd mogg && npm run build */
 (() => {
 'use strict';
-/* Pure geometry/scoring helpers. No network calls or image uploads. */
+/* Сравнение лица с эталоном: чистая геометрия, без сетевых запросов.
+   Алгоритм (v3):
+   1. Фронтализация. По 3D-ориентирам MediaPipe (x, y, z) строится система координат самого лица:
+      ось X — по шести симметричным парам точек (глаза, скулы, рот, виски), ось Y — по средней линии
+      (лоб → подбородок). Все точки проецируются на плоскость лица, поэтому наклон (roll), поворот (yaw)
+      и кивок (pitch) головы в умеренных пределах почти не влияют на пропорции.
+   2. Из фронтализованных точек считаются 16 безразмерных признаков (отношения расстояний, доли третей,
+      наклон глаз, межзрачковое расстояние по радужкам).
+   3. Каждое отличие от эталона делится на σ — разброс признака у подростков 11–18 лет. Признаки,
+      которые сильно меняются в пубертате (длина носа, нижняя треть, челюсть, подбородок), получили
+      увеличенный σ: школьника не «штрафуют» за то, что лицо ещё растёт.
+   4. z-отличия ограничиваются 3σ (одна сбойная точка не обнуляет результат), усредняются в квадрате
+      с весами (аналог расстояния Махаланобиса), итог = 100·exp(−½·(D/K)²).
+      Калибровка: то же фото после отражения, масштаба и поворота на ±9° даёт 92–100 %,
+      фото другого человека (D ≈ 1,2–1,6) — 35–55 %, похожий — 70–85 %.
+   5. Мимика (улыбка, открытый рот) по blendshapes MediaPipe снижает вес признаков рта и подбородка. */
 const clamp = (value, min = 0, max = 100) => Math.min(max, Math.max(min, value));
 
 function pointPx(landmarks, index, width, height) {
@@ -17,21 +32,12 @@ function distance(a, b) {
   return Math.hypot(b.x - a.x, b.y - a.y);
 }
 
-function distanceAt(landmarks, first, second, width, height) {
-  return distance(pointPx(landmarks, first, width, height), pointPx(landmarks, second, width, height));
-}
-
-// Positive angle means the outer eye corner is higher than the inner corner.
+// Положительный угол: внешний уголок глаза выше внутреннего.
 function canthalTilt(inner, outer) {
   const dx = Math.abs(outer.x - inner.x);
   if (dx < 1e-6) return 0;
-  const dy = inner.y - outer.y; // canvas/image y increases downwards
+  const dy = inner.y - outer.y; // ось y изображения направлена вниз
   return Math.atan2(dy, dx) * 180 / Math.PI;
-}
-
-function gaussian(value, target, sigma) {
-  if (!Number.isFinite(value) || !Number.isFinite(target) || !Number.isFinite(sigma) || sigma <= 0) return 0;
-  return 100 * Math.exp(-0.5 * ((value - target) / sigma) ** 2);
 }
 
 function mean(values) {
@@ -43,177 +49,274 @@ function rounded(value, decimals = 2) {
   return Math.round(value * p) / p;
 }
 
-// Условная градация по геометрическому баллу. Пороги одинаковы для всех пресетов,
-// а названия верхних ступеней зависят от выбранного пресета (Chad / Stacy и т. д.).
-const TIER_DEFS = [
-  { key: 'low', max: 3, range: 'ниже 3', label: 'Sub 3', names: { neutral: 'Sub 3', masculine: 'Sub 3', feminine: 'Sub 3' } },
-  { key: 'sub5', max: 3.5, range: '3–3.5', label: 'Sub 5', names: { neutral: 'Sub 5', masculine: 'Sub 5', feminine: 'Sub 5' } },
-  { key: 'ltn', max: 4.5, range: '3.5–4.5', label: 'LTN', names: { neutral: 'LTN', masculine: 'LTN', feminine: 'LTN' } },
-  { key: 'mtn', max: 5.5, range: '4.5–5.5', label: 'MTN', names: { neutral: 'MTN', masculine: 'MTN', feminine: 'MTN' } },
-  { key: 'htn', max: 6.5, range: '5.5–6.5', label: 'HTN', names: { neutral: 'HTN', masculine: 'HTN', feminine: 'HTN' } },
-  { key: 'chadlite', max: 8, range: '6.5–8', label: 'Chadlite', names: { neutral: 'Chadlite', masculine: 'Chadlite', feminine: 'Stacylite' } },
-  { key: 'chad', max: 9, range: '8–9', label: 'Chad', names: { neutral: 'Chad/Stacy', masculine: 'Chad', feminine: 'Stacy' } },
-  { key: 'giga', max: 10, range: '9–10', label: 'GigaChad', names: { neutral: 'GigaChad/GigaStacy', masculine: 'GigaChad', feminine: 'GigaStacy' } },
-  { key: 'true', max: Infinity, range: '10', label: 'True Adam', names: { neutral: 'True Adam/True Eve', masculine: 'True Adam', feminine: 'True Eve' } },
-];
-
-// Пресеты задают, какие пропорции считаются эталоном для выбранного пола.
-// Пол по фото НЕ определяется: пресет выбирает пользователь. Эталон мужского
-// пресета — шире челюсть и скулы, ниже и массивнее верх лица; женского — мягче
-// челюсть, выше наклон глаз, полнее нижняя губа. Веса групп тоже зависят от пресета.
-const PROFILES = {
-  neutral:   { label: 'Универсальный', jaw: 0.83, chin: 1.45, jawFace: 0.68, fwhr: 1.90, tilt: 2.5, lip: 1.45, weights: { harmony: 35, dimorphism: 25, angularity: 20, misc: 20 } },
-  masculine: { label: 'Мужской',       jaw: 0.87, chin: 1.55, jawFace: 0.72, fwhr: 1.98, tilt: 3.0, lip: 1.35, weights: { harmony: 30, dimorphism: 25, angularity: 28, misc: 17 } },
-  feminine:  { label: 'Женский',       jaw: 0.79, chin: 1.30, jawFace: 0.64, fwhr: 1.82, tilt: 4.0, lip: 1.65, weights: { harmony: 40, dimorphism: 25, angularity: 12, misc: 23 } },
+const v3 = {
+  sub: (a, b) => ({ x: a.x - b.x, y: a.y - b.y, z: a.z - b.z }),
+  add: (a, b) => ({ x: a.x + b.x, y: a.y + b.y, z: a.z + b.z }),
+  scale: (a, k) => ({ x: a.x * k, y: a.y * k, z: a.z * k }),
+  dot: (a, b) => a.x * b.x + a.y * b.y + a.z * b.z,
+  norm: (a) => Math.hypot(a.x, a.y, a.z),
+  unit: (a) => { const n = Math.hypot(a.x, a.y, a.z) || 1; return { x: a.x / n, y: a.y / n, z: a.z / n }; },
+  avg: (list) => list.reduce((acc, p) => v3.add(acc, v3.scale(p, 1 / list.length)), { x: 0, y: 0, z: 0 }),
 };
 
-function getTierLadder(profile = 'neutral') {
-  const key = PROFILES[profile] ? profile : 'neutral';
-  return TIER_DEFS.map((tier, index) => ({ key: tier.key, index, range: tier.range, community: tier.names[key] }));
+// Пары «левая — правая» сторона лица и средняя линия: по ним строится система координат лица.
+const SYMMETRIC_PAIRS = [[33, 263], [133, 362], [234, 454], [61, 291], [127, 356], [93, 323]];
+const MIDLINE_UPPER = [10, 151, 9, 168];
+const MIDLINE_LOWER = [152, 17, 0, 2];
+
+const Z_CAP = 3;
+const SCORE_K = 1.15;
+
+// Схожесть одного признака по z-отличию (в единицах σ).
+function featureSimilarity(value, target, sigma) {
+  if (!Number.isFinite(value) || !Number.isFinite(target) || !(sigma > 0)) return 0;
+  const z = Math.min(Z_CAP, Math.abs(value - target) / sigma);
+  return 100 * Math.exp(-0.5 * (z / SCORE_K) ** 2);
 }
 
-function getTier(score, profile = 'neutral') {
-  // NaN не меньше ни одного порога: без запасного варианта TIER_DEFS[-1] уронил бы отчёт.
-  const found = TIER_DEFS.findIndex((tier) => score < tier.max);
-  const index = found >= 0 ? found : 0;
-  const ladder = getTierLadder(profile);
-  const tier = TIER_DEFS[index];
-  return { key: tier.key, index, label: tier.label, community: ladder[index].community, range: tier.range, ladder };
+const GROUPS = [
+  { key: 'outline', title: 'Контур лица', short: 'Контур', weight: 28, description: 'Ширина скул к высоте лица, ширина челюсти и FWHR (скулы к высоте от бровей до верхней губы).' },
+  { key: 'vertical', title: 'Вертикальные пропорции', short: 'Трети', weight: 22, description: 'Доли верхней, средней и нижней трети лица и длина носа.' },
+  { key: 'eyes', title: 'Глаза', short: 'Глаза', weight: 30, description: 'Межзрачковое расстояние, расстояние между глазами, ширина и наклон глаз. Самая стабильная зона лица.' },
+  { key: 'lower', title: 'Нос и рот', short: 'Нос и рот', weight: 20, description: 'Ширина носа и рта, соотношение губ и длина подбородка. Вес рта автоматически снижается при улыбке.' },
+];
+
+// sigma — разброс признака у подростков 11–18 лет в выходе MediaPipe (≈ 1 стандартное отклонение).
+// Сетка MediaPipe «притягивает» лица к усреднённой модели, поэтому разброс меньше антропометрического;
+// значения откалиброваны так, чтобы разные лица надёжно расходились, а одно и то же лицо давало > 90 %.
+// teen — во сколько раз σ увеличен из-за возрастной изменчивости (лицо ещё растёт).
+// weight — надёжность признака (точность ориентиров MediaPipe).
+// expr — от какой мимики зависит признак: 'smile' или 'jaw'.
+const FEATURES = [
+  { key: 'widthToHeight', group: 'outline', label: 'Ширина скул / высота лица', sigma: 0.033, teen: 1.1, weight: 1, digits: 2, expr: 'jaw' },
+  { key: 'jawToCheek', group: 'outline', label: 'Челюсть / скулы', sigma: 0.042, teen: 1.2, weight: 0.9, digits: 2 },
+  { key: 'jawMidToCheek', group: 'outline', label: 'Середина челюсти / скулы', sigma: 0.042, teen: 1.15, weight: 0.7, digits: 2 },
+  { key: 'fwhr', group: 'outline', label: 'FWHR', sigma: 0.108, teen: 1, weight: 1, digits: 2, expr: 'smile' },
+  { key: 'thirdUpper', group: 'vertical', label: 'Верхняя треть', sigma: 0.021, teen: 1, weight: 0.8, digits: 3 },
+  { key: 'thirdMiddle', group: 'vertical', label: 'Средняя треть', sigma: 0.0168, teen: 1.1, weight: 1, digits: 3 },
+  { key: 'thirdLower', group: 'vertical', label: 'Нижняя треть', sigma: 0.021, teen: 1.2, weight: 1, digits: 3, expr: 'jaw' },
+  { key: 'noseLength', group: 'vertical', label: 'Длина носа / высота лица', sigma: 0.018, teen: 1.2, weight: 1, digits: 3 },
+  { key: 'ipd', group: 'eyes', label: 'Межзрачковое / скулы', sigma: 0.015, teen: 1.1, weight: 1.2, digits: 3 },
+  { key: 'eyeGap', group: 'eyes', label: 'Между глазами / ширина глаза', sigma: 0.084, teen: 1, weight: 1, digits: 2 },
+  { key: 'eyeWidth', group: 'eyes', label: 'Ширина глаза / скулы', sigma: 0.0108, teen: 1.15, weight: 1, digits: 3, expr: 'smile' },
+  { key: 'eyeTilt', group: 'eyes', label: 'Наклон глаз, °', sigma: 2.1, teen: 1, weight: 0.8, digits: 1 },
+  { key: 'noseWidth', group: 'lower', label: 'Ширина носа / скулы', sigma: 0.0168, teen: 1.15, weight: 1, digits: 3, expr: 'smile' },
+  { key: 'mouthWidth', group: 'lower', label: 'Ширина рта / скулы', sigma: 0.027, teen: 1.1, weight: 0.7, digits: 3, expr: 'smile' },
+  { key: 'lipRatio', group: 'lower', label: 'Нижняя / верхняя губа', sigma: 0.33, teen: 1, weight: 0.4, digits: 2, expr: 'smile' },
+  { key: 'chinToPhiltrum', group: 'lower', label: 'Подбородок / губной желобок', sigma: 0.27, teen: 1.2, weight: 0.8, digits: 2, expr: 'jaw' },
+];
+
+const FEATURE_SIGNATURE = FEATURES.map((f) => f.key).join(',');
+
+// Признаки эталонного лица, посчитанные тем же конвейером (MediaPipe, 2 кадрирования, фронтализация).
+// Эталонное фото на сайт не загружается и не показывается.
+const REFERENCE_PRESET = {
+  widthToHeight: 0.8247, jawToCheek: 0.9586, jawMidToCheek: 0.8130, fwhr: 1.6489,
+  thirdUpper: 0.2123, thirdMiddle: 0.3672, thirdLower: 0.4205, noseLength: 0.2945,
+  ipd: 0.4513, eyeGap: 1.2684, eyeWidth: 0.1880, eyeTilt: 0.11,
+  noseWidth: 0.3065, mouthWidth: 0.3900, lipRatio: 1.5004, chinToPhiltrum: 2.7879,
+};
+// Мимика на эталонном фото (blendshapes): лёгкая улыбка, рот закрыт.
+const REFERENCE_EXPRESSION = { smile: 0.51, jawOpen: 0.0 };
+
+function isValidReference(values) {
+  return !!values && FEATURES.every((f) => Number.isFinite(values[f.key]));
 }
 
-function calculateMetrics(landmarks, width, height, profile = 'neutral') {
+const BANDS = [
+  { key: 'other', max: 30, range: 'ниже 30 %', label: 'Другая вселенная', phrase: 'С гуру у вас общего — разве что любовь к задачам. Зато вы уникальны!' },
+  { key: 'weak', max: 45, range: '30–45 %', label: 'Дальний родственник', phrase: 'Что-то от гуру проглядывает, но издалека и в тумане. Путь к просветлению долог.' },
+  { key: 'moderate', max: 60, range: '45–60 %', label: 'Ученик гуру', phrase: 'Типичный ученик матпрактикума: сходство есть, но до гуру ещё пара контрольных.' },
+  { key: 'clear', max: 75, range: '60–75 %', label: 'Подающий надежды', phrase: 'Заметное сходство! Наденьте розовую рубашку в полоску — и могут перепутать.' },
+  { key: 'strong', max: 90, range: '75–90 %', label: 'Почти гуру', phrase: 'Очень похоже. Ещё чуть-чуть — и вас попросят объяснить задачу у доски.' },
+  { key: 'match', max: Infinity, range: 'от 90 %', label: 'Гуру, это вы?', phrase: 'Гуру, это вы?' },
+];
+
+function getSimilarityBand(percent) {
+  const index = Math.max(0, BANDS.findIndex((band) => percent < band.max));
+  const band = BANDS[index];
+  return { key: band.key, index, label: band.label, phrase: band.phrase, range: band.range, total: BANDS.length };
+}
+
+// Фронтальная проекция лица: P(i) → {x, y} в плоскости лица + оценка позы головы.
+function frontalize(landmarks, width, height) {
+  const p3 = (i) => {
+    const p = landmarks[i];
+    if (!p || !Number.isFinite(p.x) || !Number.isFinite(p.y)) {
+      throw new Error(`Не найден лицевой ориентир №${i}. Попробуй более чёткое фото анфас.`);
+    }
+    return { x: p.x * width, y: p.y * height, z: Number.isFinite(p.z) ? p.z * width : 0 };
+  };
+  const xAxis = v3.unit(SYMMETRIC_PAIRS.reduce((acc, [l, r]) => v3.add(acc, v3.sub(p3(r), p3(l))), { x: 0, y: 0, z: 0 }));
+  const down = v3.sub(v3.avg(MIDLINE_LOWER.map(p3)), v3.avg(MIDLINE_UPPER.map(p3)));
+  if (!(v3.norm(down) > 0)) throw new Error('Положение лица выглядит нестандартно для расчёта. Выбери ровный снимок анфас.');
+  const yAxis = v3.unit(v3.sub(down, v3.scale(xAxis, v3.dot(down, xAxis))));
+  const origin = p3(168);
+  const cache = new Map();
+  const P = (i) => {
+    if (!cache.has(i)) {
+      const d = v3.sub(p3(i), origin);
+      cache.set(i, { x: v3.dot(d, xAxis), y: v3.dot(d, yAxis) });
+    }
+    return cache.get(i);
+  };
+  const deg = (r) => r * 180 / Math.PI;
+  return {
+    P,
+    pose: {
+      rollDeg: rounded(deg(Math.atan2(xAxis.y, xAxis.x)), 1),
+      yawDeg: rounded(deg(Math.asin(clamp(xAxis.z, -1, 1))), 1),
+      pitchDeg: rounded(deg(Math.asin(clamp(yAxis.z, -1, 1))), 1),
+    },
+  };
+}
+
+function extractFeatures(landmarks, width, height) {
   if (!Array.isArray(landmarks) || landmarks.length < 468) {
     throw new Error('Модель вернула неполный набор лицевых ориентиров. Попробуй другое фото.');
   }
   if (!(width > 0 && height > 0)) throw new Error('Не удалось определить размеры изображения.');
 
-  // Frequently used points from MediaPipe Face Landmarker (468-point mesh + optional iris points).
-  const P = (i) => pointPx(landmarks, i, width, height);
+  const { P, pose: angles } = frontalize(landmarks, width, height);
   const d = (a, b) => distance(P(a), P(b));
-  const cheekWidth = d(234, 454);
-  const jawWidth = d(132, 361);
-  const foreheadY = P(10).y;
-  const browY = mean([P(70).y, P(300).y]);
-  const noseBaseY = mean([P(2).y, P(98).y, P(327).y]);
+  const has = (i) => landmarks[i] && Number.isFinite(landmarks[i].x);
+
+  const cheek = d(234, 454);
+  const jaw = d(132, 361);
+  const jawMid = d(172, 397);
+  const topY = P(10).y;
   const chinY = P(152).y;
-  const thirdsRaw = [browY - foreheadY, noseBaseY - browY, chinY - noseBaseY];
-  if (thirdsRaw.some((n) => !Number.isFinite(n) || n <= 0) || cheekWidth <= 0 || jawWidth <= 0) {
+  const faceHeight = chinY - topY;
+  const browY = mean([P(70).y, P(300).y, P(105).y, P(334).y]);
+  const noseBaseY = mean([P(2).y, P(98).y, P(327).y]);
+  const thirdsRaw = [browY - topY, noseBaseY - browY, chinY - noseBaseY];
+  if (!(cheek > 0) || !(jaw > 0) || !(faceHeight > 0) || thirdsRaw.some((n) => !Number.isFinite(n) || n <= 0)) {
     throw new Error('Положение лица выглядит нестандартно для расчёта. Выбери ровный снимок анфас.');
   }
   const thirdsTotal = thirdsRaw.reduce((a, b) => a + b, 0);
-  const thirds = thirdsRaw.map((v) => v / thirdsTotal);
-  const thirdsDeviation = mean(thirds.map((v) => Math.abs(v - 1 / 3)));
-  const thirdsScore = gaussian(thirdsDeviation, 0, 0.105);
+  const upperFace = P(13).y - browY;
+  if (!(upperFace > 0)) throw new Error('Не удалось определить верхнюю высоту лица. Выбери ровный снимок анфас.');
 
-  const pairs = [[33, 263], [133, 362], [234, 454], [61, 291], [132, 361]];
-  const midlineX = mean([P(1).x, P(168).x, P(0).x, P(152).x]);
-  const symmetryErrors = pairs.map(([li, ri]) => {
-    const L = P(li), R = P(ri);
-    const horizontalMismatch = Math.abs(Math.abs(L.x - midlineX) - Math.abs(R.x - midlineX));
-    const verticalMismatch = Math.abs(L.y - R.y) * 0.45; // reduce sensitivity to slight head tilt
-    return Math.hypot(horizontalMismatch, verticalMismatch) / cheekWidth;
+  const eyeWidth = mean([d(33, 133), d(263, 362)]);
+  const tilt = mean([canthalTilt(P(133), P(33)), canthalTilt(P(362), P(263))]);
+  const upperLip = d(0, 13);
+  const philtrum = Math.abs(P(0).y - P(2).y);
+  const centre = (a, b) => ({ x: (P(a).x + P(b).x) / 2, y: (P(a).y + P(b).y) / 2 });
+  // Центры зрачков по радужкам (468, 473); если модель их не вернула — центры глаз.
+  const pupilL = has(468) ? P(468) : centre(33, 133);
+  const pupilR = has(473) ? P(473) : centre(263, 362);
+
+  const values = {
+    widthToHeight: cheek / faceHeight,
+    jawToCheek: jaw / cheek,
+    jawMidToCheek: jawMid / cheek,
+    fwhr: cheek / upperFace,
+    thirdUpper: thirdsRaw[0] / thirdsTotal,
+    thirdMiddle: thirdsRaw[1] / thirdsTotal,
+    thirdLower: thirdsRaw[2] / thirdsTotal,
+    noseLength: Math.abs(P(2).y - P(168).y) / faceHeight,
+    ipd: distance(pupilL, pupilR) / cheek,
+    eyeGap: d(133, 362) / Math.max(eyeWidth, 1e-6),
+    eyeWidth: eyeWidth / cheek,
+    eyeTilt: tilt,
+    noseWidth: d(129, 358) / cheek,
+    mouthWidth: d(61, 291) / cheek,
+    lipRatio: d(14, 17) / Math.max(upperLip, 1e-6),
+    chinToPhiltrum: Math.abs(chinY - P(17).y) / Math.max(philtrum, 1e-6),
+  };
+  if (!FEATURES.every((f) => Number.isFinite(values[f.key]))) {
+    throw new Error('Не удалось рассчитать пропорции лица. Выбери более чёткое фото анфас.');
+  }
+
+  // Двумерная оценка поворота: смещение кончика носа от середины скул (работает и без z).
+  const yaw2d = (P(1).x - mean([P(234).x, P(454).x])) / cheek;
+  const turned = Math.abs(yaw2d) > 0.07 || Math.abs(angles.yawDeg) > 18 || Math.abs(angles.pitchDeg) > 25;
+  const pose = {
+    ...angles,
+    yawRatio: rounded(yaw2d, 3),
+    warning: turned ? 'Голова заметно повёрнута: фронтализация частично это исправляет, но для точного результата лучше фото строго анфас.' : null,
+  };
+  return { values, pose };
+}
+
+// Усредняет признаки нескольких проходов детектора (разные кадрирования): меньше шума ориентиров.
+function averageFeatures(list) {
+  const valid = list.filter(isValidReference);
+  if (!valid.length) return null;
+  const out = {};
+  for (const f of FEATURES) out[f.key] = mean(valid.map((v) => v[f.key]));
+  return out;
+}
+
+// Множитель веса от мимики. expression: { smile: 0..1, jawOpen: 0..1 } из blendshapes MediaPipe.
+// Сравнивается с мимикой эталона: отличие до 0,15 не мешает, дальше вес плавно падает до 25 %.
+function expressionFactor(feature, expression, reference = REFERENCE_EXPRESSION) {
+  if (!expression || !feature.expr) return 1;
+  const key = feature.expr === 'smile' ? 'smile' : 'jawOpen';
+  const level = expression[key];
+  if (!Number.isFinite(level)) return 1;
+  return 1 - 0.75 * clamp((Math.abs(level - (reference?.[key] ?? 0)) - 0.15) / 0.4, 0, 1);
+}
+
+function expressionDiffers(expression, reference = REFERENCE_EXPRESSION) {
+  return !!expression && (Math.abs(expression.smile - reference.smile) > 0.4 || Math.abs(expression.jawOpen - reference.jawOpen) > 0.4);
+}
+
+function compareValues(values, reference, { pose = null, expression = null } = {}) {
+  if (!isValidReference(reference)) throw new Error('Эталон не готов: не удалось получить его пропорции.');
+  if (!isValidReference(values)) throw new Error('Не удалось рассчитать пропорции лица. Выбери более чёткое фото анфас.');
+
+  const scoreOf = (d2) => clamp(100 * Math.exp(-0.5 * d2 / SCORE_K ** 2));
+  const groups = GROUPS.map((group) => {
+    const features = FEATURES.filter((f) => f.group === group.key).map((f) => {
+      const sigma = f.sigma * f.teen;
+      return {
+        key: f.key,
+        label: f.label,
+        digits: f.digits,
+        weight: f.weight * expressionFactor(f, expression),
+        value: values[f.key],
+        reference: reference[f.key],
+        z: Math.min(Z_CAP, Math.abs(values[f.key] - reference[f.key]) / sigma),
+        similarity: featureSimilarity(values[f.key], reference[f.key], sigma),
+      };
+    });
+    const weightSum = features.reduce((acc, f) => acc + f.weight, 0);
+    const d2 = features.reduce((acc, f) => acc + f.weight * f.z * f.z, 0) / weightSum;
+    return { d2, category: { key: group.key, title: group.title, short: group.short, description: group.description, weight: group.weight, score: rounded(scoreOf(d2), 1), features } };
   });
-  const asymmetryIndex = mean(symmetryErrors) * 100;
-  const symmetryScore = gaussian(mean(symmetryErrors), 0, 0.045);
 
-  const leftEyeWidth = d(33, 133);
-  const rightEyeWidth = d(263, 362);
-  const averageEyeWidth = mean([leftEyeWidth, rightEyeWidth]);
-  const interEyeGap = d(133, 362);
-  const eyeGapRatio = interEyeGap / Math.max(averageEyeWidth, 1e-6);
-  const eyeSpacingScore = gaussian(eyeGapRatio, 1.0, 0.48);
-  const harmonyScore = clamp(thirdsScore * 0.38 + symmetryScore * 0.37 + eyeSpacingScore * 0.25);
+  const weightTotal = GROUPS.reduce((acc, g) => acc + g.weight, 0);
+  const d2Total = groups.reduce((acc, g, i) => acc + g.d2 * GROUPS[i].weight, 0) / weightTotal;
+  const percent = rounded(scoreOf(d2Total), 1);
 
-  const jawToCheek = jawWidth / cheekWidth;
-  const philtrumLength = Math.abs(P(0).y - P(2).y);
-  const chinLength = Math.abs(P(152).y - P(17).y);
-  const chinToPhiltrum = chinLength / Math.max(philtrumLength, 1e-6);
-  const selectedProfile = PROFILES[profile] ? profile : 'neutral';
-  const target = PROFILES[selectedProfile];
-  const weights = target.weights;
-  const jawProfileScore = gaussian(jawToCheek, target.jaw, 0.13);
-  const chinProfileScore = gaussian(chinToPhiltrum, target.chin, 0.55);
-  const dimorphismScore = clamp(jawProfileScore * 0.65 + chinProfileScore * 0.35);
-
-  const faceHeight = Math.abs(chinY - foreheadY);
-  const jawToFaceHeight = jawWidth / Math.max(faceHeight, 1e-6);
-  const upperFaceHeight = P(13).y - browY;
-  if (!(upperFaceHeight > 0)) throw new Error('Не удалось определить верхнюю высоту лица. Выбери ровный снимок анфас.');
-  const fwhr = cheekWidth / upperFaceHeight;
-  const fwhrScore = gaussian(fwhr, target.fwhr, 0.35);
-  const angularityScore = clamp(
-    fwhrScore * 0.48 +
-    gaussian(jawToFaceHeight, target.jawFace, 0.13) * 0.32 +
-    gaussian(jawToCheek, target.jaw, 0.16) * 0.20
-  );
-
-  const pupilLeft = landmarks[468] && landmarks[473] ? d(468, 473) : d(33, 263) * 1.8;
-  const ipdProxy = Math.max(pupilLeft, 1e-6); // proxy only; never reported as millimetres
-  const noseWidth = d(129, 358);
-  const mouthWidth = d(61, 291);
-  const upperLipHeight = d(0, 13);
-  const lowerLipHeight = d(14, 17);
-  const lipRatio = lowerLipHeight / Math.max(upperLipHeight, 1e-6);
-  const leftTilt = canthalTilt(P(133), P(33));
-  const rightTilt = canthalTilt(P(362), P(263));
-  const averageTilt = mean([leftTilt, rightTilt]);
-  const tiltScore = gaussian(averageTilt, target.tilt, 8.0);
-  const noseRatio = noseWidth / ipdProxy;
-  const mouthRatio = mouthWidth / ipdProxy;
-  const noseScore = gaussian(noseRatio, 0.66, 0.19);
-  const mouthScore = gaussian(mouthRatio, 1.45, 0.38);
-  const lipScore = gaussian(lipRatio, target.lip, 0.95);
-  const miscellaneousScore = clamp(tiltScore * 0.32 + noseScore * 0.26 + mouthScore * 0.25 + lipScore * 0.17);
-
-  const combined = clamp((harmonyScore * weights.harmony + dimorphismScore * weights.dimorphism + angularityScore * weights.angularity + miscellaneousScore * weights.misc) / 100);
-  // Display the weighted composite geometry directly on a 0–10 scale; no PSL remapping.
-  const geometryScore = rounded(combined / 10, 1);
-  const tier = getTier(geometryScore, selectedProfile);
+  const measurements = {};
+  for (const f of FEATURES) measurements[f.key] = rounded(values[f.key], 4);
 
   return {
-    overallScore: geometryScore,
-    compositeScore: rounded(combined, 1),
-    tier,
-    profile: { key: selectedProfile, label: target.label },
-    categories: [
-      { key: 'harmony', title: 'Фациальная гармония', short: 'Гармония', score: rounded(harmonyScore), weight: weights.harmony, description: 'Баланс приблизительных третей, симметрия ключевых точек и расстояние между глазами.', details: { thirdsScore: rounded(thirdsScore), symmetryScore: rounded(symmetryScore), eyeSpacingScore: rounded(eyeSpacingScore) } },
-      { key: 'dimorphism', title: 'Структура / выбранный профиль', short: 'Структура', score: rounded(dimorphismScore), weight: weights.dimorphism, description: 'Сравнение отношения ширины челюсти к скулам и пропорции подбородка с эталоном выбранного пресета.', details: { jawToCheek: rounded(jawToCheek), chinToPhiltrum: rounded(chinToPhiltrum), targetProfile: target.label } },
-      { key: 'angularity', title: 'Геометрия контура', short: 'Контур', score: rounded(angularityScore), weight: weights.angularity, description: 'Приближение FWHR (ширина скул / высота от линии бровей до верхней губы) и ширины нижней трети.', details: { fwhr: rounded(fwhr), fwhrScore: rounded(fwhrScore), jawToFaceHeight: rounded(jawToFaceHeight), jawToCheek: rounded(jawToCheek) } },
-      { key: 'misc', title: 'Вторичные пропорции', short: 'Детали', score: rounded(miscellaneousScore), weight: weights.misc, description: 'Наклон глаз и отношения ширины носа/рта к межзрачковому расстоянию; соотношение губ.', details: { canthalTiltDegrees: rounded(averageTilt, 1), noseToIpd: rounded(noseRatio), mouthToIpd: rounded(mouthRatio), lipRatio: rounded(lipRatio) } },
-    ],
-    measurements: {
-      canthalTiltDegrees: rounded(averageTilt, 1),
-      intercanthalDistancePx: rounded(d(133, 362), 1),
-      eyeGapRatio: rounded(eyeGapRatio),
-      thirds: thirds.map((v) => rounded(v, 3)),
-      asymmetryIndexPercent: rounded(asymmetryIndex, 2),
-      cheekWidthPx: rounded(cheekWidth, 1),
-      jawWidthPx: rounded(jawWidth, 1),
-      jawToCheekRatio: rounded(jawToCheek),
-      jawToFaceHeightRatio: rounded(jawToFaceHeight),
-      fwhr: rounded(fwhr),
-      cheekToJawRatio: rounded(cheekWidth / jawWidth),
-      chinToPhiltrumRatio: rounded(chinToPhiltrum),
-      noseToIpdRatio: rounded(noseRatio),
-      mouthToIpdRatio: rounded(mouthRatio),
-      lipRatio: rounded(lipRatio),
-    },
-    notes: [
-      'Пропорции третей приблизительны: линия роста волос напрямую не определяется, поэтому используется верхний видимый ориентир лба.',
-      'Миллиметры не выводятся: без известного масштаба фотографии они были бы ложной точностью.',
-      'Модель видит двумерную проекцию; профиль, глубину посадки глаз и выраженность костей в 3D надёжно не измерить.',
-    ],
+    similarityPercent: percent,
+    distance: rounded(Math.sqrt(d2Total), 3),
+    band: getSimilarityBand(percent),
+    categories: groups.map((g) => g.category),
+    measurements,
+    pose: pose || { warning: null },
+    expressionWarning: expressionDiffers(expression) ? 'Мимика сильно отличается от эталона (гуру слегка улыбается): признаки рта и подбородка учтены с пониженным весом.' : null,
   };
 }
 
+function compareFaces(landmarks, width, height, reference, expression = null) {
+  if (!isValidReference(reference)) throw new Error('Эталон не готов: не удалось получить его пропорции.');
+  const { values, pose } = extractFeatures(landmarks, width, height);
+  return compareValues(values, reference, { pose, expression });
+}
+
 const MP_VERSION = '1.1.0';
-const MP_MODULE_URL = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MP_VERSION}/vision_bundle.mjs`;
 const MP_WASM_URL = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MP_VERSION}/wasm`;
 const MODEL_URL = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
 const MAX_FILE_BYTES = 12 * 1024 * 1024;
 const MAX_IMAGE_EDGE = 1600;
-
 const mogRoot = document.getElementById('mogApp');
+const mogSection = document.getElementById('t4');
 const el = (id) => mogRoot.querySelector(`#${id}`);
 const fileInput = el('fileInput');
 const dropZone = el('dropZone');
@@ -221,30 +324,31 @@ const previewWrap = el('previewWrap');
 const sourcePreview = el('sourcePreview');
 const analyzeBtn = el('analyzeBtn');
 const analyzeBtnText = el('analyzeBtnText');
-const profileSelect = el('profileSelect');
 const errorBox = el('errorBox');
 const progressBox = el('progressBox');
 const progressTitle = el('progressTitle');
 const progressText = el('progressText');
 const emptyState = el('emptyState');
 const reportContent = el('reportContent');
-const annotatedCanvas = el('annotatedCanvas');
-const canvasCtx = annotatedCanvas.getContext('2d');
 
 let chosenFile = null;
 let objectUrl = null;
 let detectorPromise = null;
 let faceLandmarker = null;
-let analysisLandmarks = null;
-let processingWidth = 0;
-let processingHeight = 0;
-let processingCanvas = null;
-let latestMetrics = null;
 let isBusy = false;
 let loadToken = 0; // защита от гонок, если фото выбрали несколько раз подряд
 
+// ---- Князев-коины: стоимость анализа и баланс (мост window.KD из js/main.js) ----
+const kd = () => window.KD || null;
+const analysisCost = () => (kd() ? kd().cost() : 0);
+const analyzeLabel = () => {
+  const cost = analysisCost();
+  return cost > 0 ? `Сравнить с гуру · ${cost} КК` : 'Сравнить с гуру';
+};
+
 function updateAnalyzeButton() {
   analyzeBtn.disabled = !chosenFile || isBusy;
+  if (!isBusy) analyzeBtnText.textContent = analyzeLabel();
 }
 
 function showError(message) {
@@ -272,14 +376,9 @@ function humanFileSize(bytes) {
 }
 
 function resetReport() {
-  latestMetrics = null;
-  analysisLandmarks = null;
-  processingCanvas = null;
-  processingWidth = 0;
-  processingHeight = 0;
   emptyState.classList.remove('mog-hidden');
   reportContent.classList.add('mog-hidden');
-  document.getElementById('t4').classList.remove('mog-analyzed');
+  mogSection.classList.remove('mog-analyzed');
   el('formulaContent').classList.add('mog-hidden');
   el('formulaToggle').setAttribute('aria-expanded', 'false');
 }
@@ -318,8 +417,8 @@ function unsupportedMessage(type) {
 }
 
 async function setPhoto(file) {
+  if (!file || isBusy) return;
   clearError();
-  if (!file) return;
   const token = ++loadToken;
   if (file.size === 0) {
     clearPhoto();
@@ -365,6 +464,7 @@ async function setPhoto(file) {
 }
 
 function clearPhoto() {
+  loadToken += 1;
   chosenFile = null;
   if (objectUrl) URL.revokeObjectURL(objectUrl);
   objectUrl = null;
@@ -381,30 +481,23 @@ async function loadFaceLandmarker() {
   if (faceLandmarker) return faceLandmarker;
   if (detectorPromise) return detectorPromise;
   detectorPromise = (async () => {
-    setProgress('Загружаю MediaPipe…', 'Подключаю библиотеку и модель. При первом запуске это может занять некоторое время.');
-    const { FaceLandmarker, FilesetResolver } = await import(MP_MODULE_URL);
+    setProgress('Загружаю MediaPipe…', 'Подключаю модель распознавания ориентиров. При первом запуске нужен интернет.');
+    const lib = window.MPVision;
+    if (!lib?.FaceLandmarker) throw new Error('Не найден файл js/vendor/tasks-vision-1.1.0.js.');
+    const { FaceLandmarker, FilesetResolver } = lib;
     const vision = await FilesetResolver.forVisionTasks(MP_WASM_URL);
     const commonOptions = {
       runningMode: 'IMAGE',
       numFaces: 2,
-      minFaceDetectionConfidence: 0.55,
-      minFacePresenceConfidence: 0.55,
+      minFaceDetectionConfidence: 0.5,
+      minFacePresenceConfidence: 0.5,
       minTrackingConfidence: 0.5,
-      outputFaceBlendshapes: false,
+      outputFaceBlendshapes: true,
       outputFacialTransformationMatrixes: false,
     };
-    try {
-      faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
-        ...commonOptions,
-        baseOptions: { modelAssetPath: MODEL_URL, delegate: 'GPU' },
-      });
-    } catch (gpuError) {
-      // Some devices/browser drivers do not support the GPU delegate; retry on CPU.
-      faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
-        ...commonOptions,
-        baseOptions: { modelAssetPath: MODEL_URL, delegate: 'CPU' },
-      });
-    }
+    // Только CPU: GPU-делегат MediaPipe в Firefox при повторных detect() на canvas разного
+    // размера мог сбрасывать видеопроцесс браузера (мигание окна и падение страницы).
+    faceLandmarker = await FaceLandmarker.createFromOptions(vision, { ...commonOptions, baseOptions: { modelAssetPath: MODEL_URL, delegate: 'CPU' } });
     return faceLandmarker;
   })();
   try {
@@ -412,135 +505,121 @@ async function loadFaceLandmarker() {
   } catch (err) {
     detectorPromise = null;
     faceLandmarker = null;
-    throw new Error('Не получилось загрузить MediaPipe или модель Google. Проверь интернет, HTTPS и доступ к cdn.jsdelivr.net и storage.googleapis.com, затем обнови страницу. Детали: ' + (err?.message || String(err)));
+    const detail = err?.message || String(err);
+    throw new Error('Не получилось загрузить модель MediaPipe. Проверь интернет и доступ к cdn.jsdelivr.net и storage.googleapis.com, затем обнови страницу. Детали: ' + detail);
   }
 }
 
-function prepareCanvas(img) {
+// Уменьшенная копия фото для первого (грубого) поиска лица.
+function makeCanvas(img) {
   const scale = Math.min(1, MAX_IMAGE_EDGE / Math.max(img.naturalWidth, img.naturalHeight));
-  processingWidth = Math.max(1, Math.round(img.naturalWidth * scale));
-  processingHeight = Math.max(1, Math.round(img.naturalHeight * scale));
-  processingCanvas = document.createElement('canvas');
-  processingCanvas.width = processingWidth;
-  processingCanvas.height = processingHeight;
-  const ctx = processingCanvas.getContext('2d', { willReadFrequently: false });
+  const width = Math.max(1, Math.round(img.naturalWidth * scale));
+  const height = Math.max(1, Math.round(img.naturalHeight * scale));
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Браузер не смог создать canvas для обработки изображения.');
-  ctx.drawImage(img, 0, 0, processingWidth, processingHeight);
+  ctx.drawImage(img, 0, 0, width, height);
+  return { canvas, width, height, scale };
 }
 
-function drawAnnotated(landmarks) {
-  annotatedCanvas.width = processingWidth;
-  annotatedCanvas.height = processingHeight;
-  canvasCtx.clearRect(0, 0, processingWidth, processingHeight);
-  canvasCtx.drawImage(processingCanvas, 0, 0);
-  const radius = Math.max(1.05, Math.min(processingWidth, processingHeight) / 650);
-  canvasCtx.fillStyle = '#bafa58';
-  canvasCtx.strokeStyle = 'rgba(15, 18, 13, .65)';
-  canvasCtx.lineWidth = 0.5;
-  // Draw sparse mesh points for a readable overlay rather than painting every vertex as a blob.
-  for (let i = 0; i < landmarks.length; i++) {
-    const p = landmarks[i];
-    if (i % 2 !== 0 && i > 467) continue;
-    const x = p.x * processingWidth;
-    const y = p.y * processingHeight;
-    if (x < 0 || y < 0 || x >= processingWidth || y >= processingHeight) continue;
-    canvasCtx.beginPath();
-    canvasCtx.arc(x, y, radius, 0, Math.PI * 2);
-    canvasCtx.fill();
-    canvasCtx.stroke();
-  }
-  // Emphasize the primary geometry landmarks.
-  const marked = [10, 70, 300, 2, 152, 33, 133, 362, 263, 234, 454, 132, 361, 61, 291, 129, 358];
-  canvasCtx.fillStyle = '#fff9d7';
-  marked.forEach((index) => {
-    const p = landmarks[index];
-    if (!p) return;
-    canvasCtx.beginPath();
-    canvasCtx.arc(p.x * processingWidth, p.y * processingHeight, radius * 1.8, 0, Math.PI * 2);
-    canvasCtx.fill();
-  });
+// Квадратный кадр вокруг лица, вырезанный из ОРИГИНАЛА в полном разрешении:
+// мелкое лицо на большом фото не теряет детализацию при уменьшении.
+function cropFace(img, landmarks, scale, factor, outputSize = 768) {
+  const W = img.naturalWidth;
+  const H = img.naturalHeight;
+  const xs = landmarks.map((p) => p.x * W);
+  const ys = landmarks.map((p) => p.y * H);
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const minY = Math.min(...ys), maxY = Math.max(...ys);
+  const faceSize = Math.max(maxX - minX, maxY - minY);
+  if (!Number.isFinite(faceSize) || faceSize < 2) throw new Error('Не удалось определить размер лица.');
+  if (faceSize * scale < 60) throw new Error('Лицо на фото слишком маленькое. Возьми снимок, где лицо крупнее.');
+  const side = Math.max(2, Math.min(Math.min(W, H), faceSize * factor));
+  const sx = Math.max(0, Math.min(W - side, (minX + maxX) / 2 - side / 2));
+  const sy = Math.max(0, Math.min(H - side, (minY + maxY) / 2 - side / 2));
+  const crop = document.createElement('canvas');
+  crop.width = outputSize;
+  crop.height = outputSize;
+  const ctx = crop.getContext('2d');
+  if (!ctx) throw new Error('Браузер не смог нормализовать область лица.');
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(img, sx, sy, side, side, 0, 0, outputSize, outputSize);
+  return crop;
 }
 
-function safeNumber(value, digits = 2) {
-  return Number.isFinite(value) ? Number(value).toFixed(digits) : '—';
+function readExpression(blendshapes) {
+  const cats = blendshapes?.categories;
+  if (!cats?.length) return null;
+  const score = (name) => cats.find((c) => c.categoryName === name)?.score ?? 0;
+  return { smile: (score('mouthSmileLeft') + score('mouthSmileRight')) / 2, jawOpen: score('jawOpen') };
 }
 
-function buildMetricDetails(category) {
-  const d = category.details;
-  if (category.key === 'harmony') {
-    return `Трети: ${safeNumber(d.thirdsScore, 0)} · Симметрия: ${safeNumber(d.symmetryScore, 0)} · Посадка глаз: ${safeNumber(d.eyeSpacingScore, 0)}`;
+// Два прохода: грубый поиск лица, затем уточнение на двух кадрированиях разного масштаба.
+// Признаки и мимика усредняются по кадрам.
+const CROP_FACTORS = [1.7, 2.1];
+function analyzeFace(detector, img) {
+  const { canvas, scale } = makeCanvas(img);
+  const firstPass = detector.detect(canvas)?.faceLandmarks || [];
+  if (!firstPass.length) throw new Error('Лицо не найдено. Используй чёткий снимок анфас с хорошим освещением.');
+  if (firstPass.length > 1) throw new Error('На фото найдено больше одного лица. Оставь в кадре одного человека.');
+  const passes = [];
+  for (const factor of CROP_FACTORS) {
+    const crop = cropFace(img, firstPass[0], scale, factor);
+    const result = detector.detect(crop);
+    const landmarks = result?.faceLandmarks?.[0];
+    if (!landmarks) continue;
+    const { values, pose } = extractFeatures(landmarks, crop.width, crop.height);
+    passes.push({ values, pose, expression: readExpression(result.faceBlendshapes?.[0]) });
   }
-  if (category.key === 'dimorphism') {
-    return `Челюсть/скулы: ${safeNumber(d.jawToCheek)} · Подбородок/филтрум: ${safeNumber(d.chinToPhiltrum)}`;
-  }
-  if (category.key === 'angularity') {
-    return `FWHR: ${safeNumber(d.fwhr)} · Челюсть/видимая высота: ${safeNumber(d.jawToFaceHeight)} · Челюсть/скулы: ${safeNumber(d.jawToCheek)}`;
-  }
-  return `Наклон глаз: ${safeNumber(d.canthalTiltDegrees, 1)}° · Нос/IPD: ${safeNumber(d.noseToIpd)} · Рот/IPD: ${safeNumber(d.mouthToIpd)} · Губы: ${safeNumber(d.lipRatio)}`;
+  if (!passes.length) throw new Error('Не удалось уточнить ориентиры лица. Попробуй фото, где лицо крупнее и лучше освещено.');
+  const exprs = passes.map((p) => p.expression).filter(Boolean);
+  const expression = exprs.length ? { smile: exprs.reduce((a, e) => a + e.smile, 0) / exprs.length, jawOpen: exprs.reduce((a, e) => a + e.jawOpen, 0) / exprs.length } : null;
+  return { pose: passes[0].pose, values: averageFeatures(passes.map((p) => p.values)), expression };
 }
 
-function renderMetrics(metrics) {
-  const grid = el('metricGrid');
-  grid.replaceChildren();
-  metrics.categories.forEach((category) => {
-    const card = document.createElement('article');
-    card.className = 'mog-metric-card';
-    const top = document.createElement('div');
-    top.className = 'mog-metric-card-top';
-    const title = document.createElement('h4');
-    title.textContent = category.title;
-    const score = document.createElement('span');
-    score.className = 'mog-metric-score';
-    score.textContent = `${Math.round(category.score)}/100`;
-    top.append(title, score);
-    const bar = document.createElement('div');
-    bar.className = 'mog-metric-bar';
-    const fill = document.createElement('span');
-    fill.style.width = `${Math.max(0, Math.min(100, category.score))}%`;
-    bar.append(fill);
-    const desc = document.createElement('p');
-    desc.textContent = category.description;
-    const more = document.createElement('div');
-    more.className = 'mog-metric-more';
-    more.textContent = buildMetricDetails(category);
-    card.append(top, bar, desc, more);
-    grid.append(card);
-  });
+function getReference() {
+  if (!isValidReference(REFERENCE_PRESET)) throw new Error('Эталон не задан: заполни REFERENCE_PRESET в metrics.js.');
+  return REFERENCE_PRESET;
 }
 
 function renderReport(metrics) {
-  latestMetrics = metrics;
-  const score = metrics.overallScore;
-  const tier = metrics.tier;
+  const percent = metrics.similarityPercent;
   emptyState.classList.add('mog-hidden');
   reportContent.classList.remove('mog-hidden');
-  el('scoreValue').textContent = score.toFixed(1);
-  el('tierName').textContent = tier.range + ' / 10';
-  el('tierBadge').textContent = tier.community;
-  el('scoreSummaryText').textContent = `Геометрический балл · ${score.toFixed(1)}/10 · ${metrics.profile.label.toLowerCase()} пресет. Приблизительная оценка пропорций по фото, не объективная оценка внешности.`;
-  el('scoreRing').style.setProperty('--score-angle', `${score / 10 * 360}deg`);
-  // Only the matching category is shown; no full tier ladder.
-  document.getElementById('t4').classList.add('mog-analyzed');
-  renderMetrics(metrics);
-  const formulaList = el('formulaList');
-  formulaList.replaceChildren();
-  metrics.categories.forEach((category) => {
-    const li = document.createElement('li');
-    li.textContent = `${category.title}: ${category.weight}% веса, подбалл ${category.score}/100. ${buildMetricDetails(category)}`;
-    formulaList.append(li);
-  });
-  drawAnnotated(analysisLandmarks);
+  el('scoreValue').textContent = String(Math.round(percent));
+  el('tierBadge').textContent = metrics.band.label;
+  el('tierBadge').dataset.band = metrics.band.key;
+  const notes = [metrics.pose.warning, metrics.expressionWarning].filter(Boolean);
+  el('scoreSummaryText').textContent = notes.join(' ');
+  el('scoreSummaryText').classList.toggle('mog-hidden', !notes.length);
+  el('scoreRing').style.setProperty('--score-angle', `${percent / 100 * 360}deg`);
+  mogSection.classList.add('mog-analyzed');
+  if (metrics.band.key === 'match') grantGuruBonus();
+}
+
+// «Гуру, это вы?» — разовый бонус 1000 КК на пользователя (флаг в localStorage).
+const GURU_BONUS_KEY = 'kd-mogg-guru-bonus';
+function grantGuruBonus() {
+  try {
+    if (localStorage.getItem(GURU_BONUS_KEY)) return;
+    localStorage.setItem(GURU_BONUS_KEY, '1');
+  } catch { return; }
+  kd().refund(1000);
+  if (typeof toast === 'function') toast('Гуру узнан! +1000 КК');
 }
 
 async function analyzePhoto() {
   if (!chosenFile || isBusy) return;
-  // Анализ стоит КК: списываем с баланса до старта, при ошибке возвращаем.
-  const bridge = window.KD || null;
-  const cost = bridge ? bridge.cost() : 0;
-  if (cost > 0 && !(bridge && bridge.spend(cost))) {
-    showError(`Анализ стоит ${cost} КК — на балансе не хватает. Забери бонус или открой кейс.`);
+  // Анализ стоит КК: списываем до старта, при ошибке или смене фото возвращаем.
+  const bridge = kd();
+  const cost = analysisCost();
+  if (cost > 0 && !bridge.spend(cost)) {
+    showError(`Анализ стоит ${cost} КК — на балансе не хватает. Нажми «+» рядом с балансом или продай карточку в Князев Cases.`);
     return;
   }
+  const refund = () => { if (cost > 0) bridge.refund(cost); };
   isBusy = true;
   updateAnalyzeButton();
   clearError();
@@ -552,44 +631,36 @@ async function analyzePhoto() {
     if (!sourcePreview.complete || !sourcePreview.naturalWidth) {
       await sourcePreview.decode();
     }
-    prepareCanvas(sourcePreview);
     const detector = await loadFaceLandmarker();
-    setProgress('Ищу ориентиры лица…', 'Изображение обрабатывается в этом браузере; оно не отправляется на ваш сервер.');
-    // detect() is synchronous and may block briefly on large photos, so we resize before inference.
+    setProgress('Ищу ориентиры лица…', 'Фото обрабатывается прямо в этом браузере и никуда не отправляется.');
+    // detect() синхронный и может ненадолго заблокировать страницу: даём отрисоваться прогрессу.
     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-    // Фото удалили или заменили во время загрузки модели: отчёт по старому фото не показываем.
     if (photoChanged()) {
-      processingCanvas = null;
-      if (cost > 0 && bridge) bridge.refund(cost);
+      refund();
       return;
     }
-    const result = detector.detect(processingCanvas);
-    const faces = result?.faceLandmarks || [];
-    if (faces.length === 0) throw new Error('Лицо не найдено. Используй чёткий снимок анфас с хорошим освещением.');
-    if (faces.length > 1) throw new Error('На фото найдено больше одного лица. Оставь в кадре одного человека.');
-    analysisLandmarks = faces[0];
-    const metrics = calculateMetrics(analysisLandmarks, processingWidth, processingHeight, profileSelect.value);
+    const face = analyzeFace(detector, sourcePreview);
+    const metrics = compareValues(face.values, getReference(), { pose: face.pose, expression: face.expression });
     renderReport(metrics);
     reportContent.scrollIntoView({ behavior: 'auto', block: 'start' });
   } catch (err) {
-    if (cost > 0 && bridge) bridge.refund(cost);
+    refund();
     if (!photoChanged()) showError(err?.message || 'Не удалось проанализировать изображение. Попробуй другой файл.');
   } finally {
     isBusy = false;
     hideProgress();
-    analyzeBtnText.textContent = kdAnalyzeLabel();
     updateAnalyzeButton();
   }
 }
 
 // ---- Выбор файла, перетаскивание и вставка ---------------------------------------
-const mogSection = document.getElementById('t4');
 const isMogActive = () => !mogSection.hidden;
 const hasFiles = (event) => Array.from(event.dataTransfer?.types || []).includes('Files');
+const openPicker = () => { if (!isBusy) fileInput.click(); };
 
 // 1) Диалог «Проводника»: label[for] открывает его и без JS.
 dropZone.addEventListener('keydown', (event) => {
-  if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); fileInput.click(); }
+  if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openPicker(); }
 });
 fileInput.addEventListener('change', () => {
   const file = fileInput.files?.[0];
@@ -650,35 +721,21 @@ document.addEventListener('paste', (event) => {
     showError('В буфере обмена нет изображения. Скопируй картинку или сделай скриншот и нажми Ctrl+V ещё раз.');
   }
 });
-el('changePhotoBtn').addEventListener('click', () => fileInput.click());
-// Клик по загруженному фото (без точек) снова открывает проводник.
-el('sourcePreview').addEventListener('click', () => fileInput.click());
-el('sourcePreview').title = 'Нажми, чтобы выбрать другое фото';
-el('removePhotoBtn').addEventListener('click', clearPhoto);
+el('changePhotoBtn').addEventListener('click', openPicker);
+sourcePreview.addEventListener('click', openPicker);
+el('removePhotoBtn').addEventListener('click', () => { if (!isBusy) clearPhoto(); });
 analyzeBtn.addEventListener('click', analyzePhoto);
-profileSelect.addEventListener('change', () => {
-  if (analysisLandmarks && processingWidth && processingHeight) {
-    try { renderReport(calculateMetrics(analysisLandmarks, processingWidth, processingHeight, profileSelect.value)); }
-    catch (err) { showError(err?.message || 'Не удалось пересчитать выбранный профиль.'); }
-  }
-});
 el('formulaToggle').addEventListener('click', () => {
   const button = el('formulaToggle');
   const expanded = button.getAttribute('aria-expanded') === 'true';
   button.setAttribute('aria-expanded', String(!expanded));
   el('formulaContent').classList.toggle('mog-hidden', expanded);
 });
-el('downloadBtn').addEventListener('click', () => {
-  if (!annotatedCanvas.width || !annotatedCanvas.height) return;
-  const link = document.createElement('a');
-  link.download = 'knyazev-mogg-landmarks.png';
-  link.href = annotatedCanvas.toDataURL('image/png');
-  link.click();
-});
+el('resetBtnTop').addEventListener('click', () => el('resetBtn').click());
 el('resetBtn').addEventListener('click', () => {
+  if (isBusy) return;
   clearPhoto();
-  updateAnalyzeButton();
-  el('dropZone').scrollIntoView({ behavior: 'auto', block: 'nearest' });
+  dropZone.scrollIntoView({ behavior: 'auto', block: 'nearest' });
 });
 
 window.addEventListener('beforeunload', () => {
@@ -687,34 +744,4 @@ window.addEventListener('beforeunload', () => {
 });
 
 updateAnalyzeButton();
-
-// Пресет (пол для эталона) запоминаем: он не меняется от фото к фото.
-try {
-  const savedProfile = localStorage.getItem('mogg.profile');
-  if (savedProfile && [...profileSelect.options].some((option) => option.value === savedProfile)) profileSelect.value = savedProfile;
-} catch (err) { /* localStorage недоступен: работаем без запоминания */ }
-profileSelect.addEventListener('change', () => {
-  try { localStorage.setItem('mogg.profile', profileSelect.value); } catch (err) { /* ignore */ }
-});
-
-// ---- Князев-коины: баланс, бонус, стоимость анализа (мост window.KD) ----
-const kdAnalyzeLabel = () => {
-  const bridge = window.KD || null;
-  return bridge ? `Проанализировать лицо · ${bridge.cost()} КК` : 'Проанализировать лицо';
-};
-function refreshKdUi() {
-  const bridge = window.KD || null;
-  if (!bridge) return;
-  const bal = document.getElementById('mogBal'), bn = document.getElementById('mogBn');
-  if (bal) bal.textContent = `${bridge.bal()} КК`;
-  if (bn) bn.textContent = `Бонус +${bridge.bonusAmount()}`;
-  analyzeBtnText.textContent = kdAnalyzeLabel();
-  bridge.refreshMogg();
-}
-const mogBn = document.getElementById('mogBn');
-if (mogBn) mogBn.addEventListener('click', () => {
-  const bridge = window.KD || null;
-  if (bridge && bridge.claimBonus()) refreshKdUi();
-});
-refreshKdUi();
 })();

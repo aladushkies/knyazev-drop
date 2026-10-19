@@ -7,13 +7,9 @@ function drawUpgrade() {
   const canUpgrade = Boolean(selectedItem && selectedItem.r < 3);
   const chance = canUpgrade ? Math.min(ECON.upgrade.cap, ECON.upgrade.coef * selectedItem.v / IT[tg][2]) : 0;
   const circumference = 2 * Math.PI * 118;
-  // Баланс и бонус живут в шапке вкладки (см. index.html, #upBn/#upBal).
-  // Скелет как в Cases: карточка с кейсами, затем колесо, затем инвентарь.
+  // Баланс и кнопка пополнения живут в шапке вкладки (см. index.html, #upBn/#upBal).
+  // Колесо апгрейда, под ним инвентарь. Кейсы открываются только во вкладке Cases.
   $('#ui').innerHTML = `
-    <section class="upgrade-shop">
-      <p class="m">ФМШ 2007 · условная валюта «Князев-коины» (КК).</p>
-      <div class="cg">${CS.map((item,index)=>`<button class="cse" data-up-case="${index}" type="button"><big>${index?'∑':'✎'}</big><b>${item[0]}</b><span>${item[1]} КК</span></button>`).join('')}</div>
-    </section>
     <div class="upgrade-workspace">
       <div class="upgrade-slot">
         <span class="slot-caption">Исходная оценка</span>
@@ -47,7 +43,6 @@ function drawUpgrade() {
         <div class="pct" aria-live="polite">${canUpgrade ? `${Math.round(chance)}%` : '—'}</div>
         <div class="chance-caption">Шанс успеха</div>
         ${canUpgrade ? '<div class="upgrade-risk">При неудаче карточка сгорит</div>' : ''}
-        <div class="wheel-help">${canUpgrade ? 'Вероятность зависит от стоимости карточки и цели' : 'Выберите карточку'}</div>
       </div>
 
       <div class="upgrade-slot">
@@ -71,34 +66,28 @@ function drawUpgrade() {
           ${selectedItem.o ? '' : `<button class="b g" data-sell>Продать за ${sellPrice(selectedItem.v)} КК</button>`}
           ${ECON.insurance.enabled ? `<button class="b g" data-ins>${ins ? 'Страховка ✓' : 'Страховка'} · ${Math.floor(selectedItem.v * ECON.insurance.costRate)} КК</button>` : ''}
         </div>
-        <p class="upgrade-note">При успехе оценка улучшится. Выберите цель и проверьте шанс перед запуском.</p>
       ` : selectedItem ? `
-        <p class="m">Пятёрка — максимальная оценка. Её можно оставить в инвентаре или продать.</p>
         ${selectedItem.o ? '' : `<button class="b g" data-sell>Продать за ${sellPrice(selectedItem.v)} КК</button>`}
-      ` : `
-        <p class="m">Сначала выберите карточку в инвентаре.</p>
-      `}
+      ` : ``}
     </div>
 
     <section class="card inventory-section">
       <div class="section-heading">
         <div>
           <h3>Инвентарь</h3>
-          <p class="m">Нажмите на карточку, которую хотите улучшить.</p>
         </div>
-        <span class="inventory-counter">${S.inv.length} предмет(ов)</span>
+        <span class="inventory-counter">${itemsCount(S.inv.length)}</span>
       </div>
       ${S.inv.length
         ? `<div class="inv">${S.inv.map((item, index) => `
             <div class="iw" data-i="${index}">${cell(item, index === sel ? 'sel' : '')}</div>
           `).join('')}</div>`
-        : '<div class="upgrade-empty">Инвентарь пока пуст. Откройте кейс «Домашка» или «Самостоятельная».</div>'}
+        : '<div class="upgrade-empty">Инвентарь пуст</div>'}
     </section>
   `;
 }
 $('#ui').onclick=e=> {
   const w=e.target.closest('.iw'),b=e.target.closest('button');
-  if(b&&'upCase' in b.dataset&&!busy){const ci=Number(b.dataset.upCase);go(1);openC(ci);return;}
   if(b&&'t' in b.dataset&&!busy) {
     tg=+b.dataset.t;
     drawCases()
@@ -145,13 +134,11 @@ async function up(t) {
     S.inv[sel]=it(t);
     if(x.o)S.inv[sel].o=1
   } else if(!insured) S.inv.splice(sel,1);
-  // Итог одной строкой: «X → Y» вместо отдельной подписи над результатом.
+  // Итог одной строкой; о сгоревшей оценке отдельно не сообщаем.
   const resultText = ok
     ? `Успех: ${x.g} → ${IT[t][1]} · теперь оценка ${S.inv[sel].g} (${S.inv[sel].v} КК)`
-    : insured
-      ? `Не повезло: ${x.g} → ${IT[t][1]} · страховка спасла оценку ${x.g}`
-      : `Не повезло: ${x.g} → ${IT[t][1]} · оценка ${x.g} сгорела`;
-  $('#ures').innerHTML=`<div class=rsl><div style="font-size:20px;font-weight:700;color:var(--t)">${resultText}</div></div>`;
+    : insured ? `Не повезло: ${x.g} → ${IT[t][1]} · страховка спасла оценку ${x.g}` : '';
+  $('#ures').innerHTML=resultText?`<div class=rsl><div style="font-size:20px;font-weight:700;color:var(--t)">${resultText}</div></div>`:'';
   await sl(1300);
   sel=-1;
   ins=0;
