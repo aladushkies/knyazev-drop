@@ -48,7 +48,7 @@ dialog{outline:none}
   #cbar #classLink{flex:0 0 auto;min-height:40px;padding-inline:12px}
   #cbar select{flex:1 1 auto;width:auto;min-width:0;max-width:none;height:40px;min-height:40px}
   .stage{padding:14px 10px;margin-bottom:8px}
-  #nm{font-size:clamp(26px,9vw,40px)}
+  .stage{--nm-base:clamp(26px,9vw,40px)}
   .sv{height:66px;margin:10px auto}
   .sk{height:48px;font-size:var(--fs-m)}
   #rs{min-height:0!important}
@@ -212,3 +212,12 @@ html.wish-open{overflow:hidden}
 /* Оверлей опроса закрывает весь экран даже когда панели браузера Telegram/Safari
    прячутся или страницу оттягивают: тень-заливка выходит за пределы fixed-блока. */
 .wish{box-shadow:0 0 0 100vmax rgba(15,23,42,.55);padding-bottom:max(16px,env(safe-area-inset-bottom))}
+
+/* Рулетка Drop: имя всегда в одну строку. --nm-base — штатный (максимальный) размер,
+   --nm-fit подбирает js/views/drop-fit.js по самому длинному имени класса. */
+.stage{--nm-base:clamp(28px,7vw,60px)}
+@media(max-width:700px){.stage{--nm-base:clamp(26px,9vw,40px)}}
+#nm{font-size:min(var(--nm-base),var(--nm-fit,var(--nm-base)));white-space:nowrap;transition:font-size .18s cubic-bezier(.2,.7,.2,1)}
+#nm.nm-instant{transition:none}
+.nm-probe{position:fixed;left:0;top:0;visibility:hidden;pointer-events:none;white-space:nowrap;font-size:var(--nm-base);font-weight:800;letter-spacing:-1px;contain:layout style}
+@media(prefers-reduced-motion:reduce){#nm{transition:none}}

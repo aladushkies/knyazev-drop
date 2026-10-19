@@ -124,8 +124,8 @@ function isValidReference(values) {
 }
 
 const BANDS = [
-  { key: 'other', max: 30, range: 'ниже 30 %', label: 'Другая вселенная', phrase: '' },
-  { key: 'weak', max: 45, range: '30–45 %', label: 'Дальний родственник', phrase: '' },
+  { key: 'other', max: 30, range: 'ниже 30 %', label: 'Другая вселенная', phrase: 'Общее с гуру у вас одно — оба знаете, что такое интеграл.' },
+  { key: 'weak', max: 45, range: '30–45 %', label: 'Дальний родственник', phrase: 'Если прищуриться и выключить свет — что-то общее есть.' },
   { key: 'moderate', max: 60, range: '45–60 %', label: 'Ученик гуру', phrase: 'До гуру ещё пара контрольных.' },
   { key: 'clear', max: 75, range: '60–75 %', label: 'Подающий надежды', phrase: 'Наденьте розовую рубашку в полоску — и могут перепутать.' },
   { key: 'strong', max: 90, range: '75–90 %', label: 'Почти гуру', phrase: 'Ещё чуть-чуть — и вас попросят объяснить задачу у доски.' },

@@ -39,6 +39,7 @@ function drawDrop() {
     p,n
   })=>`<div class="li${n>998?' w':''}"><b>${n>998?'·':'№'+n}</b>${E(p.n)}${n>998?'':`<i class=ux data-u=${p.id} title="Освободить место">×</i>`}</div>`).join('')||'<p class=m>Список пуст</p>';
   $('#sc').textContent=`${ps.length-un.length}/${ps.length}`;
+  window.fitDropName?.();
   drawChips()
 }
 const BACK_ROW_PREFERRED=new Set(['Прохоров Марк','Андросов Никита','Зеленов Степан','Селицкий Лев','Курочкин Егор','Захаревич Илья']);
@@ -171,7 +172,7 @@ $('#au').onclick=async()=> {
   }
   if(busy)return;
   auto=1;
-  $('#au').textContent='Сто��';
+  $('#au').textContent='Стоп';
   while(auto&&await drop())await sl(700*S.spd);
   auto=0;
   $('#au').textContent='Авто до конца'
@@ -195,7 +196,7 @@ function downloadScheme() {
   const rr = (x, y, w, h, r) => { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); };
   g.fillStyle = '#ffffff'; g.fillRect(0, 0, W, H);
   g.textAlign = 'center';
-  g.fillStyle = '#0b1526'; g.font = '700 15px system-ui,sans-serif';
+  g.fillStyle = '#0b1526'; g.font = '700 15px "Segoe UI","KD Sans",sans-serif';
   g.fillText(`Князев Drop · рассадка · ${c.name}`, W / 2, 26);
   const ss = seats(c), by = 44;
   for (const d of list) {
@@ -208,25 +209,25 @@ function downloadScheme() {
       if (!s) continue;
       const cx = x + i * 68 + 34;
       if (s.on) {
-        g.fillStyle = '#0b1526'; g.font = '700 15px system-ui,sans-serif';
+        g.fillStyle = '#0b1526'; g.font = '700 15px "Segoe UI","KD Sans",sans-serif';
         g.fillText(String(s.n), cx, y + 25);
         const nm = assigned[s.k];
         if (nm) {
           const label = nm.trim().split(/\s+/)[0];
           let size = 12;
-          g.font = `${size}px system-ui,sans-serif`;
-          while (size > 8 && g.measureText(label).width > 62) g.font = `${--size}px system-ui,sans-serif`;
+          g.font = `${size}px "Segoe UI","KD Sans",sans-serif`;
+          while (size > 8 && g.measureText(label).width > 62) g.font = `${--size}px "Segoe UI","KD Sans",sans-serif`;
           g.fillStyle = '#475569';
           g.fillText(label, cx, y + 45, 64);
         }
       } else {
-        g.fillStyle = '#94a3b8'; g.font = '700 15px system-ui,sans-serif';
+        g.fillStyle = '#94a3b8'; g.font = '700 15px "Segoe UI","KD Sans",sans-serif';
         g.fillText('—', cx, y + 30);
       }
       if (i === 1) { g.strokeStyle = '#cbd5e1'; g.lineWidth = 1; g.setLineDash([3, 3]); g.beginPath(); g.moveTo(x + 68, y + 8); g.lineTo(x + 68, y + 56); g.stroke(); g.setLineDash([]); }
     }
   }
-  g.fillStyle = '#94a3b8'; g.font = '11px system-ui,sans-serif';
+  g.fillStyle = '#94a3b8'; g.font = '11px "Segoe UI","KD Sans",sans-serif';
   g.fillText('ФМШ 2007 · Князев Drop гарантирует биекцию', W / 2, H - 16);
   return saveCanvasImage(cv, `knyazevdrop-rassadka-${c.name}.png`)
     .then(saved => { if (saved) toast('Фото рассадки сохранено'); })

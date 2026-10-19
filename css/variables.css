@@ -32,7 +32,7 @@
   --r-s:8px;
 
   /* типографика: один шрифт и пять размеров */
-  --font:system-ui,"Segoe UI",Roboto,sans-serif;
+  --font:"Segoe UI","KD Sans",sans-serif;
   --fs-xs:12px;     /* подписи, метки */
   --fs-s:13px;      /* второстепенный текст */
   --fs-m:15px;      /* основной текст */

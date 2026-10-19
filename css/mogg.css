@@ -85,7 +85,12 @@
 #t4 .mog-score-ring-inner strong{margin-top:2px;color:#fff;font-size:48px;font-weight:700;line-height:1;letter-spacing:-.03em}
 #t4 .mog-score-outof{margin-top:4px;color:var(--m-t);font-size:var(--fs-xs)}
 #t4 .mog-score-summary .mog-score-kicker{color:var(--m-t)}
-#t4 .mog-tier-badge{display:inline-block;max-width:100%;margin:6px 0 4px;padding:4px 14px;border-radius:var(--r-s);background:var(--a);color:#fff;font-size:var(--fs-xl);font-weight:700;line-height:1.25;letter-spacing:-.01em;overflow-wrap:anywhere}
+#t4 .mog-tier-badge{display:inline-block;max-width:100%;margin:6px 0 4px;padding:3px 14px 6px;border-radius:var(--r-s);background:var(--a);color:#fff;font-size:var(--fs-xl);font-weight:700;line-height:1.2;letter-spacing:-.01em;overflow-wrap:anywhere}
+/* Оптически центрируем текст по заглавным буквам: обрезаем пустое место над буквами и под базовой линией,
+   иначе надпись кажется сдвинутой вниз. Без поддержки text-box работает асимметричный padding выше. */
+@supports (text-box:trim-both cap alphabetic){
+  #t4 .mog-tier-badge{text-box:trim-both cap alphabetic;padding:.38em 14px}
+}
 #t4 .mog-score-summary h4{margin:4px 0 6px;color:#fff;font-size:var(--fs-l);font-weight:700;line-height:1.3}
 #t4 .mog-score-summary p{margin:0;color:var(--m-t);font-size:var(--fs-s)}
 #t4 .mog-tier-ladder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:18px 0 0;padding:0;list-style:none}
@@ -161,7 +166,8 @@
   #t4 .mog-score-ring{width:112px;height:112px}
   #t4 .mog-score-ring:before{inset:7px}
   #t4 .mog-score-ring-inner strong{font-size:36px}
-  #t4 .mog-tier-badge{font-size:var(--fs-l);padding:3px 10px}
+  #t4 .mog-tier-badge{font-size:var(--fs-l);padding:2px 10px 5px}
+  @supports (text-box:trim-both cap alphabetic){#t4 .mog-tier-badge{padding:.42em 10px}}
   #t4 .mog-metric-grid{grid-template-columns:1fr}
   #t4 .mog-metric-heading{align-items:flex-start;flex-direction:column;gap:4px}
 }

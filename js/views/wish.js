@@ -1,8 +1,10 @@
-// Опрос «Князев заболел…»: показывается один раз за сессию, «Нет» не нажимается, каждое «Да» считается.
+// Опрос «Князев заболел…»: пожелать здоровья можно один раз с одного устройства
+// (флаг в localStorage, как разовый бонус Князев Team). «Нет» не нажимается.
 (() => {
   const box = $('#wish');
   if (!box) return;
-  try { if (sessionStorage.getItem('kd-wish-shown')) return; } catch { /* без sessionStorage показываем всегда */ }
+  const DONE_KEY = 'kd-wish-done';
+  try { if (localStorage.getItem(DONE_KEY)) return; } catch { /* без localStorage показываем опрос */ }
 
   const yes = $('#wishYes'), no = $('#wishNo'), note = $('#wishNote');
   let noteTimer = 0;
@@ -22,9 +24,16 @@
   };
 
   no.addEventListener('click', refuse);
+  let wished = false;
   yes.addEventListener('click', () => {
-    try { sessionStorage.setItem('kd-wish-shown', '1'); } catch { /* ignore */ }
-    wishHit();
+    if (wished) return;
+    wished = true;
+    let alreadyCounted = false;
+    try {
+      alreadyCounted = !!localStorage.getItem(DONE_KEY);
+      localStorage.setItem(DONE_KEY, String(Date.now()));
+    } catch { /* ignore */ }
+    if (!alreadyCounted) wishHit();
     box.classList.add('is-leaving');
     document.removeEventListener('keydown', trap, true);
     document.documentElement.classList.remove('wish-open');
