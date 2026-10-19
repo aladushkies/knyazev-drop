@@ -208,3 +208,7 @@ html.wish-open{overflow:hidden}
 .reset-form .row{flex-wrap:wrap;gap:8px}
 .reset-form input{flex:1 1 180px;min-width:0}
 .reset-msg{min-height:1.4em;margin:6px 0 0;color:var(--err)}
+
+/* Оверлей опроса закрывает весь экран даже когда панели браузера Telegram/Safari
+   прячутся или страницу оттягивают: тень-заливка выходит за пределы fixed-блока. */
+.wish{box-shadow:0 0 0 100vmax rgba(15,23,42,.55);padding-bottom:max(16px,env(safe-area-inset-bottom))}

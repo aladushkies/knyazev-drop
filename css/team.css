@@ -26,10 +26,10 @@
 
 /* Приглашение в Discord — отдельная, сдержанная карточка. */
 .team-discord{display:flex;align-items:center;justify-content:space-between;gap:16px 24px;flex-wrap:wrap;padding:18px 20px;border:1px solid var(--l);background:#fff}
-.team-discord-copy{flex:1 1 280px;min-width:0}
+.team-discord-copy{flex:1 1 420px;min-width:0}
 .team-discord-kicker{display:block;margin-bottom:6px;color:var(--m);font-size:11px;font-weight:700;letter-spacing:.08em;line-height:1.3}
 .team-discord h2{margin:0 0 5px;color:var(--t);font-size:18px;font-weight:700;line-height:1.3;letter-spacing:-.015em}
-.team-discord p{margin:0;color:#586271;font-size:14px;line-height:1.5;max-width:62ch}
+.team-discord p{margin:0;color:#586271;font-size:14px;line-height:1.5;max-width:96ch}
 .team-discord-link{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:40px;padding:10px 15px;border:1px solid #3b82d0;border-radius:var(--r-s);background:#3b82d0;color:#fff;font-size:14px;font-weight:650;line-height:1.3;text-decoration:none;transition:background .15s,border-color .15s}
 .team-discord-link:hover{background:#3276be;border-color:#3276be;color:#fff}
 .team-discord-link:focus-visible{outline:2px solid var(--a);outline-offset:3px}

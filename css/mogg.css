@@ -139,9 +139,8 @@
 }
 
 /* Телефон: свой интерфейс MOGG.
-   До анализа виден только блок загрузки. После анализа отчёт идёт первым, а фото
-   показывается один раз: исходный предпросмотр сворачивается в строку с именем файла,
-   остаётся только снимок с точками. */
+   До анализа виден только блок загрузки. После анализа отчёт идёт первым,
+   загруженное фото остаётся видно, как в версии для ПК. */
 @media(max-width:700px){
   body[data-tab="3"] .hero{display:flex}
   #t4 .mog-hero{padding:14px;margin-bottom:10px}
@@ -151,8 +150,6 @@
   #t4:not(.mog-analyzed) .mog-results-column{display:none}
   #t4.mog-analyzed .mog-results-column{order:-1}
   #t4.mog-analyzed .mog-results-column>.mog-panel-heading,#t4.mog-analyzed .mog-upload-panel>.mog-panel-heading{display:none}
-  #t4.mog-analyzed .mog-preview-top,#t4.mog-analyzed .mog-preview-wrap>img{display:none}
-  #t4.mog-analyzed .mog-preview-foot{border-top:0}
   #t4 .mog-drop-zone{min-height:140px}
 }
 @media(hover:none){

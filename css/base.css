@@ -5,7 +5,11 @@ header{background:var(--t);color:#fff;display:flex;gap:12px;align-items:center;p
 /* Заливка шапки продолжается вверх и в стороны: при оттягивании страницы (iOS/macOS),
    при зуме и горизонтальной прокрутке над и рядом с шапкой не видно пустоты. */
 header::before{content:"";position:absolute;z-index:-1;top:-100vh;bottom:0;left:0;right:0;background:var(--t);pointer-events:none}
-html{overflow-x:hidden}
+/* clip, а не hidden: не создаёт контейнер прокрутки, поэтому sticky-шапка в WebKit
+   (Safari, браузер Telegram) не отрывается от верха и страницу нельзя таскать вбок. */
+html,body{overflow-x:clip;max-width:100%}
+html{overscroll-behavior:none;touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overscroll-behavior:none}
 .logo{font-weight:800;font-size:21px;letter-spacing:-.5px}.logo b{color:var(--a)}
 nav{display:flex;gap:4px;margin-left:auto}nav button{background:0;border:0;color:var(--m-t);padding:8px 12px;border-radius:var(--r-s);cursor:pointer;font:inherit}nav .on{background:transparent;border:1px solid rgba(148,163,184,.55);color:#fff;border-radius:10px}
 main{max-width:1100px;margin:0 auto;padding:14px}.card{background:#fff;border:1px solid var(--l);border-radius:var(--r);padding:14px;margin-bottom:14px}
