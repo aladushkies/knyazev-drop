@@ -5,7 +5,7 @@ $('#nv').innerHTML=TN.map(n=>`<button type="button"><span class="nv-pre">Кня�
 let activeTab=0;
 const showClass=()=>{if(busy)return toast('Дождитесь окончания розыгрыша');activeTab=-1;document.body.dataset.tab='class';[...$('#nv').children].forEach(b=>b.className='');[0,1,2,3,4,5].forEach(j=>$('#t'+j).hidden=j!==1);$('#cbar').hidden=true;drawClass()};
 // Страница команды открывается из футера и не входит в меню — как конструктор Class.
-const showTeam=()=>{if(busy)return toast('Дождитесь окончания розыгрыша');activeTab=-1;document.body.dataset.tab='team';[...$('#nv').children].forEach(b=>b.className='');[0,1,2,3,4,5].forEach(j=>$('#t'+j).hidden=j!==5);$('#cbar').hidden=true;drawTeam();syncPills();window.scrollTo(0,0)};
+const showTeam=()=>{if(busy)return toast('Дождитесь окончания розыгрыша');activeTab=-1;document.body.dataset.tab='team';[...$('#nv').children].forEach(b=>b.className='');[0,1,2,3,4,5].forEach(j=>$('#t'+j).hidden=j!==5);$('#cbar').hidden=true;drawTeam();syncPills();teamOpenHit();window.scrollTo(0,0)};
 const go=i=> {
   if(busy && i!==activeTab)return toast('Дождитесь окончания розыгрыша');
   activeTab=i;
@@ -46,8 +46,7 @@ window.KD = {
   cost: () => ECON.mogg.analysisCost,
   spend: v => { if (S.bal < v) return false; S.bal -= v; sv(); syncPills(); return true },
   refund: v => { S.bal += v; sv(); syncPills() },
-  refreshMogg: () => syncPills(),
-  analyzed: () => moggHit()
+  refreshMogg: () => syncPills()
 };
 
 // Награда прерванного кейса (экономика v2.0, разд. 3): результат определяется

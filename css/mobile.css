@@ -222,5 +222,6 @@ html.wish-open{overflow:hidden}
 .nm-probe{position:fixed;left:0;top:0;visibility:hidden;pointer-events:none;white-space:nowrap;font-size:var(--nm-base);font-weight:800;letter-spacing:-1px;contain:layout style}
 @media(prefers-reduced-motion:reduce){#nm{transition:none}}
 
-/* Панель статистики: пять счётчиков — последний (нечётный) занимает всю строку */
-.vs>div:last-child:nth-child(odd){grid-column:1/-1}
+/* Не оставляем одинокий интеграл на второй строке в мобильной подписи. */
+.hero .hero-tagline{overflow-wrap:normal;word-break:normal}
+@media(max-width:700px){.hero .hero-tagline{max-width:100%;text-wrap:wrap}.hero .ht{min-width:0}}

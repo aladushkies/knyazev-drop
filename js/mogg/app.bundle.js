@@ -593,8 +593,6 @@ function renderReport(metrics) {
   el('tierPhrase').hidden = !metrics.band.phrase;
   el('scoreRing').style.setProperty('--score-angle', `${percent / 100 * 360}deg`);
   mogSection.classList.add('mog-analyzed');
-  // Общий счётчик «проанализировало лицо Mogg» (+1 за каждый успешный анализ).
-  if (kd() && typeof kd().analyzed === 'function') kd().analyzed();
   if (metrics.band.key === 'match') grantGuruBonus();
 }
 
@@ -641,6 +639,7 @@ async function analyzePhoto() {
     const face = analyzeFace(detector, sourcePreview);
     const metrics = compareValues(face.values, getReference(), { pose: face.pose, expression: face.expression });
     renderReport(metrics);
+    if (typeof moggAnalysisHit === 'function') moggAnalysisHit();
     reportContent.scrollIntoView({ behavior: 'auto', block: 'start' });
   } catch (err) {
     refund();

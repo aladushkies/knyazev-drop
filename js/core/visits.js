@@ -22,7 +22,8 @@ function vkeys(gen = 0, now = Date.now()) {
     m: `${g}m-${y}-${m}`,
     a: `${g}all`,
     w: `${g}wish-health`,
-    g: `${g}mogg-analyzed`
+    mog: `${g}mogg-analyzed`,
+    team: `${g}team-opened`
   };
 }
 // Повторы при 429 (лимит сервиса: 30 запросов за 10 секунд с одного IP).
@@ -55,12 +56,28 @@ async function visitHit() {
 const getGen = () => vreq('get', GEN_KEY);
 // Счётчик «пожелало здоровья гуру»: каждое нажатие «Да» в опросе — +1.
 const wishHit = () => getGen().then(gen => vreq('hit', vkeys(gen).w)).catch(e => console.warn('Счётчик пожеланий недоступен', e));
-// Счётчик «проанализировало лицо Mogg»: каждый успешный анализ — +1. Сбрасывается вместе с остальными (поколение).
-const moggHit = () => getGen().then(gen => vreq('hit', vkeys(gen).g)).catch(e => console.warn('Счётчик анализов Mogg недоступен', e));
+// Уникальность — на уровне браузера (localStorage), не идентификация человека.
+// Метка привязана к поколению: после общего сброса снова можно засчитаться.
+const eventPending = new Set();
+async function uniqueEventHit(kind) {
+  try {
+    const gen = await getGen();
+    const marker = `kd-visit-${gen}-${kind}`;
+    if (eventPending.has(marker)) return;
+    try { if (localStorage.getItem(marker)) return; } catch (_) { /* приватный режим */ }
+    eventPending.add(marker);
+    try {
+      await vreq('hit', vkeys(gen)[kind]);
+      try { localStorage.setItem(marker, '1'); } catch (_) { /* приватный режим */ }
+    } finally { eventPending.delete(marker); }
+  } catch (e) { console.warn('Счётчик события недоступен', kind, e); }
+}
+const moggAnalysisHit = () => uniqueEventHit('mog');
+const teamOpenHit = () => uniqueEventHit('team');
 async function visitStats() {
   const k = vkeys(await getGen());
-  const [w, g, d, m, a] = await Promise.all([vreq('get', k.w), vreq('get', k.g), vreq('get', k.d), vreq('get', k.m), vreq('get', k.a)]);
-  return { w, g, d, m, a };
+  const [w, d, m, a, mog, team] = await Promise.all([vreq('get', k.w), vreq('get', k.d), vreq('get', k.m), vreq('get', k.a), vreq('get', k.mog), vreq('get', k.team)]);
+  return { w, d, m, a, mog, team };
 }
 // Обнуление всех счётчиков для всех пользователей (вызывается из админки после проверки пароля).
 const resetAllCounters = () => vreq('hit', GEN_KEY);
