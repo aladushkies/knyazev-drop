@@ -8,7 +8,7 @@ let adminTaps = 0, adminTapTimer = null, resetBusy = false;
 const vbox = () => {
   const n = key => VS ? Number(VS[key]).toLocaleString('ru-RU') : '…';
   const updated = VT ? `<p class="m vs-time">Обновлено в ${VT.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</p>` : '';
-  return `<div class="vs" aria-busy="${VL}"><div><b>${n('w')}</b><span>пожелало здоровья гуру</span></div><div><b>${n('d')}</b><span>за сегодня</span></div><div><b>${n('m')}</b><span>за этот месяц</span></div><div><b>${n('a')}</b><span>за всё время</span></div></div>${VE ? '<p class="m vs-error" role="alert">Не удалось получить данные счётчика. Попробуйте обновить через несколько секунд.</p>' : updated}`;
+  return `<div class="vs" aria-busy="${VL}"><div><b>${n('w')}</b><span>пожелало здоровья гуру</span></div><div><b>${n('g')}</b><span>проанализировало лицо Mogg</span></div><div><b>${n('d')}</b><span>за сегодня</span></div><div><b>${n('m')}</b><span>за этот месяц</span></div><div><b>${n('a')}</b><span>за всё время</span></div></div>${VE ? '<p class="m vs-error" role="alert">Не удалось получить данные счётчика. Попробуйте обновить через несколько секунд.</p>' : updated}`;
 };
 function renderVisits() {
   const box = $('#vs');

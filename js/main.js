@@ -46,7 +46,8 @@ window.KD = {
   cost: () => ECON.mogg.analysisCost,
   spend: v => { if (S.bal < v) return false; S.bal -= v; sv(); syncPills(); return true },
   refund: v => { S.bal += v; sv(); syncPills() },
-  refreshMogg: () => syncPills()
+  refreshMogg: () => syncPills(),
+  analyzed: () => moggHit()
 };
 
 // Награда прерванного кейса (экономика v2.0, разд. 3): результат определяется

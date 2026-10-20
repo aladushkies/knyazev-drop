@@ -21,7 +21,8 @@ function vkeys(gen = 0, now = Date.now()) {
     d: `${g}d-${y}-${m}-${d}`,
     m: `${g}m-${y}-${m}`,
     a: `${g}all`,
-    w: `${g}wish-health`
+    w: `${g}wish-health`,
+    g: `${g}mogg-analyzed`
   };
 }
 // Повторы при 429 (лимит сервиса: 30 запросов за 10 секунд с одного IP).
@@ -54,10 +55,12 @@ async function visitHit() {
 const getGen = () => vreq('get', GEN_KEY);
 // Счётчик «пожелало здоровья гуру»: каждое нажатие «Да» в опросе — +1.
 const wishHit = () => getGen().then(gen => vreq('hit', vkeys(gen).w)).catch(e => console.warn('Счётчик пожеланий недоступен', e));
+// Счётчик «проанализировало лицо Mogg»: каждый успешный анализ — +1. Сбрасывается вместе с остальными (поколение).
+const moggHit = () => getGen().then(gen => vreq('hit', vkeys(gen).g)).catch(e => console.warn('Счётчик анализов Mogg недоступен', e));
 async function visitStats() {
   const k = vkeys(await getGen());
-  const [w, d, m, a] = await Promise.all([vreq('get', k.w), vreq('get', k.d), vreq('get', k.m), vreq('get', k.a)]);
-  return { w, d, m, a };
+  const [w, g, d, m, a] = await Promise.all([vreq('get', k.w), vreq('get', k.g), vreq('get', k.d), vreq('get', k.m), vreq('get', k.a)]);
+  return { w, g, d, m, a };
 }
 // Обнуление всех счётчиков для всех пользователей (вызывается из админки после проверки пароля).
 const resetAllCounters = () => vreq('hit', GEN_KEY);
