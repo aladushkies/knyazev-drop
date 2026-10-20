@@ -194,9 +194,6 @@ html.wish-open{overflow:hidden}
   .chips .chip-dedication{display:inline-block}
 }
 
-/* Подзаголовок hero-плашки: одна строка, размер шрифта подгоняет js/views/hero.js */
-.hero .ht>span.hero-sub{white-space:nowrap;text-wrap:nowrap;overflow:hidden;max-width:100%}
-
 /* Фраза под плашкой уровня — тем же шрифтом, что «% схожести» */
 #t4 .mog-tier-note{display:block;margin-top:6px;color:var(--m-t);font-size:var(--fs-xs);line-height:1.4}
 #t4 .mog-tier-note[hidden]{display:none}

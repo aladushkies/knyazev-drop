@@ -10,7 +10,7 @@ function syncPills() {
   }
 }
 // Строки hero-плашки всегда в одну строку: если ширины не хватает, шрифт уменьшается под доступное место.
-// Так работают посвящение и подзаголовок «Князев Drop · рассадка, кейсы и немного ∫».
+// Так работает посвящение.
 const HERO_LINE_MIN_FONT = 5;
 function fitHeroLine(el) {
   if (!el) return;
@@ -30,7 +30,6 @@ function fitHeroLine(el) {
 }
 function fitDedication() {
   fitHeroLine(document.getElementById('dedication'));
-  fitHeroLine(document.getElementById('heroSub'));
 }
 let dedicationFrame = 0;
 const scheduleFitDedication = () => {
