@@ -77,4 +77,5 @@ const WALL_COOLDOWN = 15000;  // пауза между сообщениями с
   if (c) c.addEventListener('click', hide);
   const a = b.querySelector('a');
   if (a) a.addEventListener('click', hide);
+  document.querySelectorAll('.wall-bot, .wall-about h2').forEach(el => el.addEventListener('click', hide));
 })();
