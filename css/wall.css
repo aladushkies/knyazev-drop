@@ -1,0 +1,6 @@
+.wall-card form{display:grid;gap:10px;max-width:640px}
+.wall-in{width:100%;box-sizing:border-box;font:inherit;padding:10px 12px;border:1px solid var(--l2);border-radius:10px;background:var(--s1);color:var(--t);resize:vertical}
+.wall-in:focus{outline:2px solid var(--a);border-color:var(--a)}
+.wall-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.wall-row{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--m);font-size:13px}
+#wallMsg{font-size:14px;min-height:20px}#wallMsg.ok{color:var(--ok)}#wallMsg.err{color:var(--err)}

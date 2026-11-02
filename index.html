@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="css/variables.css?v=2.5.0" />
   <link rel="stylesheet" href="css/base.css?v=2.4.0" />
   <link rel="stylesheet" href="css/components.css?v=2.0.0" />
+  <link rel="stylesheet" href="css/wall.css">
   <link rel="stylesheet" href="css/theme.css?v=2.0.0" />
   <link rel="stylesheet" href="css/responsive.css?v=2.0.0" />
   <link rel="stylesheet" href="css/upgrade.css?v=2.0.0" />
@@ -184,6 +185,19 @@
       </div>
     </section>
 
+    <section id="t6" hidden aria-labelledby="wallTitle">
+      <div class="tab-heading"><div><span class="tab-kicker">ФМШ 2007 / СТЕНА</span><h1 id="wallTitle">Князев <span class="brand-word">Wall</span></h1><p>Напиши сообщение — после проверки модератором оно уйдёт в канал.</p></div></div>
+      <div class="card wall-card">
+        <form id="wallForm" autocomplete="off">
+          <input class="wall-hp" id="wallHp" name="website" tabindex="-1" aria-hidden="true" autocomplete="off">
+          <input class="wall-in" id="wallName" maxlength="40" placeholder="Подпись (необязательно)">
+          <textarea class="wall-in" id="wallText" maxlength="1000" rows="6" placeholder="Твоё сообщение…" required></textarea>
+          <div class="wall-row"><span id="wallCnt">0 / 1000</span><button class="b" id="wallBtn" type="submit">Отправить</button></div>
+          <div id="wallMsg" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+
     <section id="t5" hidden aria-labelledby="teamTitle">
       <div class="tab-heading"><div><span class="tab-kicker">ФМШ 2007 / КОМАНДА</span><h1 id="teamTitle">Князев <span class="brand-word">Team</span></h1><p>Проект ведёт <b>10А класс</b></p></div><div class="tab-actions"><button class="b g" id="backTeam" type="button">← Князев <span class="brand-word">Drop</span></button><button class="b team-bonus-button" id="teamBn" type="button"></button></div></div>
 
@@ -239,9 +253,10 @@
   <script src="js/views/team.js?v=2.3.0"></script>
   <script src="js/views/topup.js?v=2.0.0"></script>
   <script src="js/core/viewport.js?v=2.4.0"></script>
-  <script src="js/core/visits.js?v=2.3.0"></script>
+  <script src="js/core/visits.js?v=2.3.1"></script>
   <script src="js/admin/auth.js?v=2.3.0"></script>
   <script src="js/views/wish.js?v=2.5.0"></script>
+  <script src="js/views/wall.js?v=1.0.0"></script>
   <script src="js/main.js?v=2.3.0"></script>
   <script defer src="js/vendor/tasks-vision-1.1.0.js"></script>
   <script src="js/mogg/app.bundle.js?v=2.5.1"></script>

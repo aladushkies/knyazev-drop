@@ -50,16 +50,22 @@ async function visitHit() {
   try {
     await sl(R(1500));
     const k = vkeys(await getGen());
-    await Promise.all([k.r, k.d, k.m, k.a].map(key => vreq('hit', key)));
+    // ОТКЛЮЧЕНО на время обновления: не пишем +1 в Abacus (ложные заходы).
+    // await Promise.all([k.r, k.d, k.m, k.a].map(key => vreq('hit', key)));
   } catch (e) { console.warn('Счётчик заходов недоступен', e); }
 }
 const getGen = () => vreq('get', GEN_KEY);
 // Счётчик «пожелало здоровья гуру»: каждое нажатие «Да» в опросе — +1.
-const wishHit = () => getGen().then(gen => vreq('hit', vkeys(gen).w)).catch(e => console.warn('Счётчик пожеланий недоступен', e));
+// ОТКЛЮЧЕНО на время обновления:
+// const wishHit = () => getGen().then(gen => vreq('hit', vkeys(gen).w)).catch(e => console.warn('Счётчик пожеланий недоступен', e));
+const wishHit = () => {};
 // Уникальность — на уровне браузера (localStorage), не идентификация человека.
 // Метка привязана к поколению: после общего сброса снова можно засчитаться.
 const eventPending = new Set();
 async function uniqueEventHit(kind) {
+  // ОТКЛЮЧЕНО на время обновления: события team/mogg тоже не пишут в Abacus.
+  return;
+  // eslint-disable-next-line no-unreachable
   try {
     const gen = await getGen();
     const marker = `kd-visit-${gen}-${kind}`;
@@ -67,7 +73,8 @@ async function uniqueEventHit(kind) {
     try { if (localStorage.getItem(marker)) return; } catch (_) { /* приватный режим */ }
     eventPending.add(marker);
     try {
-      await vreq('hit', vkeys(gen)[kind]);
+      // ОТКЛЮЧЕНО на время обновления: не пишем +1 в Abacus.
+      // await vreq('hit', vkeys(gen)[kind]);
       try { localStorage.setItem(marker, '1'); } catch (_) { /* приватный режим */ }
     } finally { eventPending.delete(marker); }
   } catch (e) { console.warn('Счётчик события недоступен', kind, e); }
@@ -80,5 +87,8 @@ async function visitStats() {
   return { w, d, m, a, mog, team };
 }
 // Обнуление всех счётчиков для всех пользователей (вызывается из админки после проверки пароля).
-const resetAllCounters = () => vreq('hit', GEN_KEY);
-visitHit();
+// ОТКЛЮЧЕНО на время обновления:
+// const resetAllCounters = () => vreq('hit', GEN_KEY);
+const resetAllCounters = () => {};
+// ОТКЛЮЧЕНО на время обновления: автозаход больше не считается.
+// visitHit();
