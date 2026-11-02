@@ -16,6 +16,10 @@
 #wallMsg.err{color:var(--err)}
 
 .wall-about{background:linear-gradient(180deg,#fff,var(--a2))}
+.wall-bot{display:block;margin:0 0 12px;padding:10px 12px;border-radius:var(--r-s);background:var(--a);color:#fff;text-align:center;font-weight:600;text-decoration:none;transition:filter .16s}
+.wall-bot:hover{filter:brightness(.94)}
+.wall-bot small{display:block;margin-top:2px;font-size:var(--fs-xs);font-weight:400;opacity:.9}
+.chip-bot{text-decoration:none}.chip-bot>span{border-color:var(--a);color:var(--on-t)}
 .wall-kicker{display:inline-block;font-size:var(--fs-xs);font-weight:700;letter-spacing:.12em;color:var(--a);margin-bottom:6px}
 .wall-about h2{margin:0 0 8px;font-size:var(--fs-l)}
 .wall-about p{margin:0 0 10px;font-size:var(--fs-s);line-height:1.55;color:var(--t)}
