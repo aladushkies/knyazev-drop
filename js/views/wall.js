@@ -2,7 +2,7 @@
 // Адрес Worker'а выдаёт `wrangler deploy`; менять его нужно только при переезде бота.
 const WALL_API = 'https://knyazev-wall.lev20112010.workers.dev/submit';
 const WALL_COST = 100;        // КК за одну отправку
-const WALL_COOLDOWN = 60000;  // пауза между сообщениями с одного браузера, мс
+const WALL_COOLDOWN = 15000;  // пауза между сообщениями с одного браузера, мс
 (() => {
   const f = document.getElementById('wallForm');
   if (!f) return;
@@ -69,9 +69,12 @@ const WALL_COOLDOWN = 60000;  // пауза между сообщениями с
   try { seen = !!localStorage.getItem('kd-bot-hint'); } catch (_) { /* без localStorage показываем */ }
   if (seen) return;
   b.hidden = false;
-  const c = document.getElementById('botBannerClose');
-  if (c) c.addEventListener('click', () => {
+  const hide = () => {
     b.hidden = true;
     try { localStorage.setItem('kd-bot-hint', '1'); } catch (_) { /* ignore */ }
-  });
+  };
+  const c = document.getElementById('botBannerClose');
+  if (c) c.addEventListener('click', hide);
+  const a = b.querySelector('a');
+  if (a) a.addEventListener('click', hide);
 })();
