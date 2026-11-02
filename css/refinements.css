@@ -33,7 +33,7 @@
 /* Телефон: вкладки всегда на виду, график живёт внутри блока с заголовком */
 @media(max-width:700px){
   header{flex-wrap:wrap;gap:6px 10px;padding:8px 12px}
-  nav{order:3;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;width:100%;margin-left:0}
+  nav{order:3;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;width:100%;margin-left:0}
   nav button{display:flex;align-items:center;justify-content:center;padding:8px 4px;font-size:var(--fs-s);font-weight:500;white-space:nowrap}
   .nv-pre{display:none}
   .hero{flex-wrap:nowrap;align-items:center;gap:12px;padding:14px;min-height:0}

@@ -15,11 +15,11 @@
   <link rel="stylesheet" href="css/variables.css?v=2.5.0" />
   <link rel="stylesheet" href="css/base.css?v=2.4.0" />
   <link rel="stylesheet" href="css/components.css?v=2.0.0" />
-  <link rel="stylesheet" href="css/wall.css">
+  <link rel="stylesheet" href="css/wall.css?v=1.2.0" />
   <link rel="stylesheet" href="css/theme.css?v=2.0.0" />
   <link rel="stylesheet" href="css/responsive.css?v=2.0.0" />
   <link rel="stylesheet" href="css/upgrade.css?v=2.0.0" />
-  <link rel="stylesheet" href="css/refinements.css?v=2.0.0" />
+  <link rel="stylesheet" href="css/refinements.css?v=2.1.0" />
   <link rel="stylesheet" href="css/mogg.css?v=2.5.0" />
   <link rel="stylesheet" href="css/soft-blue-glow.css?v=2.0.0" />
   <link rel="stylesheet" href="css/team.css?v=2.4.0" />
@@ -186,15 +186,37 @@
     </section>
 
     <section id="t6" hidden aria-labelledby="wallTitle">
-      <div class="tab-heading"><div><span class="tab-kicker">ФМШ 2007 / СТЕНА</span><h1 id="wallTitle">Князев <span class="brand-word">Wall</span></h1><p>Напиши сообщение — после проверки модератором оно уйдёт в канал.</p></div></div>
-      <div class="card wall-card">
-        <form id="wallForm" autocomplete="off">
-          <input class="wall-hp" id="wallHp" name="website" tabindex="-1" aria-hidden="true" autocomplete="off">
-          <input class="wall-in" id="wallName" maxlength="40" placeholder="Подпись (необязательно)">
-          <textarea class="wall-in" id="wallText" maxlength="1000" rows="6" placeholder="Твоё сообщение…" required></textarea>
-          <div class="wall-row"><span id="wallCnt">0 / 1000</span><button class="b" id="wallBtn" type="submit">Отправить</button></div>
-          <div id="wallMsg" aria-live="polite"></div>
-        </form>
+      <div class="tab-heading">
+        <div><span class="tab-kicker">ФМШ 2007 / СТЕНА</span><h1 id="wallTitle">Князев <span class="brand-word">Wall</span></h1><p>Напиши сообщение — после проверки модератором оно уйдёт в Telegram-канал.</p></div>
+        <div class="tab-actions"><button class="topup-btn" id="wallBn" data-topup type="button" aria-label="Пополнить КК" title="Пополнить КК"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 6v12M6 12h12"/></svg></button><div class="balance-pill"><span>Баланс</span><strong id="wallBal">— КК</strong></div></div>
+      </div>
+
+      <div class="wall-layout">
+        <div class="card wall-card">
+          <form id="wallForm" autocomplete="off">
+            <input class="wall-hp" id="wallHp" name="website" tabindex="-1" aria-hidden="true" autocomplete="off">
+            <label class="wall-label" for="wallText">Сообщение</label>
+            <textarea class="wall-in" id="wallText" maxlength="1000" rows="7" placeholder="Твоё сообщение…" required></textarea>
+            <div class="wall-row"><span id="wallCnt">0 / 1000</span><span class="wall-price">Стоимость отправки: <b>100 КК</b></span></div>
+            <label class="wall-label" for="wallName">Подпись <span class="wall-opt">(необязательно)</span></label>
+            <input class="wall-in" id="wallName" maxlength="40" placeholder="Как тебя подписать">
+            <div class="wall-actions"><button class="b primary" id="wallBtn" type="submit">Отправить · 100 КК</button></div>
+            <div id="wallMsg" aria-live="polite"></div>
+          </form>
+        </div>
+        <aside class="card wall-about">
+          <span class="wall-kicker">О WALL</span>
+          <h2>Стена сообщений</h2>
+          <p>Князев <span class="brand-word">Wall</span> — место, куда можно написать что угодно для канала <b>@wiretap2007</b>: признание, шутку, вопрос или поздравление.</p>
+          <p>Каждое сообщение сначала видит модератор. Он может опубликовать его в канале или отклонить — в канал попадает только одобренное.</p>
+          <ul class="wall-rules">
+            <li>До 1000 символов в сообщении.</li>
+            <li>Подпись необязательна — можно писать анонимно.</li>
+            <li>Отправка стоит 100 КК с баланса.</li>
+            <li>Если отправить не получилось, КК вернутся.</li>
+          </ul>
+          <p class="wall-note">Пиши по-человечески: спам, оскорбления и рекламу модератор отклонит.</p>
+        </aside>
       </div>
     </section>
 
@@ -245,7 +267,7 @@
   <script src="js/views/class-editor.js?v=2.0.0"></script>
   <script src="js/views/people.js?v=2.0.0"></script>
   <script src="js/views/header.js?v=2.0.0"></script>
-  <script src="js/views/hero.js?v=2.0.0"></script>
+  <script src="js/views/hero.js?v=2.4.0"></script>
   <script src="js/views/drop.js?v=2.6.1"></script>
   <script src="js/views/drop-fit.js?v=2.6.0"></script>
   <script src="js/views/cases.js?v=2.0.0"></script>
@@ -256,7 +278,7 @@
   <script src="js/core/visits.js?v=2.3.1"></script>
   <script src="js/admin/auth.js?v=2.3.0"></script>
   <script src="js/views/wish.js?v=2.5.0"></script>
-  <script src="js/views/wall.js?v=1.0.0"></script>
+  <script src="js/views/wall.js?v=1.2.0"></script>
   <script src="js/main.js?v=2.3.0"></script>
   <script defer src="js/vendor/tasks-vision-1.1.0.js"></script>
   <script src="js/mogg/app.bundle.js?v=2.5.1"></script>
