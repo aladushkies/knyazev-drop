@@ -33,3 +33,10 @@
   .wall-actions .b{width:100%}
   .wall-card{padding:12px}
 }
+
+/* Подсказка про бота на сайте */
+.bot-banner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 14px;padding:10px 14px;border:1px solid var(--a);border-radius:var(--r);background:var(--a2);font-size:var(--fs-s)}
+.bot-banner[hidden]{display:none}
+.bot-banner span{flex:1 1 200px;color:var(--t)}
+.bot-banner a{background:var(--a);color:#fff;text-decoration:none;padding:7px 12px;border-radius:var(--r-s);font-weight:600;white-space:nowrap}
+.bot-banner button{border:0;background:transparent;color:var(--m);font-size:22px;line-height:1;cursor:pointer;padding:0 4px}

@@ -60,3 +60,18 @@ const WALL_COOLDOWN = 60000;  // пауза между сообщениями с
     }
   });
 })();
+
+// Подсказка про бота на сайте: показываем один раз, пока её не закроют.
+(() => {
+  const b = document.getElementById('botBanner');
+  if (!b) return;
+  let seen = false;
+  try { seen = !!localStorage.getItem('kd-bot-hint'); } catch (_) { /* без localStorage показываем */ }
+  if (seen) return;
+  b.hidden = false;
+  const c = document.getElementById('botBannerClose');
+  if (c) c.addEventListener('click', () => {
+    b.hidden = true;
+    try { localStorage.setItem('kd-bot-hint', '1'); } catch (_) { /* ignore */ }
+  });
+})();
