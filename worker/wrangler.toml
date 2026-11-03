@@ -1,0 +1,22 @@
+name = "knyazev-wall"
+main = "src/index.ts"
+compatibility_date = "2026-11-01"
+
+# Публичный адрес сайта. Важно: только origin, без пути и без слэша на конце.
+# GitHub Pages пришлёт Origin: https://aladushkies.github.io
+[vars]
+ALLOWED_ORIGIN = "https://aladushkies.github.io"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "knyazev-wall-db"
+# Замените на database_id из вывода `wrangler d1 create knyazev-wall-db`.
+database_id = "9738c7f2-1945-4afd-ace4-d0266346087d"
+migrations_dir = "migrations"
+
+# Ежедневная уборка: старые pending и старые записи лимитов.
+[triggers]
+crons = ["0 3 * * *"]
+
+[observability]
+enabled = true

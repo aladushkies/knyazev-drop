@@ -1,0 +1,10 @@
+# Скопируйте в .dev.vars и заполните только для локальной разработки.
+# В git этот файл не попадает.
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_WEBHOOK_SECRET=
+TURNSTILE_SECRET=
+ADMIN_IDS=
+IP_HASH_SALT=
+
+# Для локального сайта на http://localhost:8080
+ALLOWED_ORIGIN=http://localhost:8080

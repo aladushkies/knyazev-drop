@@ -1,11 +1,11 @@
 // Точка входа: навигация по вкладкам и первая отрисовка
 const TN=['Drop','Cases','Upgrade','Mogg','Wall'];
-// «Князев » скрывается на телефоне, чтобы все четыре вкладки помещались в экран
+// «Князев » скрывается на телефоне, чтобы все пять вкладок помещались в экран
 $('#nv').innerHTML=TN.map(n=>`<button type="button"><span class="nv-pre">Князев </span><span class="nv-name">${n}</span></button>`).join('');
 let activeTab=0;
-const showClass=()=>{if(busy)return toast('Дождитесь окончания розыгрыша');activeTab=-1;document.body.dataset.tab='class';[...$('#nv').children].forEach(b=>b.className='');[0,1,2,3,4,5,6].forEach(j=>$('#t'+j).hidden=j!==1);$('#cbar').hidden=true;drawClass()};
+const showClass=()=>{if(busy)return toast('Дождитесь окончания розыгрыша');activeTab=-1;document.body.dataset.tab='class';[...$('#nv').children].forEach(b=>b.className='');[0,1,2,3,4,5,6].forEach(j=>$('#t'+j).hidden=j!==1);$('#cbar').hidden=true;if(window.KDWall)KDWall.setActive(false);drawClass()};
 // Страница команды открывается из футера и не входит в меню — как конструктор Class.
-const showTeam=()=>{if(busy)return toast('Дождитесь окончания розыгрыша');activeTab=-1;document.body.dataset.tab='team';[...$('#nv').children].forEach(b=>b.className='');[0,1,2,3,4,5,6].forEach(j=>$('#t'+j).hidden=j!==5);$('#cbar').hidden=true;drawTeam();syncPills();teamOpenHit();window.scrollTo(0,0)};
+const showTeam=()=>{if(busy)return toast('Дождитесь окончания розыгрыша');activeTab=-1;document.body.dataset.tab='team';[...$('#nv').children].forEach(b=>b.className='');[0,1,2,3,4,5,6].forEach(j=>$('#t'+j).hidden=j!==5);$('#cbar').hidden=true;if(window.KDWall)KDWall.setActive(false);drawTeam();syncPills();teamOpenHit();window.scrollTo(0,0)};
 const go=i=> {
   if(busy && i!==activeTab)return toast('Дождитесь окончания розыгрыша');
   activeTab=i;
@@ -14,8 +14,10 @@ const go=i=> {
   const sectionByTab={0:0,1:2,2:3,3:4,4:6};
   [0,1,2,3,4,5,6].forEach(j=>$('#t'+j).hidden=j!==sectionByTab[i]);
   $('#cbar').hidden=i!==0;
+  if(window.KDWall)KDWall.setActive(i===4);
   // Правки людей в конструкторе не перерисовывают Drop — обновляем при возврате.
   if(i===0&&!busy)drawDrop();
+  if(i===0&&window.KDWall)KDWall.updateBanner();
   if(i===1||i===2)drawCases();
   if(i===3&&window.KD)KD.refreshMogg();
 };

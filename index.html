@@ -15,7 +15,6 @@
   <link rel="stylesheet" href="css/variables.css?v=2.5.0" />
   <link rel="stylesheet" href="css/base.css?v=2.4.0" />
   <link rel="stylesheet" href="css/components.css?v=2.0.0" />
-  <link rel="stylesheet" href="css/wall.css?v=1.5.0" />
   <link rel="stylesheet" href="css/theme.css?v=2.0.0" />
   <link rel="stylesheet" href="css/responsive.css?v=2.0.0" />
   <link rel="stylesheet" href="css/upgrade.css?v=2.0.0" />
@@ -25,6 +24,7 @@
   <link rel="stylesheet" href="css/team.css?v=2.4.0" />
   <link rel="stylesheet" href="css/topup.css?v=2.0.0" />
   <link rel="stylesheet" href="css/mobile.css?v=2.6.0" />
+  <link rel="stylesheet" href="css/wall.css?v=1.0.0" />
 </head>
 <body>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -50,15 +50,22 @@
       <div class="ht">
         <b>Физико-математическая школа 2007</b>
         <span class="hero-tagline">Князев <span class="brand-word">Drop</span> · рассадка, кейсы и немного&nbsp;∫</span>
-        <div class="chips" id="chips"><span class="chip-dedication" id="dedication">Посвящается Князеву Алексею Андреевичу<span class="chip-extra"> (для тех, кто не догадался)</span></span><a class="chip-bot" href="https://t.me/wiretap2007_bot" target="_blank" rel="noopener noreferrer"><span>Бот канала →</span></a></div>
+        <div class="chips" id="chips"><span class="chip-dedication" id="dedication">Посвящается Князеву Алексею Андреевичу<span class="chip-extra"> (для тех, кто не догадался)</span></span></div>
       </div>
       <svg class="plot" viewBox="0 0 340 134" aria-hidden="true"><path class="cv" pathLength="1" d="M10 67C45-3 75-3 90 67S135 137 170 67 215-3 250 67 295 137 330 67"></path><path class="c2" pathLength="1" d="M40 130Q170-60 300 130"></path><text x="14" y="16" fill="#5d7ba3" font-size="11" font-family="ui-monospace,Menlo,monospace">y = sin x</text></svg>
       <i class="mz">∑ 1/n² = π²/6 &nbsp;·&nbsp; e^(iπ) + 1 = 0 &nbsp;·&nbsp; a² + b² = c²</i>
       <figure class="pol"><div class="cat"></div></figure>
     </div>
 
+
     <section id="t0">
       <div class="tab-heading"><div><span class="tab-kicker">ФМШ 2007 / РАССАДКА</span><h1>Князев <span class="brand-word">Drop</span></h1></div><div class="tab-actions" id="cbar"></div></div>
+      <button class="wall-banner" id="wallBanner" type="button" hidden>
+        <span class="wall-banner-kicker">НОВОЕ НА САЙТЕ</span>
+        <strong class="wall-banner-title">Князев <span class="brand-word">Wall</span></strong>
+        <span class="wall-banner-text">Стена сообщений: напишите, что думаете. Сообщение появится после проверки администратором.</span>
+        <span class="wall-banner-cta">Открыть стену →</span>
+      </button>
       <div class="stage">
         <div class="m">Князев <span class="brand-word">Roll</span> · ФМШ 2007</div>
         <div id="nm">Князев Drop</div>
@@ -184,47 +191,6 @@
       </div>
     </section>
 
-    <section id="t6" hidden aria-labelledby="wallTitle">
-      <div class="tab-heading">
-        <div><span class="tab-kicker">ФМШ 2007 / СТЕНА</span><h1 id="wallTitle">Князев <span class="brand-word">Wall</span></h1></div>
-        <div class="tab-actions"><button class="topup-btn" id="wallBn" data-topup type="button" aria-label="Пополнить КК" title="Пополнить КК"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 6v12M6 12h12"/></svg></button><div class="balance-pill"><span>Баланс</span><strong id="wallBal">— КК</strong></div></div>
-      </div>
-
-      <div class="bot-banner" id="botBanner" hidden>
-        <span>Это бот для входа в канал с твоим сообщением. Нажми — он пришлёт ссылку для входа.</span>
-        <a href="https://t.me/wiretap2007_bot" target="_blank" rel="noopener noreferrer">Открыть бота</a>
-        <button type="button" id="botBannerClose" aria-label="Закрыть подсказку">×</button>
-      </div>
-
-      <div class="wall-layout">
-        <div class="card wall-card">
-          <form id="wallForm" autocomplete="off">
-            <input class="wall-hp" id="wallHp" name="website" tabindex="-1" aria-hidden="true" autocomplete="off">
-            <label class="wall-label" for="wallText">Сообщение</label>
-            <textarea class="wall-in" id="wallText" maxlength="1000" rows="7" placeholder="Твоё сообщение…" required></textarea>
-            <div class="wall-row"><span id="wallCnt">0 / 1000</span><span class="wall-price">Стоимость отправки: <b>100 КК</b></span></div>
-            <label class="wall-label" for="wallName">Подпись <span class="wall-opt">(необязательно)</span></label>
-            <input class="wall-in" id="wallName" maxlength="40" placeholder="Как тебя подписать">
-            <div class="wall-actions"><div id="wallMsg" aria-live="polite"></div><button class="b primary" id="wallBtn" type="submit">Отправить · 100 КК</button></div>
-          </form>
-        </div>
-        <aside class="card wall-about">
-          <span class="wall-kicker">О WALL</span>
-          <h2>Стена сообщений</h2>
-          <a class="wall-bot" href="https://t.me/wiretap2007_bot" target="_blank" rel="noopener noreferrer">Открыть бота<small>@wiretap2007_bot</small></a>
-          <p>Князев <span class="brand-word">Wall</span> — место, куда можно написать что угодно: признание, шутку, вопрос или поздравление.</p>
-          <p>Каждое сообщение сначала видит модератор. Он может опубликовать его в канале или отклонить — в канал попадает только одобренное.</p>
-          <ul class="wall-rules">
-            <li>До 1000 символов в сообщении.</li>
-            <li>Подпись необязательна — можно писать анонимно.</li>
-            <li>Отправка стоит 100 КК с баланса.</li>
-            <li>Если отправить не получилось, КК вернутся.</li>
-          </ul>
-          <p class="wall-note">Пиши по-человечески: спам, оскорбления и рекламу модератор отклонит.</p>
-        </aside>
-      </div>
-    </section>
-
     <section id="t5" hidden aria-labelledby="teamTitle">
       <div class="tab-heading"><div><span class="tab-kicker">ФМШ 2007 / КОМАНДА</span><h1 id="teamTitle">Князев <span class="brand-word">Team</span></h1><p>Проект ведёт <b>10А класс</b></p></div><div class="tab-actions"><button class="b g" id="backTeam" type="button">← Князев <span class="brand-word">Drop</span></button><button class="b team-bonus-button" id="teamBn" type="button"></button></div></div>
 
@@ -240,6 +206,46 @@
           <p>Обсуждаем идеи, делимся обновлениями и собираем предложения для следующих версий. Напишите нам список вашего класса и мы добавим его в Князев <span class="brand-word">Drop</span>.</p>
         </div>
         <a class="team-discord-link" href="https://discord.gg/FzABkEFBQM" target="_blank" rel="noopener noreferrer">Присоединиться к серверу</a>
+      </div>
+    </section>
+
+    <section id="t6" hidden aria-labelledby="wallTitle">
+      <div class="tab-heading">
+        <div>
+          <span class="tab-kicker">ФМШ 2007 / СТЕНА</span>
+          <h1 id="wallTitle">Князев <span class="brand-word">Wall</span></h1>
+          <p>Сообщения появляются после проверки администратором</p>
+        </div>
+      </div>
+
+      <div class="card wall-compose">
+        <h2>Написать на стену</h2>
+        <form id="wallForm" class="wall-form" novalidate>
+          <div class="wall-field">
+            <label for="wallAuthor">Имя <span class="m">(необязательно)</span></label>
+            <input id="wallAuthor" name="author" type="text" autocomplete="nickname" placeholder="Аноним" aria-describedby="wallAuthorHint" />
+            <span class="wall-hint" id="wallAuthorHint">До 50 символов. Если не указывать — будет «Аноним».</span>
+          </div>
+          <div class="wall-field">
+            <label for="wallText">Сообщение</label>
+            <textarea id="wallText" name="text" rows="5" required placeholder="Напишите что-нибудь доброе…" aria-describedby="wallNote wallCounter"></textarea>
+            <div class="wall-counter-row">
+              <span class="wall-hint" id="wallNote">До 1000 символов. HTML-теги будут видны как обычный текст.</span>
+              <span class="wall-counter" id="wallCounter" aria-live="polite">1000</span>
+            </div>
+          </div>
+          <div class="wall-turnstile" id="wallTurnstile" aria-label="Проверка Cloudflare Turnstile"></div>
+          <p class="wall-status" id="wallFormStatus" role="status" aria-live="polite"></p>
+          <div class="wall-actions"><button class="b primary" id="wallSubmit" type="submit" disabled>Отправить</button></div>
+        </form>
+        <p class="wall-note">Имя необязательно. IP хранится только в виде хэша — для защиты от спама. Сообщения проверяет администратор.</p>
+      </div>
+
+      <div class="card wall-feed-card">
+        <div class="wall-feed-head"><h2>Стена</h2></div>
+        <div class="wall-feed" id="wallFeed" aria-busy="true"></div>
+        <p class="wall-feed-status" id="wallFeedStatus" role="status" aria-live="polite"></p>
+        <div class="wall-more-row"><button class="b g" id="wallMore" type="button" hidden>Показать ещё</button></div>
       </div>
     </section>
   </main>
@@ -283,8 +289,8 @@
   <script src="js/core/visits.js?v=2.3.1"></script>
   <script src="js/admin/auth.js?v=2.3.0"></script>
   <script src="js/views/wish.js?v=2.5.0"></script>
-  <script src="js/views/wall.js?v=1.5.0"></script>
-  <script src="js/main.js?v=2.3.0"></script>
+  <script src="js/views/wall.js?v=1.0.0"></script>
+  <script src="js/main.js?v=2.4.0"></script>
   <script defer src="js/vendor/tasks-vision-1.1.0.js"></script>
   <script src="js/mogg/app.bundle.js?v=2.5.1"></script>
 </body>

@@ -1,0 +1,18 @@
+{
+  "name": "knyazev-wall-worker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cloudflare Worker: стена сообщений Князев Wall",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "db:migrate:local": "wrangler d1 migrations apply knyazev-wall-db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply knyazev-wall-db --remote"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261103.1",
+    "typescript": "^5.9.0",
+    "wrangler": "^4.157.0"
+  }
+}
