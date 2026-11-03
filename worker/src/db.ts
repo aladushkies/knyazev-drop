@@ -16,6 +16,13 @@ export interface NotificationRow {
   created_at: number;
 }
 
+export interface ChannelPostRow {
+  message_id: number;
+  chat_id: string;
+  tg_message_id: number;
+  created_at: number;
+}
+
 const MESSAGE_COLUMNS = 'id, author, text, created_at';
 
 export async function getApprovedMessages(
@@ -171,6 +178,44 @@ export async function getExpiredPending(
 
 export async function deleteRateLimitsBefore(db: D1Database, cutoff: number): Promise<void> {
   await db.prepare('DELETE FROM rate_limits WHERE created_at < ?').bind(cutoff).run();
+}
+
+export async function insertChannelPost(
+  db: D1Database,
+  messageId: number,
+  chatId: string,
+  tgMessageId: number,
+  now: number,
+): Promise<void> {
+  await db
+    .prepare(
+      `INSERT OR REPLACE INTO channel_posts
+         (message_id, chat_id, tg_message_id, created_at)
+       VALUES (?, ?, ?, ?)`,
+    )
+    .bind(messageId, chatId, tgMessageId, now)
+    .run();
+}
+
+export async function getChannelPost(
+  db: D1Database,
+  messageId: number,
+): Promise<ChannelPostRow | null> {
+  return db
+    .prepare(
+      `SELECT message_id, chat_id, tg_message_id, created_at
+       FROM channel_posts
+       WHERE message_id = ?`,
+    )
+    .bind(messageId)
+    .first<ChannelPostRow>();
+}
+
+export async function deleteChannelPost(
+  db: D1Database,
+  messageId: number,
+): Promise<void> {
+  await db.prepare('DELETE FROM channel_posts WHERE message_id = ?').bind(messageId).run();
 }
 
 export async function deleteOrphanNotifications(db: D1Database): Promise<void> {

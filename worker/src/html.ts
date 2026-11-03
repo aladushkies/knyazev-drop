@@ -2,6 +2,7 @@
 // проходит через escapeHtml: & < > — единственные спецсимволы Telegram HTML.
 
 import type { MessageRow } from './db';
+import { ANONYMOUS_AUTHOR } from './config';
 import { formatMsk } from './time';
 
 export interface InlineKeyboardMarkup {
@@ -49,6 +50,18 @@ export function buildDeletedText(): string {
 
 export function buildExpiredText(): string {
   return '⌛ <b>Удалено (истекло)</b>';
+}
+
+export function buildChannelPost(message: MessageRow): string {
+  const author = message.author === ANONYMOUS_AUTHOR
+    ? 'анон'
+    : escapeHtml(message.author);
+  return [
+    `⋂⋂ — ${escapeHtml(message.text)}`,
+    '',
+    author,
+    '<a href="https://князевдроп.рф">князевдроп.рф</a>',
+  ].join('\n');
 }
 
 export function pendingKeyboard(messageId: number): InlineKeyboardMarkup {

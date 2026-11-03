@@ -6,6 +6,8 @@ compatibility_date = "2026-11-01"
 # GitHub Pages пришлёт Origin: https://aladushkies.github.io
 [vars]
 ALLOWED_ORIGIN = "https://aladushkies.github.io"
+# Публичный канал для дублей одобренных сообщений.
+TELEGRAM_CHANNEL_ID = "@wiretap2007"
 
 [[d1_databases]]
 binding = "DB"

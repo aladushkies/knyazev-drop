@@ -6,6 +6,7 @@ export interface Env {
   ALLOWED_ORIGIN: string;
   TELEGRAM_BOT_TOKEN: string;
   TELEGRAM_WEBHOOK_SECRET: string;
+  TELEGRAM_CHANNEL_ID: string;
   TURNSTILE_SECRET: string;
   ADMIN_IDS: string;
   IP_HASH_SALT: string;

@@ -12,6 +12,7 @@ import {
 import { readBodyWithLimit } from './http';
 import {
   buildApprovedText,
+  buildChannelPost,
   buildDeletedText,
   buildExpiredText,
   buildPendingText,
@@ -22,15 +23,18 @@ import {
 } from './html';
 import {
   approveMessage,
+  deleteChannelPost,
   deleteMessage,
   deleteNotification,
   deleteNotifications,
   deleteOrphanNotifications,
   deletePendingMessage,
   deleteRateLimitsBefore,
+  getChannelPost,
   getExpiredPending,
   getMessageStatus,
   getNotifications,
+  insertChannelPost,
   insertNotification,
   type MessageRow,
   type NotificationRow,
@@ -233,6 +237,74 @@ async function syncDeleted(
   await deleteNotifications(env.DB, messageId);
 }
 
+async function sendChannelPost(env: Env, message: MessageRow): Promise<void> {
+  const channelId = (env.TELEGRAM_CHANNEL_ID ?? '').trim();
+  if (!channelId || !env.TELEGRAM_BOT_TOKEN) return;
+
+  try {
+    const statusBefore = await getMessageStatus(env.DB, message.id);
+    if (statusBefore !== 'approved') return;
+
+    const result = await callTelegram<TelegramMessage>(env, 'sendMessage', {
+      chat_id: channelId,
+      text: buildChannelPost(message),
+      parse_mode: 'HTML',
+      disable_web_page_preview: true,
+    });
+
+    if (!result.ok || !result.result) {
+      console.warn('wall: channel post was not sent', message.id);
+      return;
+    }
+
+    // Пока отправляли, сообщение могли удалить — тогда убираем и пост.
+    const statusAfter = await getMessageStatus(env.DB, message.id);
+    if (statusAfter !== 'approved') {
+      await callTelegram(env, 'deleteMessage', {
+        chat_id: channelId,
+        message_id: result.result.message_id,
+      });
+      return;
+    }
+
+    await insertChannelPost(
+      env.DB,
+      message.id,
+      channelId,
+      result.result.message_id,
+      Math.floor(Date.now() / 1000),
+    );
+  } catch (error) {
+    console.warn(
+      'wall: channel post error',
+      message.id,
+      error instanceof Error ? error.name : 'unknown',
+    );
+  }
+}
+
+async function deleteChannelPostForMessage(env: Env, messageId: number): Promise<void> {
+  try {
+    const post = await getChannelPost(env.DB, messageId);
+    if (!post) return;
+
+    await callTelegram(env, 'deleteMessage', {
+      chat_id: post.chat_id,
+      message_id: post.tg_message_id,
+    });
+
+    // Даже если Telegram не дал удалить (старый пост, бот больше не админ),
+    // строку убираем: сообщение со стены уже удалено безвозвратно.
+    await deleteChannelPost(env.DB, messageId);
+  } catch (error) {
+    console.warn(
+      'wall: channel post delete error',
+      messageId,
+      error instanceof Error ? error.name : 'unknown',
+    );
+  }
+}
+
 async function approveAndSync(env: Env, messageId: number, callbackId: string): Promise<void> {
   try {
     const notifications = await getNotifications(env.DB, messageId);
@@ -241,6 +313,7 @@ async function approveAndSync(env: Env, messageId: number, callbackId: string): 
     if (message) {
       await answerCallbackQuery(env, callbackId, 'Опубликовано');
       await syncApproved(env, message, notifications);
+      await sendChannelPost(env, message);
       return;
     }
 
@@ -265,6 +338,7 @@ async function deleteAndSync(env: Env, messageId: number, callbackId: string): P
 
     await answerCallbackQuery(env, callbackId, changed ? 'Удалено' : 'Уже удалено');
     await syncDeleted(env, messageId, notifications);
+    await deleteChannelPostForMessage(env, messageId);
   } catch (error) {
     console.error('wall: delete failed', error instanceof Error ? error.name : 'unknown');
     await answerCallbackQuery(env, callbackId, 'Ошибка, попробуйте ещё раз');

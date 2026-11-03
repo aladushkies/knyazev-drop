@@ -2,6 +2,8 @@
 # В git этот файл не попадает.
 TELEGRAM_BOT_TOKEN=
 TELEGRAM_WEBHOOK_SECRET=
+# Пусто — локально не отправлять дубли в канал.
+TELEGRAM_CHANNEL_ID=
 TURNSTILE_SECRET=
 ADMIN_IDS=
 IP_HASH_SALT=
